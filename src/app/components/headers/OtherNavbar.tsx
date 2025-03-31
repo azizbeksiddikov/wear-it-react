@@ -1,26 +1,60 @@
 import React from 'react';
+import { Box, Button, Container, Stack } from '@mui/material';
 import { NavLink } from 'react-router-dom';
 
 export default function OtherNavbar() {
+	const authMember = null;
+
 	return (
-		<nav>
-			<ul>
-				<li>
-					<NavLink to="/">Home</NavLink>
-				</li>
-				<li>
-					<NavLink to="/help">Help</NavLink>
-				</li>
-				<li>
-					<NavLink to="/products">Products</NavLink>
-				</li>
-				<li>
-					<NavLink to="/orders">Orders</NavLink>
-				</li>
-				<li>
-					<NavLink to="/member-page">My Page</NavLink>
-				</li>
-			</ul>
-		</nav>
+		<div className="other-navbar">
+			<Container className="navbar-container">
+				<Stack className="menu">
+					<Box>
+						<NavLink to="/">
+							<img className="brand-logo" src="/icons/burak.svg" alt="brand-logo" />
+						</NavLink>
+					</Box>
+					<Stack className="links">
+						<Box className={'hover-line'}>
+							<NavLink to="/">Home</NavLink>
+						</Box>
+						<Box className={'hover-line'}>
+							<NavLink to="/products" activeClassName={'underline'}>
+								Products
+							</NavLink>
+						</Box>
+						{authMember ? (
+							<Box className={'hover-line'}>
+								<NavLink to="/orders" activeClassName={'underline'}>
+									Orders
+								</NavLink>
+							</Box>
+						) : null}
+						{authMember ? (
+							<Box className={'hover-line'}>
+								<NavLink to="/member-page" activeClassName={'underline'}>
+									My Page
+								</NavLink>
+							</Box>
+						) : null}
+						<Box className={'hover-line'}>
+							<NavLink to="/help" activeClassName={'underline'}>
+								Help
+							</NavLink>
+						</Box>
+						{/* Basket */}
+						{!authMember ? (
+							<Box>
+								<Button variant="contained" className="login-button">
+									Login
+								</Button>
+							</Box>
+						) : (
+							<img className="user-avatar" src={'/icons/default-user.svg'} aria-haspopup={'true'} alt="user-avatar" />
+						)}
+					</Stack>
+				</Stack>
+			</Container>
+		</div>
 	);
 }
