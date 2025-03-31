@@ -2,6 +2,7 @@
 # Other files
 .env
 yarn.lock
+public/img/
 
 # dependencies
 /node_modules
