@@ -2,19 +2,19 @@ import React from 'react';
 import { Box, Button, Container, Stack } from '@mui/material';
 import { NavLink } from 'react-router-dom';
 
-export function HomeNavbar() {
-	const authMember = true;
+export default function HomeNavbar() {
+	const authMember = null;
 
 	return (
 		<div className="home-navbar">
-			<Container sx={{ mt: '55px', height: '642px' }}>
-				<Stack sx={{ height: '50px' }} flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'}>
+			<Container className="navbar-container">
+				<Stack className="menu">
 					<Box>
 						<NavLink to="/">
-							<Box>Wear It</Box>
+							<img className="brand-logo" src="/icons/burak.svg" alt="brand-logo" />
 						</NavLink>
 					</Box>
-					<Stack flexDirection={'row'} justifyContent={'space-between'} minWidth={'700px'} alignItems={'center'}>
+					<Stack className="links">
 						<Box className={'hover-line'}>
 							<NavLink to="/" activeClassName={'underline'}>
 								Home
@@ -47,20 +47,33 @@ export function HomeNavbar() {
 						{/* Basket */}
 						{!authMember ? (
 							<Box>
-								<Button variant="contained" style={{ background: '#3776CC', color: '#f8f8ff' }}>
+								<Button variant="contained" className="login-button">
 									Login
 								</Button>
 							</Box>
 						) : (
-							<Button variant="contained" style={{ background: '#3776CC', color: '#f8f8ff' }}>
-								Logout
-							</Button>
+							<img className="user-avatar" src={'/icons/default-user.svg'} aria-haspopup={'true'} alt="user-avatar" />
 						)}
 					</Stack>
 				</Stack>
-				<Stack>Detail</Stack>
+				<Stack className="header-frame">
+					<Stack className="detail">
+						<Box className="head-main-text">World's Most Delicious Cousine</Box>
+						<Box className="wel-text">The Choice, not just a choice</Box>
+						<Box className="service-text">24 hours service</Box>
+						<Box className="signup">
+							{!authMember ? (
+								<Button variant="contained" className="signup-button">
+									SIGN UP
+								</Button>
+							) : null}
+						</Box>
+					</Stack>
+					<Stack className="logo-frame">
+						<div className="logo-img"></div>
+					</Stack>
+				</Stack>
 			</Container>
 		</div>
 	);
 }
-export default HomeNavbar;
