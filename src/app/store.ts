@@ -1,5 +1,4 @@
 import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit";
-import { UrlWithStringQuery } from "url";
 
 export const store = configureStore({
   reducer: {},
