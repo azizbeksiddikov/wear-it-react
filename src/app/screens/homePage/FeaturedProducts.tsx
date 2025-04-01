@@ -1,13 +1,10 @@
 import React from 'react';
 import { Box, Container, Stack } from '@mui/material';
 import Card from '@mui/joy/Card';
-import CardCover from '@mui/joy/CardCover';
-import CardContent from '@mui/joy/CardContent';
 import Typography from '@mui/joy/Typography';
 import { CssVarsProvider } from '@mui/joy/styles';
 import CardOverflow from '@mui/joy/CardOverflow';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import AspectRatio from '@mui/joy/AspectRatio';
 import Divider from '../../components/divider';
 

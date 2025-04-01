@@ -25,9 +25,9 @@ export default function UserPage() {
 						<Box className={'order-info-box'}>
 							<Box display={'flex'} flexDirection={'column'} alignItems={'center'}>
 								<div className={'order-user-img'}>
-									<img src={'/icons/default-user.svg'} className={'order-user-avatar'} />
+									<img src={'/icons/default-user.svg'} className={'order-user-avatar'} alt="" />
 									<div className={'order-user-icon-box'}>
-										<img src={'/icons/user-badge.svg'} />
+										<img src={'/icons/user-badge.svg'} alt="" />
 									</div>
 								</div>
 								<span className={'order-user-name'}>Martin</span>
