@@ -33,7 +33,7 @@ export default function Basket() {
 				onClick={handleClick}
 			>
 				<Badge badgeContent={3} color="secondary">
-					<img src={'/icons/shopping-cart.svg'} />
+					<img src={'/icons/shopping-cart.svg'} alt="shopping-cart" />
 				</Badge>
 			</IconButton>
 			<Menu
@@ -82,7 +82,7 @@ export default function Basket() {
 								<div className={'cancel-btn'}>
 									<CancelIcon color={'primary'} />
 								</div>
-								<img src={'/img/fresh.webp'} className={'product-img'} />
+								<img src={'/img/fresh.webp'} className={'product-img'} alt="fresh" />
 								<span className={'product-name'}>Kebab</span>
 								<p className={'product-price'}>$10 x 1</p>
 								<Box sx={{ minWidth: 120 }}>
