@@ -10,7 +10,7 @@ const homePageSlice = createSlice({
 	name: 'homePage',
 	initialState,
 	reducers: {
-		setFeaturedProductss: (state, action) => {
+		setFeaturedProducts: (state, action) => {
 			state.featuredProducts = action.payload;
 		},
 		setSaleProducts: (state, action) => {
@@ -19,7 +19,7 @@ const homePageSlice = createSlice({
 	},
 });
 
-export const { setFeaturedProductss, setSaleProducts } = homePageSlice.actions;
+export const { setFeaturedProducts, setSaleProducts } = homePageSlice.actions;
 
 const HomePageReducer = homePageSlice.reducer;
 export default HomePageReducer;
