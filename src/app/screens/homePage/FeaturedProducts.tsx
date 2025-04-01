@@ -18,7 +18,7 @@ const list = [
 	{ _id: 103, producName: 't-shirt', productImages: ['img/t-shirt.jpg'] },
 ];
 
-export default function FeaturedClothes() {
+export default function FeaturedProducts() {
 	return (
 		<div className="new-products-frame">
 			<Container>
