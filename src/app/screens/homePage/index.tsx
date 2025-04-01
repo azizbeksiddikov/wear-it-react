@@ -1,6 +1,6 @@
 import React from 'react';
 import Statistics from './Statistics';
-import FeatuedClothes from './FeatuedClothes';
+import FeaturedClothes from './FeaturedClothes';
 import SaleClothes from './SaleClothes';
 import Advertisement from './Advertisement';
 import Events from './Events';
@@ -9,7 +9,7 @@ export default function HomePage() {
 	return (
 		<div className={'homepage'}>
 			<Statistics />
-			<FeatuedClothes />
+			<FeaturedClothes />
 			<SaleClothes />
 			<Advertisement />
 			<Events />
