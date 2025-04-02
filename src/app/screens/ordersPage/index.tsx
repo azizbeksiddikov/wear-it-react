@@ -5,81 +5,198 @@ import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import { useState, SyntheticEvent } from 'react';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
-import PausedOrders from './PausedOrders';
-import ProcessOrders from './ProcessOrders';
-import FinishedOrders from './FinishedOrders';
-import '../../../css/orders.css';
+import '../../../css/ordersPage.css';
+import TabPanel from '@mui/lab/TabPanel';
+import Button from '@mui/material/Button';
+import moment from 'moment';
 
 export default function OrdersPage() {
+	const orders = [1, 2];
+
 	const [value, setValue] = useState('1');
 	const handleChange = (e: SyntheticEvent, newValue: string) => {
 		setValue(newValue);
 	};
-	console.log(value);
 	return (
 		<div className="order-page">
 			<Container className="order-container">
-				<Stack className="order-left">
-					<TabContext value={value}>
-						<Stack className="order-nav-frame">
-							<Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-								<Tabs value={value} onChange={handleChange} aria-label="basic tabs example" className="table-list">
-									<Tab label="PAUSED ORDERS" value={'1'} />
-									<Tab label="PROCESS ORDERS" value={'2'} />
-									<Tab label="FINISHED ORDERS" value={'3'} />
-								</Tabs>
-							</Box>
-						</Stack>
-
-						<Stack className="order-main-content">
-							<PausedOrders />
-							<ProcessOrders />
-							<FinishedOrders />
-						</Stack>
-					</TabContext>
-				</Stack>
-
-				<Stack className="order-right">
-					<Stack className="member-box order-info-box">
-						<div className="order-user-img">
-							<img src="/icons/default-user.svg" className="order-user-avatar" />
-							<div className="order-user-icon-box">
-								<img src="/icons/user-badge.svg" className="order-user-prof-img" />
-							</div>
-						</div>
-						<Box className="order-user-name">Justin</Box>
-						<Box className="order-user-prof">USER</Box>
-						<Box className="liner" />
-						<Stack className="order-user-address">
-							<LocationOnIcon />
-							<Box className="spec-address-text">South Korea, Busan</Box>
-						</Stack>
+				<TabContext value={value}>
+					<Stack className="order-nav-frame">
+						<Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+							<Tabs value={value} onChange={handleChange} aria-label="basic tabs example" className="table-list">
+								<Tab label="PAUSED ORDERS" value={'1'} />
+								<Tab label="PROCESS ORDERS" value={'2'} />
+								<Tab label="FINISHED ORDERS" value={'3'} />
+							</Tabs>
+						</Box>
 					</Stack>
 
-					<Stack className="card-info order-info-box">
-						<Box className="card-input">Card Number: 5243 4090 2002 7495</Box>
-						<Stack className="card-half">
-							<Box className="card-half-input">07 / 24</Box>
-							<Box className="card-half-input">CVV: 010</Box>
-						</Stack>
-						<Box className="card-input">Justin Robertson</Box>
-						<Stack className="cards-box">
-							<img src="/icons/western-card.svg"></img>
-							<img src="/icons/master-card.svg"></img>
-							<img src="/icons/paypal-card.svg"></img>
-							<img src="/icons/visa-card.svg"></img>
-						</Stack>
+					<Stack className="order-main-content">
+						<TabPanel value="1">
+							<Stack>
+								{/* number of orders */}
+								{orders.map((ele, index) => {
+									return (
+										<Box key={index} className="order-main-box">
+											<Box className="order-box-scroll">
+												{/* number of items in each order */}
+												{[1, 2, 3].map((ele2, index2) => {
+													return (
+														<Box key={index2} className="orders-name-price">
+															<Stack className="order-dish-class">
+																<img src="img/lavash.webp" className="order-dish-img" />
+																<p className="title-dish">Lavash</p>
+															</Stack>
+															<Stack className="price-box">
+																<p>$10</p>
+																<img src="/icons/close.svg" />
+																<p>2</p>
+																<img src="/icons/pause.svg" />
+																<p style={{ marginLeft: '15px' }}>$20</p>
+															</Stack>
+														</Box>
+													);
+												})}
+											</Box>
+
+											<Box className="total-price-box">
+												<Box className="box-total">
+													<p>Product price</p>
+													<p>$60</p>
+													<img src="/icons/plus.svg" style={{ marginLeft: '20px' }} />
+													<p> Delivery cost</p>
+													<p>$5</p>
+													<img src="/icons/pause.svg" style={{ marginLeft: '20px' }} />
+													<p>Total</p>
+													<p>$65</p>
+												</Box>
+
+												<Button variant="contained" color="secondary" className="cancel-button">
+													Cancel
+												</Button>
+
+												<Button variant="contained" className="pay-button">
+													Payment
+												</Button>
+											</Box>
+										</Box>
+									);
+								})}
+
+								{orders.length <= 0 && (
+									<Box display={'flex'} flexDirection={'row'} justifyContent={'center'}>
+										<img src="/icons/noimage-list.svg" style={{ width: 300, height: 300 }} />
+									</Box>
+								)}
+							</Stack>
+						</TabPanel>
+						<TabPanel value="2">
+							<Stack>
+								{/* number of orders */}
+								{orders.map((ele, index) => {
+									return (
+										<Box key={index} className="order-main-box">
+											<Box className="order-box-scroll">
+												{/* number of items in each order */}
+												{[1, 2, 3].map((ele2, index2) => {
+													return (
+														<Box key={index2} className="orders-name-price">
+															<Stack className="order-dish-class">
+																<img src="img/lavash.webp" className="order-dish-img" />
+																<p className="title-dish">Lavash</p>
+															</Stack>
+															<Stack className="price-box">
+																<p>$10</p>
+																<img src="/icons/close.svg" />
+																<p>2</p>
+																<img src="/icons/pause.svg" />
+																<p style={{ marginLeft: '15px' }}>$20</p>
+															</Stack>
+														</Box>
+													);
+												})}
+											</Box>
+
+											<Box className="total-price-box">
+												<Box className="box-total">
+													<p>Product price</p>
+													<p>$60</p>
+													<img src="/icons/plus.svg" style={{ marginLeft: '20px' }} />
+													<p> Delivery cost</p>
+													<p>$5</p>
+													<img src="/icons/pause.svg" style={{ marginLeft: '20px' }} />
+													<p>Total</p>
+													<p>$65</p>
+												</Box>
+												<p className="data-compl">{moment().format('YY-MM-DD HH:mm')}</p>
+												<Button variant="contained" className="verify-button">
+													Verify to fulfill
+												</Button>
+											</Box>
+										</Box>
+									);
+								})}
+
+								{orders.length <= 0 && (
+									<Box display={'flex'} flexDirection={'row'} justifyContent={'center'}>
+										<img src="/icons/noimage-list.svg" style={{ width: 300, height: 300 }} />
+									</Box>
+								)}
+							</Stack>
+						</TabPanel>{' '}
+						<TabPanel value="3">
+							<Stack>
+								{/* number of orders */}
+								{orders.map((ele, index) => {
+									return (
+										<Box key={index} className="order-main-box">
+											<Box className="order-box-scroll">
+												{/* number of items in each order */}
+												{[1, 2, 3].map((ele2, index2) => {
+													return (
+														<Box key={index2} className="orders-name-price">
+															<Stack className="order-dish-class">
+																<img src="img/lavash.webp" className="order-dish-img" />
+																<p className="title-dish">Lavash</p>
+															</Stack>
+															<Stack className="price-box">
+																<p>$10</p>
+																<img src="/icons/close.svg" />
+																<p>2</p>
+																<img src="/icons/pause.svg" />
+																<p style={{ marginLeft: '15px' }}>$20</p>
+															</Stack>
+														</Box>
+													);
+												})}
+											</Box>
+
+											<Box className="total-price-box">
+												<Box className="box-total">
+													<p>Product price</p>
+													<p>$60</p>
+													<img src="/icons/plus.svg" style={{ marginLeft: '20px' }} />
+													<p> Delivery cost</p>
+													<p>$5</p>
+													<img src="/icons/pause.svg" style={{ marginLeft: '20px' }} />
+													<p>Total</p>
+													<p>$65</p>
+												</Box>
+											</Box>
+										</Box>
+									);
+								})}
+
+								{orders.length <= 0 && (
+									<Box display={'flex'} flexDirection={'row'} justifyContent={'center'}>
+										<img src="/icons/noimage-list.svg" style={{ width: 300, height: 300 }} />
+									</Box>
+								)}
+							</Stack>
+						</TabPanel>{' '}
 					</Stack>
-				</Stack>
+				</TabContext>
 			</Container>
 		</div>
 	);
 }
-// .order-page
-// .order-right
-// .order-info-box
-// .order-user-icon-box
-// .order-user-prof-img {
-
-// Now:
-// .order-page .order-right .order-user-icon-box .order-user-prof-img {
