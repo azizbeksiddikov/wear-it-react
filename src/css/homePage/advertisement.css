@@ -1,0 +1,50 @@
+.advertisement-section {
+	padding: 5rem 0;
+	background-color: #ffffff;
+}
+
+.advertisement-section .section-title {
+	text-align: center;
+	font-size: 2rem;
+	font-weight: 700;
+	margin-bottom: 3rem;
+	color: #111111;
+}
+
+.advertisement-section .feature-card {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+}
+
+.advertisement-section .feature-icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 72px;
+	height: 72px;
+	border-radius: 50%;
+	background-color: rgba(230, 0, 35, 0.1);
+	color: #e60023;
+	margin-bottom: 1.5rem;
+}
+
+.advertisement-section .feature-icon svg {
+	font-size: 32px;
+}
+
+.advertisement-section .feature-title {
+	font-size: 1.25rem;
+	font-weight: 600;
+	margin-bottom: 0.75rem;
+	color: #111111;
+}
+
+.advertisement-section .feature-description {
+	color: #767676;
+	font-size: 1rem;
+	line-height: 1.5;
+	max-width: 80%;
+	margin: 0 auto;
+}

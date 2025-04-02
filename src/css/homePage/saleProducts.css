@@ -1,0 +1,121 @@
+/* Sale Products Section */
+.sale-section {
+	padding: 3rem 0;
+	background-color: #f7f7f7; /* Slightly lighter, more elegant gray */
+}
+
+/* Header with title and view all link */
+.sale-section .sale-header {
+	margin-bottom: 3rem;
+}
+
+.sale-section .sale-title h2 {
+	font-size: 2.25rem;
+	font-weight: 700;
+	margin-bottom: 0.75rem;
+	color: #111111;
+}
+
+.sale-section .sale-title p {
+	color: #6a6a6a; /* Darker gray for better readability */
+}
+
+.sale-section .view-all-link button {
+	color: #e60023; /* Pinterest red */
+	text-transform: none;
+	font-weight: 600;
+}
+
+/* Product card styling */
+.sale-section .product-card {
+	height: 100%;
+	display: flex;
+	border-radius: 16px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+	transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+	cursor: pointer;
+}
+
+.sale-section .product-card:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12); /* Enhanced shadow on hover */
+}
+
+/* Image section */
+.sale-section .product-image-wrapper {
+	position: relative;
+	width: 100%;
+	padding-top: 100%;
+}
+
+.sale-section .product-image {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+	background-color: #ffffff; /* Pure white for product background */
+	transition: transform 0.5s ease;
+}
+
+.sale-section .product-card:hover .product-image {
+	transform: scale(1.05);
+}
+
+/* Category badge */
+.sale-section .product-category {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	background-color: rgba(255, 255, 255, 0.95); /* More opaque badge */
+	color: #333333; /* Darker text for better contrast */
+	padding: 0.25rem 0.75rem;
+	border-radius: 20px;
+	font-size: 0.75rem;
+	font-weight: 600;
+}
+
+/* Product info section */
+.sale-section .product-info {
+	padding: 1.25rem;
+	background-color: #ffffff;
+	border-top: 1px solid #f0f0f0; /* Subtle separator */
+}
+
+.sale-section .product-name {
+	font-weight: 600;
+	font-size: 1rem;
+	color: #111111;
+	line-height: 1.4;
+}
+
+/* Details button */
+.sale-section .details-button {
+	min-width: 40px;
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	background-color: #efefef;
+	color: #333333; /* Better contrast */
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+	transition: all 0.2s ease;
+}
+
+.sale-section .details-button:hover {
+	background-color: #e60023; /* Pinterest red */
+	color: #ffffff;
+	transform: scale(1.1);
+	box-shadow: 0 2px 8px rgba(230, 0, 35, 0.25); /* Red-tinted shadow */
+}
+
+/* Empty state */
+.sale-section .empty-products {
+	width: 100%;
+	padding: 3rem;
+	text-align: center;
+	color: #6a6a6a;
+	background-color: #f0f0f0;
+	border-radius: 8px;
+	border: 1px solid #e6e6e6;
+}

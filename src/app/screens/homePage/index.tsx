@@ -1,18 +1,17 @@
 import React, { useEffect } from 'react';
-import Statistics from './Statistics';
+import Introduction from './Introduction';
 import FeaturedProducts from './FeaturedProducts';
 import SaleProducts from './SaleProducts';
 import Advertisement from './Advertisement';
-import Events from './Events';
-import '../../../css/home.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { Dispatch } from '@reduxjs/toolkit';
 import { createSelector } from 'reselect';
 import { setFeaturedProducts, setSaleProducts } from './slice';
 import { retrieveFeaturedProducts, retrieveSaleProducts } from './selector';
 import { Product } from '../../../libs/types/product';
+import '../../../css/homePage/home.css';
 
-/** redux slice & selector */
+/** Redux slice & selector */
 const actionDispatch = (dispatch: Dispatch) => ({
 	setFeaturedProducts: (data: Product[]) => dispatch(setFeaturedProducts(data)),
 });
@@ -26,11 +25,10 @@ export default function HomePage() {
 
 	return (
 		<div className={'homepage'}>
-			<Statistics />
+			<Introduction />
 			<FeaturedProducts />
 			<SaleProducts />
 			<Advertisement />
-			<Events />
 		</div>
 	);
 }

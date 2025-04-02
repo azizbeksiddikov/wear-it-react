@@ -29,7 +29,7 @@ export default function Navbar() {
 					{authMember ? (
 						<>
 							<Basket />
-							<NavLink to="/member-page">
+							<NavLink to="/my-page">
 								<IconButton>
 									<PersonIcon />
 								</IconButton>

@@ -1,0 +1,117 @@
+/* Featured Products Section */
+.featured-section {
+	padding: 3rem 0;
+	background-color: #ffffff;
+}
+
+/* Header with title and view all link */
+.featured-section .featured-header {
+	margin-bottom: 3rem;
+}
+
+.featured-section .featured-title h2 {
+	font-size: 2.25rem;
+	font-weight: 700;
+	margin-bottom: 0.75rem;
+	color: #111111;
+}
+
+.featured-section .featured-title p {
+	color: #767676;
+}
+
+.featured-section .view-all-link button {
+	color: #e60023;
+	text-transform: none;
+	font-weight: 600;
+}
+
+/* Product card styling */
+.featured-section .product-card {
+	height: 100%;
+	display: flex;
+	border-radius: 16px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+	transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+	cursor: pointer;
+}
+
+.featured-section .product-card:hover {
+	transform: translateY(-1px);
+}
+
+/* Image section */
+.featured-section .product-image-wrapper {
+	position: relative;
+	width: 100%;
+	padding-top: 100%;
+}
+
+.featured-section .product-image {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+	background-color: #f9f9f9;
+	transition: transform 0.5s ease;
+}
+
+.featured-section .product-card:hover .product-image {
+	transform: scale(1.05);
+}
+
+/* Category badge */
+.featured-section .product-category {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	background-color: rgba(255, 255, 255, 0.9);
+	color: #111111;
+	padding: 0.25rem 0.75rem;
+	border-radius: 20px;
+	font-size: 0.75rem;
+	font-weight: 600;
+}
+
+/* Product info section */
+.featured-section .product-info {
+	padding: 1.25rem;
+	background-color: #ffffff;
+}
+
+.featured-section .product-name {
+	font-weight: 600;
+	font-size: 1rem;
+	color: #111111;
+	line-height: 1.4;
+}
+
+/* Details button - replaces info-action-button */
+.featured-section .details-button {
+	min-width: 40px;
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	background-color: #efefef;
+	color: #111111;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+	transition: all 0.2s ease;
+}
+
+.featured-section .details-button:hover {
+	background-color: #e60023;
+	color: #ffffff;
+	transform: scale(1.1);
+}
+
+/* Empty state */
+.featured-section .empty-products {
+	width: 100%;
+	padding: 3rem;
+	text-align: center;
+	color: #767676;
+	background-color: #f9f9f9;
+	border-radius: 8px;
+}

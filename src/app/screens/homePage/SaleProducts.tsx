@@ -1,59 +1,85 @@
 import React from 'react';
-import { Box, Container, Stack } from '@mui/material';
-import AspectRatio from '@mui/joy/AspectRatio';
-import Card from '@mui/joy/Card';
-import Typography from '@mui/joy/Typography';
-import { CssVarsProvider } from '@mui/joy/styles';
-import CardOverflow from '@mui/joy/CardOverflow';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import Divider from '../../components/divider';
+import { Box, Button, Container, Grid, Stack, Typography, Tooltip } from '@mui/material';
+import { Link } from 'react-router-dom';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import ReadMoreIcon from '@mui/icons-material/ReadMore';
+import '../../../css/homePage/saleProducts.css';
 
-const list = [
-	{ _id: 100, producName: 't-shirt', productImages: ['img/t-shirt.jpg'] },
-	{ _id: 101, producName: 't-shirt', productImages: ['img/t-shirt.jpg'] },
-	{ _id: 102, producName: 't-shirt', productImages: ['img/t-shirt.jpg'] },
-	{ _id: 103, producName: 't-shirt', productImages: ['img/t-shirt.jpg'] },
+const products = [
+	{
+		id: 100,
+		name: 'Classic White T-shirt',
+		image: 'img/t-shirt.jpg',
+		category: 'Tops',
+	},
+	{
+		id: 100,
+		name: 'Classic White T-shirt',
+		image: 'img/t-shirt.jpg',
+		category: 'Tops',
+	},
+	{
+		id: 100,
+		name: 'Classic White T-shirt',
+		image: 'img/t-shirt.jpg',
+		category: 'Tops',
+	},
+	{
+		id: 100,
+		name: 'Classic White T-shirt',
+		image: 'img/t-shirt.jpg',
+		category: 'Tops',
+	},
 ];
 
-export default function SaleClothes() {
+export default function SaleProducts() {
 	return (
-		<div className="new-products-frame">
+		<div className="sale-section">
 			<Container>
-				<Stack className="main">
-					<Box className="category-title">Fresh Menu</Box>
-					<Stack className="cards-frame">
-						<CssVarsProvider>
-							{list.map((ele, index) => {
-								return (
-									<Card key={index} variant="outlined" className="card">
-										<CardOverflow>
-											<div className="product-sale">Normal size</div>
-											<AspectRatio ratio="1">
-												<img src={ele.productImages[0]} alt="" />
-											</AspectRatio>
-										</CardOverflow>
-
-										<CardOverflow variant="soft" className="product-detail">
-											<Stack className="info">
-												<Stack flexDirection={'row'}>
-													<Typography className="title">{ele.producName}</Typography>
-													<Divider width="2" height="24" bg="#d9d9d9" />
-													<Typography className="price">$20</Typography>
-												</Stack>
-												<Stack>
-													<Typography className="views">
-														20
-														<VisibilityIcon sx={{ fontSize: 20, ml: '5px' }} />
-													</Typography>
-												</Stack>
-											</Stack>
-										</CardOverflow>
-									</Card>
-								);
-							})}
-						</CssVarsProvider>
+				<Stack className="sale-header" direction="row" justifyContent="space-between" alignItems="flex-start">
+					<Stack className="sale-title">
+						<Typography variant="h2">Sale Products</Typography>
+						<Typography variant="body1">Special offers with amazing discounts</Typography>
 					</Stack>
+
+					<Link to="/products" className="view-all-link">
+						<Button endIcon={<ArrowForwardIcon />}>View All</Button>
+					</Link>
 				</Stack>
+
+				<Grid container spacing={3} className="products-grid">
+					{products.length > 0 ? (
+						products.map((product) => (
+							<Grid item xs={12} sm={6} md={3} key={product.id}>
+								<Stack className="product-card">
+									<Box className="product-image-wrapper">
+										<img src={product.image} alt={product.name} className="product-image" />
+										<Box component="span" className="product-category">
+											{product.category}
+										</Box>
+									</Box>
+
+									<Stack direction="row" className="product-info" alignItems="center" justifyContent="space-between">
+										<Box>
+											<Typography variant="h6" className="product-name">
+												{product.name}
+											</Typography>
+										</Box>
+										<Tooltip title="View Details" placement="top" arrow>
+											<Button className="details-button" component={Link} to={`/products/${product.id}`}>
+												<ReadMoreIcon />
+											</Button>
+										</Tooltip>
+									</Stack>
+								</Stack>
+							</Grid>
+						))
+					) : (
+						<Box className="empty-products">
+							<Typography variant="body1">No sale products are available at the moment.</Typography>
+						</Box>
+					)}
+				</Grid>
 			</Container>
 		</div>
 	);
