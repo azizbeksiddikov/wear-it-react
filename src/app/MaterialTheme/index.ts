@@ -1,65 +1,99 @@
-import { createTheme } from '@mui/material/styles';
-import { common } from '@mui/material/colors';
-import shadow from './shadow';
+import { createTheme, ThemeOptions } from '@mui/material/styles';
+import { TypographyOptions } from '@mui/material/styles/createTypography';
 import typography from './typography';
 
-/**
- * LIGHT THEME (DEFAULT)
- */
-const light = {
+const light: ThemeOptions = {
 	palette: {
-		type: 'light',
+		mode: 'light',
 		background: {
-			default: '#f8f8ff',
-			paper: common.white,
+			default: '#FFFFFF',
+			paper: '#FFFFFF',
 		},
 		primary: {
-			contrastText: '#d7b586',
-			main: '#343434',
+			main: '#E60023',
+			contrastText: '#FFFFFF',
 		},
 		secondary: {
-			contrastText: '#343434',
-			main: '#d7b586',
+			main: '#EFEFEF',
+			contrastText: '#111111',
 		},
 		text: {
-			primary: '#343434',
-			secondary: '#d7b586',
-			dark: common.black,
+			primary: '#111111',
+			secondary: '#767676',
 		},
 	},
+	shape: {
+		borderRadius: 16,
+	},
 	components: {
-		MuiContainer: {
+		MuiButton: {
 			styleOverrides: {
 				root: {
-					height: '100%',
+					borderRadius: 24,
+					textTransform: 'none',
+					fontWeight: 600,
+					padding: '8px 16px',
+					'&:hover': {
+						backgroundColor: '#AD081B',
+					},
 				},
-			},
-		},
-		MuiCssBaseline: {
-			styleOverrides: {
-				html: { height: '100%' },
-				body: { background: '#f4f6f8', height: '100%', minHeight: '100%' },
-			},
-		},
-	},
-	shadow,
-	typography,
-};
-
-// A custom theme for this app
-let theme = createTheme(light);
-theme = createTheme(theme, {
-	components: {
-		MuiContainer: {
-			styleOverrides: {
-				maxWidthLg: {
-					[theme.breakpoints.up('lg')]: {
-						maxWidth: '1300px',
+				contained: {
+					boxShadow: 'none',
+					'&:hover': {
+						boxShadow: 'none',
+					},
+				},
+				outlined: {
+					borderColor: '#EFEFEF',
+					'&:hover': {
+						borderColor: '#EFEFEF',
+						backgroundColor: '#EFEFEF',
 					},
 				},
 			},
 		},
+		MuiContainer: {
+			styleOverrides: {
+				root: {
+					paddingLeft: '2rem',
+					paddingRight: '2rem',
+				},
+				maxWidthLg: {
+					maxWidth: '1400px',
+				},
+			},
+		},
 	},
-});
+	typography: typography as TypographyOptions,
+};
+
+const theme = createTheme(light);
+
+declare module '@mui/material/styles' {
+	interface Palette {
+		pinterest: {
+			red: string;
+			black: string;
+			gray: string;
+			lightgray: string;
+		};
+		muted: {
+			main: string;
+			contrastText: string;
+		};
+	}
+	interface PaletteOptions {
+		pinterest?: {
+			red: string;
+			black: string;
+			gray: string;
+			lightgray: string;
+		};
+		muted?: {
+			main: string;
+			contrastText: string;
+		};
+	}
+}
 
 export default theme;

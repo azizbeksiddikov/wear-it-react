@@ -1,7 +1,6 @@
 import React from 'react';
-import { Switch, Route, useLocation } from 'react-router-dom';
-import HomeNavbar from './components/headers/HomeNavbar';
-import OtherNavbar from './components/headers/OtherNavbar';
+import { Switch, Route } from 'react-router-dom';
+import Navbar from './components/headers/Navbar';
 import HomePage from './screens/homePage';
 import HelpPage from './screens/helpPage';
 import OrdersPage from './screens/ordersPage';
@@ -9,16 +8,12 @@ import ProductsPage from './screens/productsPage';
 import UserPage from './screens/userPage';
 import Footer from './components/footer';
 import '../css/app.css';
-import '../css/navbar.css';
-import '../css/footer.css';
 
 function App() {
-	const location = useLocation();
-
 	return (
-		<>
+		<div>
 			{/* Header */}
-			{location.pathname === '/' ? <HomeNavbar /> : <OtherNavbar />}
+			<Navbar />
 
 			{/* Main content */}
 			<Switch>
@@ -31,7 +26,7 @@ function App() {
 
 			{/* Footer */}
 			<Footer />
-		</>
+		</div>
 	);
 }
 

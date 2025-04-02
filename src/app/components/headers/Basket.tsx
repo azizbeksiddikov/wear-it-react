@@ -6,6 +6,7 @@ import Menu from '@mui/material/Menu';
 import CancelIcon from '@mui/icons-material/Cancel';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useHistory } from 'react-router-dom';
+import '../../../css/basket.css';
 
 export default function Basket() {
 	const authMember = null;
@@ -23,7 +24,7 @@ export default function Basket() {
 	};
 
 	return (
-		<Box className={'hover-line'}>
+		<Box className={'basket'}>
 			<IconButton
 				aria-label="cart"
 				id="basic-button"
@@ -33,9 +34,10 @@ export default function Basket() {
 				onClick={handleClick}
 			>
 				<Badge badgeContent={3} color="secondary">
-					<img src={'/icons/shopping-cart.svg'} alt="shopping-cart" />
+					<ShoppingCartIcon />
 				</Badge>
 			</IconButton>
+
 			<Menu
 				anchorEl={anchorEl}
 				id="account-menu"
@@ -82,7 +84,7 @@ export default function Basket() {
 								<div className={'cancel-btn'}>
 									<CancelIcon color={'primary'} />
 								</div>
-								<img src={'/img/fresh.webp'} className={'product-img'} alt="fresh" />
+								<img src={'/img/fresh.webp'} className={'product-img'} />
 								<span className={'product-name'}>Kebab</span>
 								<p className={'product-price'}>$10 x 1</p>
 								<Box sx={{ minWidth: 120 }}>

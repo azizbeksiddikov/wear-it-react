@@ -18,7 +18,7 @@ export default function Statistics() {
 				<Divider width="2" height="64" bg="#E3C08D" />
 				<Stack className="static-box">
 					<Box className="static-num">50+</Box>
-					<Box className="static-text">Menu</Box>
+					<Box className="static-text">Products</Box>
 				</Stack>
 				<Divider width="2" height="64" bg="#E3C08D" />
 				<Stack className="static-box">
