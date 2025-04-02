@@ -1,75 +1,172 @@
 import React from 'react';
-import { Container, Stack, Box, Typography, Card, CardContent, CardActions, Grid, Divider } from '@mui/material';
+import {
+	Container,
+	Stack,
+	Box,
+	Typography,
+	Card,
+	CardContent,
+	CardActions,
+	Grid,
+	Divider,
+	List,
+	ListItem,
+} from '@mui/material';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
-import { useState, SyntheticEvent } from 'react';
+import { useState, SyntheticEvent, useEffect } from 'react';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import '../../../css/orders.css';
 import TabPanel from '@mui/lab/TabPanel';
 import Button from '@mui/material/Button';
 import moment from 'moment';
+import { Order, OrderItem } from '../../../libs/types/order';
+import { OrderStatus } from '../../../libs/enums/order.enum';
 
-// Order type definition
-interface Order {
-	id: string;
-	product: string;
-	quantity: number;
-	price: number;
-	orderDate: string;
-	address: string;
-	status: 'paused' | 'process' | 'finished';
+// Extended Order type for UI with items
+interface ExtendedOrder extends Order {
+	items: OrderItem[];
+	productName?: string; // For backward compatibility
 }
 
 export default function OrdersPage() {
-	// State for current tab
-	const [value, setValue] = useState<string>('paused');
+	// State for current tab (using OrderStatus enum)
+	const [value, setValue] = useState<string>(OrderStatus.PAUSED);
 
 	// State for orders in different stages
-	const [pausedOrders, setPausedOrders] = useState<Order[]>([
+	const [pausedOrders, setPausedOrders] = useState<ExtendedOrder[]>([
 		{
-			id: 'ord-001',
-			product: 'Blue T-Shirt',
-			quantity: 2,
-			price: 29.99,
-			orderDate: '2023-07-15',
-			address: '123 Main St, City',
-			status: 'paused',
-		},
-		{
-			id: 'ord-002',
-			product: 'Black Jeans',
-			quantity: 1,
-			price: 49.99,
-			orderDate: '2023-07-16',
-			address: '456 Oak Ave, Town',
-			status: 'paused',
+			_id: 'ord-001',
+			memberId: 'mem-001',
+			orderDate: new Date('2023-07-15'),
+			orderStatus: OrderStatus.PAUSED,
+			orderShippingAddress: '123 Main St, City',
+			orderSubTotal: 69.97,
+			orderShippingCost: 5.99,
+			orderTotalAmount: 75.96,
+			createdAt: new Date('2023-07-15'),
+			updatedAt: new Date('2023-07-15'),
+			items: [
+				{
+					_id: 'item-001',
+					orderId: 'ord-001',
+					productId: 'prod-001',
+					variantId: 'var-001',
+					itemQuantity: 2,
+					itemUnitPrice: 29.99,
+					size: 'M',
+					color: 'Blue',
+					createdAt: new Date('2023-07-15'),
+					updatedAt: new Date('2023-07-15'),
+				},
+				{
+					_id: 'item-002',
+					orderId: 'ord-001',
+					productId: 'prod-002',
+					variantId: 'var-002',
+					itemQuantity: 1,
+					itemUnitPrice: 9.99,
+					size: 'One Size',
+					color: 'White',
+					createdAt: new Date('2023-07-15'),
+					updatedAt: new Date('2023-07-15'),
+				},
+			],
 		},
 	]);
 
-	const [processOrders, setProcessOrders] = useState<Order[]>([
+	const [processOrders, setProcessOrders] = useState<ExtendedOrder[]>([
 		{
-			id: 'ord-003',
-			product: 'White Sneakers',
-			quantity: 1,
-			price: 79.99,
-			orderDate: '2023-07-10',
-			address: '789 Pine Rd, Village',
-			status: 'process',
+			_id: 'ord-002',
+			memberId: 'mem-001',
+			orderDate: new Date('2023-07-10'),
+			orderStatus: OrderStatus.PROCESSING,
+			orderShippingAddress: '789 Pine Rd, Village',
+			orderSubTotal: 92.98,
+			orderShippingCost: 5.99,
+			orderTotalAmount: 98.97,
+			createdAt: new Date('2023-07-10'),
+			updatedAt: new Date('2023-07-11'),
+			items: [
+				{
+					_id: 'item-003',
+					orderId: 'ord-002',
+					productId: 'prod-003',
+					variantId: 'var-003',
+					itemQuantity: 1,
+					itemUnitPrice: 79.99,
+					size: '9',
+					color: 'White',
+					createdAt: new Date('2023-07-10'),
+					updatedAt: new Date('2023-07-10'),
+				},
+				{
+					_id: 'item-004',
+					orderId: 'ord-002',
+					productId: 'prod-004',
+					variantId: 'var-004',
+					itemQuantity: 1,
+					itemUnitPrice: 12.99,
+					size: 'One Size',
+					color: 'Black',
+					createdAt: new Date('2023-07-10'),
+					updatedAt: new Date('2023-07-10'),
+				},
+			],
 		},
 	]);
 
-	const [finishedOrders, setFinishedOrders] = useState<Order[]>([
+	const [finishedOrders, setFinishedOrders] = useState<ExtendedOrder[]>([
 		{
-			id: 'ord-004',
-			product: 'Baseball Cap',
-			quantity: 3,
-			price: 19.99,
-			orderDate: '2023-07-05',
-			address: '321 Elm Blvd, City',
-			status: 'finished',
+			_id: 'ord-003',
+			memberId: 'mem-001',
+			orderDate: new Date('2023-07-05'),
+			orderStatus: OrderStatus.FINISHED,
+			orderShippingAddress: '321 Elm Blvd, City',
+			orderSubTotal: 54.98,
+			orderShippingCost: 5.99,
+			orderTotalAmount: 60.97,
+			createdAt: new Date('2023-07-05'),
+			updatedAt: new Date('2023-07-07'),
+			items: [
+				{
+					_id: 'item-005',
+					orderId: 'ord-003',
+					productId: 'prod-005',
+					variantId: 'var-005',
+					itemQuantity: 1,
+					itemUnitPrice: 19.99,
+					size: 'One Size',
+					color: 'Navy',
+					createdAt: new Date('2023-07-05'),
+					updatedAt: new Date('2023-07-05'),
+				},
+				{
+					_id: 'item-006',
+					orderId: 'ord-003',
+					productId: 'prod-006',
+					variantId: 'var-006',
+					itemQuantity: 1,
+					itemUnitPrice: 34.99,
+					size: 'One Size',
+					color: 'Black',
+					createdAt: new Date('2023-07-05'),
+					updatedAt: new Date('2023-07-05'),
+				},
+			],
 		},
 	]);
+
+	// Product names mapping (in a real app, would be fetched from API)
+	const [productNames, setProductNames] = useState<Record<string, string>>({
+		'prod-001': 'Blue T-Shirt',
+		'prod-002': 'White Socks',
+		'prod-003': 'White Sneakers',
+		'prod-004': 'Sport Socks',
+		'prod-005': 'Baseball Cap',
+		'prod-006': 'Sunglasses',
+	});
 
 	// Handle tab change
 	const handleChange = (event: SyntheticEvent, newValue: string) => {
@@ -78,58 +175,96 @@ export default function OrdersPage() {
 
 	// Move order from Paused to Process
 	const moveToProcess = (orderId: string) => {
-		const orderToMove = pausedOrders.find((order) => order.id === orderId);
+		const orderToMove = pausedOrders.find((order) => order._id === orderId);
 		if (orderToMove) {
-			const updatedOrder = { ...orderToMove, status: 'process' as const };
-			setPausedOrders(pausedOrders.filter((order) => order.id !== orderId));
+			const updatedOrder = {
+				...orderToMove,
+				orderStatus: OrderStatus.PROCESSING,
+				updatedAt: new Date(),
+			};
+			setPausedOrders(pausedOrders.filter((order) => order._id !== orderId));
 			setProcessOrders([...processOrders, updatedOrder]);
 		}
 	};
 
 	// Move order from Process to Finished
 	const moveToFinished = (orderId: string) => {
-		const orderToMove = processOrders.find((order) => order.id === orderId);
+		const orderToMove = processOrders.find((order) => order._id === orderId);
 		if (orderToMove) {
-			const updatedOrder = { ...orderToMove, status: 'finished' as const };
-			setProcessOrders(processOrders.filter((order) => order.id !== orderId));
+			const updatedOrder = {
+				...orderToMove,
+				orderStatus: OrderStatus.FINISHED,
+				updatedAt: new Date(),
+			};
+			setProcessOrders(processOrders.filter((order) => order._id !== orderId));
 			setFinishedOrders([...finishedOrders, updatedOrder]);
 		}
 	};
 
+	// Helper function to get product name
+	const getProductName = (productId: string): string => {
+		return productNames[productId] || 'Unknown Product';
+	};
+
 	// Order Card Component
-	const OrderCard = ({ order, actionButton }: { order: Order; actionButton?: JSX.Element }) => (
+	const OrderCard = ({ order, actionButton }: { order: ExtendedOrder; actionButton?: JSX.Element }) => (
 		<Card className="order-card" variant="outlined" sx={{ mb: 2 }}>
 			<Box className="card-header">
-				<Typography variant="h6">{order.product}</Typography>
-				<Typography variant="body2" className="order-id">
-					Order ID: {order.id}
+				<Typography variant="h6">Order #{order._id}</Typography>
+				<Typography variant="body2" className="order-date">
+					Ordered on {moment(order.orderDate).format('MMMM D, YYYY')}
 				</Typography>
 			</Box>
 			<CardContent className="card-content">
 				<Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-					<span className={`status-indicator status-${order.status}`}></span>
+					<span
+						className={`status-indicator status-${order.orderStatus ? order.orderStatus.toLowerCase() : 'unknown'}`}
+					></span>
 					<Typography variant="body2" sx={{ textTransform: 'capitalize' }}>
-						{order.status}
+						{order.orderStatus || 'Unknown Status'}
 					</Typography>
 				</Box>
 
-				<Typography variant="body2" className="order-date">
-					Ordered on {moment(order.orderDate).format('MMMM D, YYYY')}
+				<Divider sx={{ my: 1.5 }} />
+
+				<Typography variant="subtitle1" className="items-heading">
+					Order Items
 				</Typography>
+
+				<List className="order-items-list">
+					{order.items.map((item) => (
+						<ListItem key={item._id} className="order-item">
+							<Box className="item-details">
+								<Typography variant="body1" className="item-name">
+									{getProductName(item.productId)}
+								</Typography>
+								<Typography variant="body2" color="text.secondary">
+									Size: {item.size}, Color: {item.color}
+								</Typography>
+								<Typography variant="body2" className="item-price">
+									${item.itemUnitPrice.toFixed(2)} × {item.itemQuantity}
+								</Typography>
+								<Typography variant="body2" className="item-subtotal">
+									Subtotal: ${(item.itemUnitPrice * item.itemQuantity).toFixed(2)}
+								</Typography>
+							</Box>
+						</ListItem>
+					))}
+				</List>
 
 				<Divider sx={{ my: 1.5 }} />
 
-				<Typography variant="body1">
-					Quantity: {order.quantity} × ${order.price.toFixed(2)}
-				</Typography>
-
-				<Typography variant="h6" color="primary" className="order-total">
-					Total: ${(order.quantity * order.price).toFixed(2)}
-				</Typography>
+				<Box className="order-summary">
+					<Typography variant="body2">Subtotal: ${order.orderSubTotal.toFixed(2)}</Typography>
+					<Typography variant="body2">Shipping: ${order.orderShippingCost.toFixed(2)}</Typography>
+					<Typography variant="h6" color="primary" className="order-total">
+						Total: ${order.orderTotalAmount.toFixed(2)}
+					</Typography>
+				</Box>
 
 				<Box className="order-address">
 					<LocationOnIcon fontSize="small" sx={{ mr: 1 }} />
-					<Typography variant="body2">{order.address}</Typography>
+					<Typography variant="body2">{order.orderShippingAddress}</Typography>
 				</Box>
 			</CardContent>
 			{actionButton && <CardActions className="card-actions">{actionButton}</CardActions>}
@@ -151,13 +286,13 @@ export default function OrdersPage() {
 						className="order-tabs"
 						variant="fullWidth"
 					>
-						<Tab label={`Paused (${pausedOrders.length})`} value="paused" />
-						<Tab label={`Processing (${processOrders.length})`} value="process" />
-						<Tab label={`Completed (${finishedOrders.length})`} value="finished" />
+						<Tab label={`Paused (${pausedOrders.length})`} value={OrderStatus.PAUSED} />
+						<Tab label={`Processing (${processOrders.length})`} value={OrderStatus.PROCESSING} />
+						<Tab label={`Completed (${finishedOrders.length})`} value={OrderStatus.FINISHED} />
 					</Tabs>
 				</Box>
 
-				<TabPanel value="paused">
+				<TabPanel value={OrderStatus.PAUSED}>
 					<Grid container spacing={2}>
 						{pausedOrders.length === 0 ? (
 							<Box className="empty-orders" sx={{ width: '100%' }}>
@@ -165,14 +300,14 @@ export default function OrdersPage() {
 							</Box>
 						) : (
 							pausedOrders.map((order) => (
-								<Grid item xs={12} md={6} lg={4} key={order.id}>
+								<Grid item xs={12} md={6} key={order._id}>
 									<OrderCard
 										order={order}
 										actionButton={
 											<Button
 												variant="contained"
 												color="primary"
-												onClick={() => moveToProcess(order.id)}
+												onClick={() => moveToProcess(order._id)}
 												className="action-btn process-btn"
 											>
 												Move to Processing
@@ -185,7 +320,7 @@ export default function OrdersPage() {
 					</Grid>
 				</TabPanel>
 
-				<TabPanel value="process">
+				<TabPanel value={OrderStatus.PROCESSING}>
 					<Grid container spacing={2}>
 						{processOrders.length === 0 ? (
 							<Box className="empty-orders" sx={{ width: '100%' }}>
@@ -193,14 +328,14 @@ export default function OrdersPage() {
 							</Box>
 						) : (
 							processOrders.map((order) => (
-								<Grid item xs={12} md={6} lg={4} key={order.id}>
+								<Grid item xs={12} md={6} key={order._id}>
 									<OrderCard
 										order={order}
 										actionButton={
 											<Button
 												variant="contained"
 												color="success"
-												onClick={() => moveToFinished(order.id)}
+												onClick={() => moveToFinished(order._id)}
 												className="action-btn finish-btn"
 											>
 												Mark as Completed
@@ -213,7 +348,7 @@ export default function OrdersPage() {
 					</Grid>
 				</TabPanel>
 
-				<TabPanel value="finished">
+				<TabPanel value={OrderStatus.FINISHED}>
 					<Grid container spacing={2}>
 						{finishedOrders.length === 0 ? (
 							<Box className="empty-orders" sx={{ width: '100%' }}>
@@ -221,7 +356,7 @@ export default function OrdersPage() {
 							</Box>
 						) : (
 							finishedOrders.map((order) => (
-								<Grid item xs={12} md={6} lg={4} key={order.id}>
+								<Grid item xs={12} md={6} key={order._id}>
 									<OrderCard
 										order={order}
 										actionButton={
