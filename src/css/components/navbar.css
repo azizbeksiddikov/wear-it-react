@@ -2,7 +2,7 @@
 	padding: 1rem;
 	background-color: #fff;
 	position: sticky;
-	top: 0;
+	border-bottom: 1px solid #efefef;
 }
 
 .navbar .navbar-container {

@@ -1,160 +1,349 @@
-import React from 'react';
-import { Box, Button, Container, Stack } from '@mui/material';
+import React, { useState, useCallback } from 'react';
+import {
+	Box,
+	Button,
+	Container,
+	Grid,
+	Typography,
+	TextField,
+	InputAdornment,
+	FormControl,
+	InputLabel,
+	Select,
+	MenuItem,
+	Card,
+	CardMedia,
+	CardContent,
+	Chip,
+	Pagination,
+	Stack,
+	Divider,
+} from '@mui/material';
+import { Link } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
-import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
-import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
-import Badge from '@mui/material/Badge';
-import Pagination from '@mui/material/Pagination';
-import PaginationItem from '@mui/material/PaginationItem';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import TextField from '@mui/material/TextField';
+import { ProductCategory, ProductGender } from '../../../libs/enums/product.enum';
+import '../../../css/productsPage/products.css';
 
+// Sample product data (consider moving this to a separate file or API)
 const products = [
-	{ producName: 't-shirt', productImages: ['img/t-shirt.jpg'] },
-	{ producName: 't-shirt', productImages: ['img/t-shirt.jpg'] },
-	{ producName: 't-shirt', productImages: ['img/t-shirt.jpg'] },
-	{ producName: 't-shirt', productImages: ['img/t-shirt.jpg'] },
-	{ producName: 't-shirt', productImages: ['img/t-shirt.jpg'] },
-	{ producName: 't-shirt', productImages: ['img/t-shirt.jpg'] },
-	{ producName: 't-shirt', productImages: ['img/t-shirt.jpg'] },
-	{ producName: 't-shirt', productImages: ['img/t-shirt.jpg'] },
+	{
+		id: 1,
+		name: 'Classic White T-shirt',
+		image: 'img/t-shirt.jpg',
+		category: 'Tops',
+		isFeatured: true,
+		onSale: true,
+	},
+	{
+		id: 2,
+		name: 'Denim Blue Jeans',
+		image: 'img/t-shirt.jpg',
+		category: 'Bottoms',
+		isFeatured: false,
+		onSale: false,
+	},
+	{
+		id: 3,
+		name: 'Summer Dress',
+		image: 'img/t-shirt.jpg',
+		category: 'Dresses',
+		isFeatured: false,
+		onSale: false,
+	},
+	{
+		id: 4,
+		name: 'Leather Jacket',
+		image: 'img/t-shirt.jpg',
+		category: 'Outerwear',
+		isFeatured: true,
+		onSale: false,
+	},
+	{
+		id: 5,
+		name: 'Athletic Shoes',
+		image: 'img/t-shirt.jpg',
+		category: 'Footwear',
+		isFeatured: false,
+		onSale: true,
+	},
+	{
+		id: 6,
+		name: 'Wool Sweater',
+		image: 'img/t-shirt.jpg',
+		category: 'Tops',
+		isFeatured: false,
+		onSale: true,
+	},
+	{
+		id: 7,
+		name: 'Casual Shorts',
+		image: 'img/t-shirt.jpg',
+		category: 'Bottoms',
+		isFeatured: true,
+		onSale: false,
+	},
+	{
+		id: 8,
+		name: 'Cotton Socks',
+		image: 'img/t-shirt.jpg',
+		category: 'Accessories',
+		isFeatured: false,
+		onSale: false,
+	},
 ];
 
+// Categories and genders for filters
+const categories = Object.values(ProductCategory);
+const genders = Object.values(ProductGender);
+
 export default function Products() {
+	const [searchQuery, setSearchQuery] = useState('');
+	const [sortBy, setSortBy] = useState('new');
+	const [page, setPage] = useState(1);
+	const [selectedCategory, setSelectedCategory] = useState<string>('');
+	const [selectedGender, setSelectedGender] = useState<string>('');
+	const [productStatus, setProductStatus] = useState<string>('');
+	const itemsPerPage = 8;
+	const totalPages = 4;
+
+	// HANDLERS
+	const handleFilterChange = useCallback(
+		(filterSetter: React.Dispatch<React.SetStateAction<string>>) => (event: React.ChangeEvent<HTMLInputElement>) => {
+			const newValue = event.target.value;
+			filterSetter(newValue);
+			setPage(1);
+		},
+		[setPage],
+	);
+
+	const handleCategoryChange = useCallback(handleFilterChange(setSelectedCategory), [handleFilterChange]);
+	const handleGenderChange = useCallback(handleFilterChange(setSelectedGender), [handleFilterChange]);
+	const handleProductStatusChange = useCallback(handleFilterChange(setProductStatus), [handleFilterChange]);
+
+	const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+		setPage(value);
+		window.scrollTo({
+			top: (document.querySelector('.products-grid-container')?.offsetTop as number) - 120,
+			behavior: 'smooth',
+		});
+	};
+
+	const handleSearch = () => {
+		setPage(1);
+		console.log('Searching for:', searchQuery);
+	};
+
+	const handleSearchKeyPress = (event: React.KeyboardEvent) => {
+		if (event.key === 'Enter') {
+			handleSearch();
+		}
+	};
+
+	const clearAllFilters = () => {
+		setSelectedCategory('');
+		setSelectedGender('');
+		setProductStatus('');
+		setSearchQuery('');
+		setPage(1);
+	};
+
 	return (
-		<div className="products">
+		<div className="products-page">
 			<Container>
-				<Stack flexDirection={'column'} alignItems="center">
-					<Stack className="avatar-big-box">
-						<Box className="title">Burak Restaurant</Box>
-						<Stack className="searchForm">
-							<TextField id="outlined-basic" label="Type here" variant="outlined" />
-
-							<Button variant="contained" className="searchButton" type="submit" endIcon={<SearchIcon />}>
-								SEARCH
-							</Button>
-						</Stack>
+				{/* Header */}
+				<Stack className="products-header">
+					<Stack className="page-title-container">
+						<Typography variant="h4" component="h1" className="page-title">
+							Products
+						</Typography>
+						<Typography variant="body1" className="page-subtitle">
+							Discover our curated collection
+						</Typography>
 					</Stack>
 
-					<Stack className="dishes-filter-section">
-						<Stack className="dishes-filter-box">
-							<Button variant="contained" color="primary" className="order">
-								New
-							</Button>
-							<Button variant="contained" color="secondary" className="order">
-								Price
-							</Button>
-							<Button variant="contained" color="secondary" className="order">
-								Views
-							</Button>
-						</Stack>
-					</Stack>
-
-					<Stack className="list-category-section">
-						<Stack className="product-category ">
-							<Button variant="contained" color="primary" className="type">
-								Dish
-							</Button>
-							<Button variant="contained" color="secondary" className="type">
-								Salad
-							</Button>
-							<Button variant="contained" color="secondary" className="type">
-								Drink
-							</Button>
-							<Button variant="contained" color="secondary" className="type">
-								Dessert
-							</Button>
-							<Button variant="contained" color="secondary" className="type">
-								Other
+					<Stack className="search-and-sort">
+						<Stack className="search-container">
+							<TextField
+								placeholder="Search products..."
+								value={searchQuery}
+								onChange={(e) => setSearchQuery(e.target.value)}
+								onKeyPress={handleSearchKeyPress}
+								InputProps={{
+									startAdornment: (
+										<InputAdornment position="start">
+											<SearchIcon />
+										</InputAdornment>
+									),
+								}}
+								variant="outlined"
+								size="small"
+								className="search-input"
+							/>
+							<Button variant="contained" className="search-button" onClick={handleSearch}>
+								Search
 							</Button>
 						</Stack>
 
-						<Stack className="product-wrapper">
-							{products.length !== 0 ? (
-								products.map((product, index) => {
-									return (
-										<Stack key={index} className="product-card">
-											<Stack className="product-img" sx={{ backgroundImage: `url(${product.productImages[0]})` }}>
-												<div className="products-sale">Normal size</div>
-												<Button className="shop-btn">
-													<img src="/icons/shopping-cart.svg" style={{ display: 'flex' }} alt="shopping-cart" />
-												</Button>
-												<Button className="view-btn" sx={{ right: '36px' }}>
-													<Badge badgeContent={20} color="secondary">
-														<RemoveRedEyeIcon sx={{ color: 20 ? 'gray' : 'white' }} />
-													</Badge>
-												</Button>
-											</Stack>
-											<Box className="product-desc">
-												<span className="product-title">{product.productImages[0]}</span>
-												<div className="product-desc">
-													<MonetizationOnIcon /> {12}
-												</div>
-											</Box>
-										</Stack>
-									);
-								})
-							) : (
-								<Box className="no-data">Products are not available</Box>
-							)}
-						</Stack>
-					</Stack>
-
-					<Stack className="pagination-section">
-						<Pagination
-							count={3}
-							page={1}
-							renderItem={(item) => (
-								<PaginationItem
-									components={{
-										previous: ArrowBackIcon,
-										next: ArrowForwardIcon,
-									}}
-									{...item}
-									color={'secondary'}
-								/>
-							)}
-						/>
+						<FormControl variant="outlined" size="small" className="sort-select">
+							<InputLabel>Sort by</InputLabel>
+							<Select value={sortBy} onChange={(e) => setSortBy(e.target.value as string)} label="Sort by">
+								<MenuItem value="new">Newest</MenuItem>
+								<MenuItem value="old">Oldest</MenuItem>
+							</Select>
+						</FormControl>
 					</Stack>
 				</Stack>
+
+				{/* Main content with filters, products, pagination */}
+				<Stack className="products-content">
+					{/* Filters Sidebar */}
+					<Grid item xs={12} md={3} className="filters-sidebar">
+						<Typography variant="h6" className="filter-heading">
+							Filters
+						</Typography>
+
+						{/* Category Filters */}
+						<Box className="filter-section">
+							<Typography variant="subtitle1" className="filter-subheading">
+								Categories
+							</Typography>
+							<FormControl fullWidth variant="outlined" size="small">
+								<Select
+									labelId="category-select-label"
+									id="category-select"
+									value={selectedCategory}
+									onChange={handleCategoryChange}
+									displayEmpty
+									renderValue={(selected) => (selected ? selected : 'All Categories')}
+								>
+									<MenuItem value="">All Categories</MenuItem>
+									{categories.map((category) => (
+										<MenuItem key={category} value={category}>
+											{category}
+										</MenuItem>
+									))}
+								</Select>
+							</FormControl>
+						</Box>
+
+						<Divider className="filter-divider" />
+
+						{/* Gender Filters */}
+						<Box className="filter-section">
+							<Typography variant="subtitle1" className="filter-subheading">
+								Gender
+							</Typography>
+							<FormControl fullWidth variant="outlined" size="small">
+								<Select
+									labelId="gender-select-label"
+									id="gender-select"
+									value={selectedGender}
+									onChange={handleGenderChange}
+									displayEmpty
+									renderValue={(selected) => (selected ? selected : 'All Genders')}
+								>
+									<MenuItem value="">All Genders</MenuItem>
+									{genders.map((gender) => (
+										<MenuItem key={gender} value={gender}>
+											{gender}
+										</MenuItem>
+									))}
+								</Select>
+							</FormControl>
+						</Box>
+
+						<Divider className="filter-divider" />
+
+						{/* Product Status Filters */}
+						<Box className="filter-section">
+							<Typography variant="subtitle1" className="filter-subheading">
+								Product Status
+							</Typography>
+							<FormControl fullWidth variant="outlined" size="small">
+								<Select
+									labelId="status-select-label"
+									id="status-select"
+									value={productStatus}
+									onChange={handleProductStatusChange}
+									displayEmpty
+									renderValue={(selected) => (selected ? selected : 'All Products')}
+								>
+									<MenuItem value="">All Products</MenuItem>
+									<MenuItem value="featured">Featured</MenuItem>
+									<MenuItem value="sale">Sale</MenuItem>
+								</Select>
+							</FormControl>
+						</Box>
+
+						{/* Clear All Filters Button */}
+						{(selectedCategory !== '' || selectedGender !== '' || productStatus !== '') && (
+							<Button variant="outlined" onClick={clearAllFilters} className="clear-filters-btn">
+								Clear All Filters
+							</Button>
+						)}
+					</Grid>
+
+					{/* Products Grid with Pagination */}
+					<Grid item xs={12} md={9}>
+						<Box className="products-grid-container">
+							{products.length > 0 ? (
+								<>
+									<Grid container spacing={3} className="products-grid">
+										{products.map((product) => (
+											<Grid item xs={12} sm={6} lg={4} key={product.id}>
+												<Link to={`/products/${product.id}`} className="product-link">
+													<Card className="product-card">
+														{/* Product image with badges */}
+														<Box className="product-image-container">
+															<CardMedia
+																component="img"
+																image={product.image}
+																alt={product.name}
+																className="product-image"
+															/>
+															{product.isFeatured && <Chip label="Featured" className="featured-badge" />}
+															{product.onSale && <Chip label="Sale" className="sale-badge" />}
+														</Box>
+
+														{/* Product details */}
+														<CardContent className="product-card-content">
+															<Typography variant="body1" className="product-name">
+																{product.name}
+															</Typography>
+															<Typography variant="body2" className="product-category">
+																{product.category}
+															</Typography>
+														</CardContent>
+													</Card>
+												</Link>
+											</Grid>
+										))}
+									</Grid>
+
+									{/* Pagination - Always shown regardless of page count */}
+									<Box className="pagination-container">
+										<Pagination
+											count={Math.max(totalPages, 1)}
+											page={page}
+											onChange={handlePageChange}
+											color="primary"
+											size="large"
+											className="pagination"
+										/>
+									</Box>
+								</>
+							) : (
+								<Box className="no-products">
+									<Typography variant="h6">No products found matching your criteria.</Typography>
+									<Button variant="outlined" onClick={clearAllFilters} className="reset-button">
+										Reset Filters
+									</Button>
+								</Box>
+							)}
+						</Box>
+					</Grid>
+				</Stack>
 			</Container>
-
-			<div className="brands-logo">
-				<Container className="brands-container">
-					<Box className="family-title">Our Family Brands</Box>
-					<Stack className="brand-wrapper">
-						<Stack className="brand-card">
-							<img src="img/doner.webp" className="brand-img" alt="" />
-						</Stack>
-						<Stack className="brand-card">
-							<img src="img/seafood.webp" className="brand-img" alt="" />
-						</Stack>
-						<Stack className="brand-card">
-							<img src="img/sweets.webp" className="brand-img" alt="" />
-						</Stack>
-						<Stack className="brand-card">
-							<img src="img/gurme.webp" className="brand-img" alt="" />
-						</Stack>
-					</Stack>
-				</Container>
-			</div>
-
-			<div className="address">
-				<Container>
-					<Stack className="address-area">
-						<Box className="title">Our Address</Box>
-						<iframe
-							title="iframe"
-							style={{ marginTop: '60px' }}
-							src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3152.467927012871!2d-122.0841436846819!3d37.42199977982518!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808f7e3c3e4e3c6d%3A0x4b6b6b1d3e3c0b2e!2sGoogleplex!5e0!3m2!1sen!2str!4v1634742459931!5m2!1sen!2str"
-							width="1320"
-							height="500"
-							referrerPolicy="no-referrer-when-downgrade"
-						></iframe>
-					</Stack>
-				</Container>
-			</div>
 		</div>
 	);
 }

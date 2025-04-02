@@ -1,5 +1,21 @@
 import { ProductCategory, ProductGender } from '../enums/product.enum';
 
+export interface Product {
+	_id: string;
+	productName: string;
+	productCategory: ProductCategory;
+	productGender: ProductGender;
+	productDesc?: string;
+	productImages?: string[];
+	isActive: boolean;
+	isFeatured: boolean;
+	onSale: boolean;
+	createdAt: Date;
+	updatedAt: Date;
+
+	productVariants?: ProductVariant[];
+}
+
 export interface ProductVariant {
 	_id: string;
 	productId: string; // Product
@@ -30,22 +46,6 @@ export interface ProductVariantUpdate {
 	salePrice?: number;
 }
 
-export interface Product {
-	_id: string;
-	productName: string;
-	productCategory: ProductCategory;
-	productGender: ProductGender;
-	productDesc?: string;
-	productImages?: string[];
-	isActive: boolean;
-	isFeatured: boolean;
-	onSale: boolean;
-	createdAt: Date;
-	updatedAt: Date;
-
-	productVariants?: ProductVariant[];
-}
-
 export interface ProductInput {
 	productName: string;
 	productCategory: ProductCategory;
@@ -67,14 +67,28 @@ export interface ProductUpdateInput {
 }
 
 export interface ProductInquiry {
+	// Pagination
 	page: number;
 	limit: number;
-	sort: 'cretedAt' | 'productName' | 'productPrice';
-	order: ['ASC', 'DESC'];
-	productCategory?: ProductCategory;
-	productGender?: ProductGender;
+
+	// Sorting
+	sort: 'createdAt' | 'productName' | 'productPrice' | 'popularity' | 'rating';
+	order: 'ASC' | 'DESC';
+
+	// Filters
+	productCategory?: ProductCategory | ProductCategory[];
+	productGender?: ProductGender | ProductGender[];
 	isActive?: boolean;
 	isFeatured?: boolean;
 	onSale?: boolean;
+
+	// Price range
+	minPrice?: number;
+	maxPrice?: number;
+
+	// In stock only
+	inStock?: boolean;
+
+	// Text search
 	search?: string;
 }

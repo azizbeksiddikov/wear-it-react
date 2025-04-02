@@ -10,16 +10,32 @@ const light: ThemeOptions = {
 			paper: '#FFFFFF',
 		},
 		primary: {
-			main: '#E60023',
+			main: '#E60023', // Pinterest red
+			light: '#FF4D72',
+			dark: '#AD081B',
 			contrastText: '#FFFFFF',
 		},
 		secondary: {
-			main: '#EFEFEF',
+			main: '#EFEFEF', // Pinterest light gray
+			light: '#F7F7F7',
+			dark: '#DADADA',
 			contrastText: '#111111',
 		},
 		text: {
-			primary: '#111111',
-			secondary: '#767676',
+			primary: '#111111', // Pinterest dark text
+			secondary: '#767676', // Pinterest secondary text
+		},
+		// Adding Pinterest specific colors
+		pinterest: {
+			red: '#E60023',
+			black: '#111111',
+			gray: '#767676',
+			lightgray: '#EFEFEF',
+		},
+		// Adding muted color for less prominent elements
+		muted: {
+			main: '#EFEFEF',
+			contrastText: '#767676',
 		},
 	},
 	shape: {

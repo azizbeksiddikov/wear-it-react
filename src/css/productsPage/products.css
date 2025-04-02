@@ -1,0 +1,370 @@
+/* Products page container */
+.products-page {
+	padding: 2rem 0;
+}
+
+/* Header section */
+.products-page .products-header {
+	display: flex;
+	margin-bottom: 2.5rem;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center; /* Vertically center items */
+}
+
+.products-page .page-title-container {
+	/* Add some spacing around the title and subtitle */
+	margin-bottom: 0.5rem;
+}
+
+.products-page .page-title {
+	font-weight: 700;
+	color: #111111;
+	font-size: 2.5rem; /* Slightly larger title */
+	margin-bottom: 0.5rem;
+}
+
+.products-page .page-subtitle {
+	color: #767676;
+	font-size: 1.25rem; /* Slightly larger subtitle */
+}
+
+.products-page .search-and-sort {
+	gap: 1.5rem; /* Increased gap */
+	align-items: center;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-around;
+}
+
+.products-page .search-container {
+	display: flex;
+	flex-direction: row;
+	max-width: 350px; /* Slightly wider search input */
+	border-radius: 28px; /* More rounded corners */
+	transition: all 0.3s ease;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+}
+
+.products-page .search-container:hover {
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.products-page .search-input {
+	border-radius: 28px 0 0 28px; /* More rounded corners */
+	display: flex;
+	flex-direction: row;
+	align-items: start;
+	justify-content: start;
+}
+
+.products-page .search-input .MuiOutlinedInput-root {
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+	height: 48px; /* Taller input field */
+}
+
+.products-page .search-input .MuiOutlinedInput-notchedOutline {
+	border-right: none;
+	border-color: rgba(0, 0, 0, 0.1); /* Lighter border */
+}
+
+.products-page .search-button {
+	border-radius: 0 28px 28px 0; /* More rounded corners */
+	margin-left: 0;
+	text-transform: none;
+	box-shadow: none;
+	padding: 10px 28px; /* Adjusted padding */
+	height: 48px; /* Taller button */
+	font-weight: 600;
+	background-color: #e60023;
+	transition: all 0.3s ease;
+}
+
+.products-page .search-button:hover {
+	background-color: #ad081b;
+}
+
+.products-page .sort-select {
+	min-width: 240px; /* Slightly wider select */
+}
+
+.products-page .sort-select .MuiInputBase-root {
+	height: 48px; /* Taller select */
+	border-radius: 28px; /* Rounded corners */
+}
+
+/* Products content layout */
+.products-page .products-content {
+	display: flex;
+	width: 100%;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: flex-start;
+	gap: 2rem; /* Add gap between filters and products */
+}
+
+/* Filters sidebar */
+.products-page .filters-sidebar {
+	background: #fff; /* Pinterest white */
+	padding: 1.75rem; /* Further increased padding */
+	border-radius: 24px; /* Even more rounded corners */
+	box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06); /* More pronounced shadow */
+	width: 280px; /* Fixed width for the sidebar */
+	flex-shrink: 0; /* Prevent the sidebar from shrinking */
+}
+
+.products-page .filter-heading {
+	margin-bottom: 2rem; /* Further increased margin */
+	font-weight: 700;
+	font-size: 1.75rem; /* Slightly larger heading */
+	color: #222; /* Darker color for heading */
+}
+
+.products-page .filter-section {
+	margin-bottom: 2rem; /* Further increased margin */
+}
+
+.products-page .filter-subheading {
+	margin-bottom: 1rem; /* Adjusted margin */
+	font-weight: 600;
+	font-size: 1.15rem; /* Slightly larger subheading */
+	color: #444; /* Darker color for subheading */
+}
+
+.products-page .filter-divider {
+	margin: 2rem 0; /* Further increased margin */
+	background-color: rgba(0, 0, 0, 0.12); /* Slightly darker divider */
+}
+
+.products-page .clear-filters-btn {
+	width: 100%;
+	margin-top: 1.5rem; /* Adjusted margin */
+	margin-bottom: 2.5rem; /* Increased margin */
+	border: none;
+	background-color: #f2f2f2; /* Lighter background color */
+	color: #444; /* Darker color for text */
+	border-radius: 32px; /* Even more rounded corners */
+	padding: 1rem 2rem; /* Adjusted padding */
+	font-weight: 600;
+	text-transform: none;
+	box-shadow: none;
+	transition: background-color 0.2s ease;
+	font-size: 1.1rem; /* Slightly larger font */
+}
+
+.products-page .clear-filters-btn:hover {
+	background-color: #eee; /* Slightly lighter hover color */
+}
+
+/* Styles for the MUI Select components */
+.products-page .filter-section .MuiFormControl-root {
+	width: 100%;
+}
+
+.products-page .filter-section .MuiInputBase-root {
+	border-radius: 32px; /* Even more rounded corners */
+	font-size: 1.05rem; /* Slightly larger font */
+	height: 48px; /* Taller select */
+	padding: 0.5rem 1rem; /* Adjusted padding */
+}
+
+.products-page .filter-section .MuiOutlinedInput-notchedOutline {
+	border-color: rgba(0, 0, 0, 0.1);
+}
+
+.products-page .filter-section .MuiSelect-select {
+	padding: 0.5rem 1rem; /* Adjusted padding */
+	height: auto; /* Reset height */
+}
+
+.products-page .filter-section .MuiInputLabel-outlined {
+	transform: translate(1.75rem, 0.9rem) scale(1); /* Adjusted transform */
+}
+
+.products-page .filter-section .MuiInputLabel-shrink {
+	transform: translate(1.75rem, -0.7rem) scale(0.85); /* Adjusted transform */
+}
+
+.products-page .filter-section .MuiSelect-icon {
+	right: 0.75rem; /* Adjusted position */
+}
+
+/* Filter radio buttons */
+.products-page .filter-radio {
+	margin-left: 0;
+	margin-right: 0;
+	margin-bottom: 0.2rem;
+}
+
+.products-page .filter-radio .MuiRadio-root {
+	padding: 6px;
+	color: #767676;
+}
+
+.products-page .filter-radio .Mui-checked {
+	color: #e60023;
+}
+
+.products-page .filter-radio .MuiFormControlLabel-label {
+	font-size: 0.95rem;
+	color: #333333;
+}
+
+/* No products message */
+.products-page .no-products {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 5rem 0;
+	text-align: center;
+	background-color: #ffffff; /* Pinterest white */
+	border-radius: 16px;
+	border: 1px dashed #e0e0e0;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.products-page .reset-button {
+	margin-top: 1.5rem;
+	border-color: #e60023 !important; /* Pinterest red */
+	color: #e60023 !important; /* Pinterest red */
+}
+
+.products-page .reset-button:hover {
+	background-color: rgba(230, 0, 35, 0.05) !important; /* Pinterest red with opacity */
+}
+
+/* Products grid */
+.products-page .products-grid-container {
+	margin-top: 1rem;
+}
+
+.products-page .products-grid {
+	margin-bottom: 2rem;
+}
+
+.products-page .products-grid .MuiGrid-item {
+	display: flex;
+}
+
+/* Product card */
+.products-page .product-card {
+	border-radius: 16px !important;
+	overflow: hidden;
+	box-shadow: 9px 13px 14px 5px rgba(0, 0, 0, 0.05), inset -1px 2px 10px 3px rgba(0, 0, 0, 0.05) !important;
+	transition: transform 0.3s ease, box-shadow 0.3s ease;
+	height: 100%;
+	cursor: pointer;
+	display: flex;
+	flex-direction: column;
+	background-color: #ffffff; /* Pinterest white */
+}
+
+.products-page .product-card:hover {
+	transform: translateY(-4px);
+	box-shadow: 9px 13px 14px 5px rgba(0, 0, 0, 0.1), inset -1px 2px 10px 3px rgba(0, 0, 0, 0.08) !important;
+}
+
+.products-page .product-image-container {
+	position: relative;
+	overflow: hidden;
+	background-color: #ffffff;
+	flex-grow: 1;
+	min-height: 180px;
+}
+
+.products-page .product-image {
+	width: 100%;
+	aspect-ratio: 1;
+	object-fit: contain;
+	transition: transform 0.5s ease;
+}
+
+.products-page .product-card:hover .product-image {
+	transform: scale(1.05);
+}
+
+/* Product badges */
+.products-page .featured-badge {
+	position: absolute !important;
+	top: 0.75rem !important;
+	left: 0.75rem !important;
+	background-color: #f5a623 !important; /* Golden yellow */
+	color: white !important;
+	font-weight: 600 !important;
+	font-size: 0.75rem !important;
+	border-radius: 50px !important;
+	padding: 0.25rem 0.75rem !important;
+	z-index: 2;
+}
+
+.products-page .sale-badge {
+	position: absolute !important;
+	top: 0.75rem !important;
+	right: 0.75rem !important;
+	background-color: #e60023 !important; /* Pinterest red */
+	color: white !important;
+	font-weight: 600 !important;
+	font-size: 0.75rem !important;
+	border-radius: 50px !important;
+	padding: 0.25rem 0.75rem !important;
+	z-index: 2;
+}
+
+.products-page .product-card-content {
+	padding: 1rem !important;
+	background-color: #ffffff; /* Pinterest white */
+	border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.products-page .product-link {
+	text-decoration: none;
+	color: inherit;
+	display: block;
+}
+
+.products-page .product-name {
+	font-weight: 600 !important;
+	color: #111111; /* Pinterest black */
+	margin-bottom: 0.25rem !important;
+	font-size: 1rem !important;
+	line-height: 1.4 !important;
+	font-family: 'Poppins', sans-serif;
+}
+
+.products-page .product-category {
+	color: #767676 !important; /* Pinterest gray */
+	font-size: 0.875rem !important;
+}
+
+/* Pagination - always visible */
+.products-page .pagination-container {
+	display: flex;
+	justify-content: center;
+	margin-top: 3rem;
+	margin-bottom: 2rem;
+}
+
+.products-page .pagination .MuiPaginationItem-root {
+	color: #111111; /* Pinterest black */
+	border-radius: 50%;
+}
+
+.products-page .pagination .MuiPaginationItem-page.Mui-selected {
+	background-color: #e60023; /* Pinterest red */
+	color: white;
+}
+
+.products-page .pagination .MuiPaginationItem-page.Mui-selected:hover {
+	background-color: #ad081b; /* Pinterest dark red */
+}
+
+.products-page .pagination .MuiPaginationItem-page:hover {
+	background-color: rgba(230, 0, 35, 0.04); /* Pinterest red with opacity */
+}
+
+.products-page .pagination .Mui-disabled {
+	opacity: 0.5;
+}

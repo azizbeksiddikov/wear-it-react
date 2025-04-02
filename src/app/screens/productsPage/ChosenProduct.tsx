@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Container, Stack, Box } from '@mui/material';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
@@ -10,8 +10,81 @@ import 'swiper/css/free-mode';
 import 'swiper/css/navigation';
 import 'swiper/css/thumbs';
 import { FreeMode, Navigation, Thumbs } from 'swiper';
+import '../../../css/productsPage/chosenProduct.css';
+import { chosenProduct } from './data';
 
 export default function ChosenProduct() {
+	const [selectedSize, setSelectedSize] = useState('');
+	const [selectedColor, setSelectedColor] = useState('');
+	const [selectedPrice, setSelectedPrice] = useState(chosenProduct.productVariants[0].productPrice);
+	const swiperRef = useRef<any>(null);
+	const [swiperIndex, setSwiperIndex] = useState(0);
+	const [quantity, setQuantity] = useState(1);
+
+	const handleSizeChange = (size: string) => {
+		setSelectedSize((prevSize) => (prevSize === size ? '' : size));
+	};
+
+	const handleColorChange = (color: string) => {
+		setSelectedColor((prevColor) => (prevColor === color ? '' : color));
+	};
+
+	const handleIncrementQuantity = () => {
+		setQuantity((prevQuantity) => prevQuantity + 1);
+	};
+
+	const handleDecrementQuantity = () => {
+		if (quantity > 1) {
+			setQuantity((prevQuantity) => prevQuantity - 1);
+		}
+	};
+
+	useEffect(() => {
+		// Find the selected variant and update the price
+		const selectedVariant = chosenProduct.productVariants.find(
+			(variant) => variant.size === selectedSize && variant.color === selectedColor,
+		);
+
+		if (selectedVariant) {
+			setSelectedPrice(selectedVariant.productPrice);
+			if (selectedVariant.salePrice) {
+				setSelectedPrice(selectedVariant.salePrice);
+			}
+		}
+	}, [selectedSize, selectedColor]);
+
+	// Extract unique sizes and colors from product variants
+	const availableSizes = [...new Set(chosenProduct.productVariants.map((variant) => variant.size))];
+	const availableColors = [...new Set(chosenProduct.productVariants.map((variant) => variant.color))];
+
+	// Get available colors for the selected size
+	const availableColorsForSize = selectedSize
+		? [
+				...new Set(
+					chosenProduct.productVariants
+						.filter((variant) => variant.size === selectedSize)
+						.map((variant) => variant.color),
+				),
+		  ]
+		: availableColors;
+
+	// Get available sizes for the selected color
+	const availableSizesForColor = selectedColor
+		? [
+				...new Set(
+					chosenProduct.productVariants
+						.filter((variant) => variant.color === selectedColor)
+						.map((variant) => variant.size),
+				),
+		  ]
+		: availableSizes;
+
+	const handleSlideChange = () => {
+		if (swiperRef.current) {
+			setSwiperIndex(swiperRef.current.swiper.realIndex);
+		}
+	};
+
 	return (
 		<div className={'chosen-product'}>
 			<Box className={'title'}>Product Detail</Box>
@@ -23,22 +96,39 @@ export default function ChosenProduct() {
 						navigation={true}
 						modules={[FreeMode, Navigation, Thumbs]}
 						className="swiper-area"
+						onSlideChange={handleSlideChange}
+						ref={swiperRef}
 					>
-						{['/img/cutlet.webp', '/img/kebab-fresh.webp'].map((ele: string, index: number) => {
+						{chosenProduct.productImages.map((ele: string, index: number) => {
 							return (
 								<SwiperSlide key={index}>
-									<img className="slider-image" src={ele} alt="" />
+									<img className="slider-image" src={ele} alt="" style={{ objectFit: 'contain' }} />
 								</SwiperSlide>
 							);
 						})}
 					</Swiper>
+					<Box className={'image-previews'}>
+						{chosenProduct.productImages.map((ele: string, index: number) => (
+							<Box
+								key={index}
+								className={`image-preview ${index === swiperIndex ? 'active' : ''}`}
+								onClick={() => swiperRef.current?.swiper.slideTo(index)}
+							>
+								<img src={ele} alt={`Product Thumbnail ${index + 1}`} style={{ objectFit: 'contain' }} />
+							</Box>
+						))}
+					</Box>
 				</Stack>
 				<Stack className={'chosen-product-info'}>
 					<Box className={'info-box'}>
-						<strong className={'product-name'}>Kebab</strong>
-						<span className={'resto-name'}>Burak</span>
+						<strong className={'product-name'}>{chosenProduct.productName}</strong>
+						<Box className={'category-box'}>
+							<span>{chosenProduct.productCategory}</span>
+							{chosenProduct.isFeatured && <span className="featured-badge">Featured</span>}
+							{chosenProduct.onSale && <span className="on-sale-badge">On Sale</span>}
+						</Box>
 						<Box className={'rating-box'}>
-							<Rating name="half-rating" defaultValue={2.5} precision={0.5} />
+							<Rating name="half-rating" defaultValue={4.5} precision={0.5} readOnly />
 							<div className={'evaluation-box'}>
 								<div className={'product-view'}>
 									<RemoveRedEyeIcon sx={{ mr: '10px' }} />
@@ -46,14 +136,74 @@ export default function ChosenProduct() {
 								</div>
 							</div>
 						</Box>
-						<p className={'product-desc'}>Our best product</p>
+						<p className={'product-desc'}>{chosenProduct.productDesc}</p>
+						{/* Size selection */}
+						<Box className={'size-options'}>
+							<span>Size:</span>
+							{availableSizes.map((size) => (
+								<Box
+									key={size}
+									className={`size-option ${selectedSize === size ? 'selected' : ''} ${
+										!availableSizesForColor.includes(size) ? 'disabled' : ''
+									}`}
+									onClick={() => (!availableSizesForColor.includes(size) ? null : handleSizeChange(size))}
+								>
+									{size}
+								</Box>
+							))}
+						</Box>
+
+						{/* Color selection */}
+						<Box className={'color-options'}>
+							<span>Color:</span>
+							{availableColors.map((color) => (
+								<Box
+									key={color}
+									className={`color-option ${selectedColor === color ? 'selected' : ''} ${
+										!availableColorsForSize.includes(color) ? 'disabled' : ''
+									}`}
+									onClick={() => (!availableColorsForSize.includes(color) ? null : handleColorChange(color))}
+								>
+									{color}
+								</Box>
+							))}
+						</Box>
 						<Divider height="1" width="100%" bg="#000000" />
-						<div className={'product-price'}>
-							<span>Price:</span>
-							<span>$12</span>
-						</div>
+						{/* Quantity selection */}
+						<Box className={'quantity-selector'}>
+							<span>Quantity:</span>
+							<Button
+								variant="outlined"
+								className="quantity-button"
+								onClick={handleDecrementQuantity}
+								disabled={quantity <= 1}
+							>
+								-
+							</Button>
+							<span className="quantity-value">{quantity}</span>
+							<Button variant="outlined" className="quantity-button" onClick={handleIncrementQuantity}>
+								+
+							</Button>
+						</Box>
+						{selectedSize && selectedColor && (
+							<div className={'product-price'}>
+								<span>Price:</span>
+								{chosenProduct.productVariants.find(
+									(variant) => variant.size === selectedSize && variant.color === selectedColor,
+								)?.salePrice ? (
+									<>
+										<span className="sale-price">${selectedPrice}</span>
+										<span className="original-price">${chosenProduct.productVariants[0].productPrice}</span>
+									</>
+								) : (
+									<span>${selectedPrice}</span>
+								)}
+							</div>
+						)}
 						<div className={'button-box'}>
-							<Button variant="contained">Add To Basket</Button>
+							<Button variant="contained" style={{ backgroundColor: '#4caf50', color: 'white' }}>
+								Add To Basket
+							</Button>
 						</div>
 					</Box>
 				</Stack>
