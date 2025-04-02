@@ -21,7 +21,7 @@ function App() {
 				<Route path="/help" component={HelpPage} />
 				<Route path="/products" component={ProductsPage} />
 				<Route path="/orders" component={OrdersPage} />
-				<Route path="/member-page" component={UserPage} />
+				<Route path="/my-page" component={UserPage} />
 			</Switch>
 
 			{/* Footer */}
