@@ -6,7 +6,7 @@ import Menu from '@mui/material/Menu';
 import CancelIcon from '@mui/icons-material/Cancel';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useHistory } from 'react-router-dom';
-import '../../../css/basket.css';
+import '../../../css/components/basket.css';
 
 export default function Basket() {
 	const authMember = null;

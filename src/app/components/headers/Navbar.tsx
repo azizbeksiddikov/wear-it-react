@@ -5,7 +5,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import LogoutIcon from '@mui/icons-material/Logout';
 import LoginIcon from '@mui/icons-material/Login';
 import Basket from './Basket';
-import '../../../css/navbar.css';
+import '../../../css/components/navbar.css';
 
 export default function Navbar() {
 	const [authMember, setAuthMember] = useState(true);

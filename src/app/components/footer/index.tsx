@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import InstagramIcon from '@mui/icons-material/Instagram';
-import '../../../css/footer.css';
+import '../../../css/components/footer.css';
 
 export default function Footer() {
 	return (
