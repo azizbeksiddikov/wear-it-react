@@ -1,41 +1,25 @@
 import React from 'react';
-import {
-	Container,
-	Stack,
-	Box,
-	Typography,
-	Card,
-	CardContent,
-	CardActions,
-	Grid,
-	Divider,
-	List,
-	ListItem,
-} from '@mui/material';
+import { Container, Typography, Stack } from '@mui/material';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
-import { useState, SyntheticEvent, useEffect } from 'react';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import '../../../css/orders.css';
+import { useState, SyntheticEvent } from 'react';
 import TabPanel from '@mui/lab/TabPanel';
-import Button from '@mui/material/Button';
-import moment from 'moment';
-import { Order, OrderItem } from '../../../libs/types/order';
+import { Order } from '../../../libs/types/order';
 import { OrderStatus } from '../../../libs/enums/order.enum';
-
-// Extended Order type for UI with items
-interface ExtendedOrder extends Order {
-	items: OrderItem[];
-	productName?: string; // For backward compatibility
-}
+import PausedOrders from './PausedOrders';
+import ProcessOrders from './ProcessOrders';
+import FinishedOrders from './FinishedOrders';
+import '../../../css/orders.css';
+import { ProductCategory, ProductGender } from '../../../libs/enums/product.enum';
+import AllOrders from './AllOrders';
 
 export default function OrdersPage() {
 	// State for current tab (using OrderStatus enum)
 	const [value, setValue] = useState<string>(OrderStatus.PAUSED);
 
 	// State for orders in different stages
-	const [pausedOrders, setPausedOrders] = useState<ExtendedOrder[]>([
+	const [pausedOrders, setPausedOrders] = useState<Order[]>([
 		{
 			_id: 'ord-001',
 			memberId: 'mem-001',
@@ -53,10 +37,14 @@ export default function OrdersPage() {
 					orderId: 'ord-001',
 					productId: 'prod-001',
 					variantId: 'var-001',
+					productName: 'Blue T-Shirt',
 					itemQuantity: 2,
 					itemUnitPrice: 29.99,
+					productCategory: ProductCategory.TOPS,
+					productGender: ProductGender.MEN,
+					productImage: '/img/t-shirt.jpg',
 					size: 'M',
-					color: 'Blue',
+					color: 'BLUE',
 					createdAt: new Date('2023-07-15'),
 					updatedAt: new Date('2023-07-15'),
 				},
@@ -65,108 +53,194 @@ export default function OrdersPage() {
 					orderId: 'ord-001',
 					productId: 'prod-002',
 					variantId: 'var-002',
+					productName: 'White Hoodie',
 					itemQuantity: 1,
 					itemUnitPrice: 9.99,
-					size: 'One Size',
-					color: 'White',
+					productCategory: ProductCategory.SWEATERS,
+					productGender: ProductGender.UNISEX,
+					productImage: '/img/t-shirt.jpg',
+					size: 'XL',
+					color: 'WHITE',
 					createdAt: new Date('2023-07-15'),
 					updatedAt: new Date('2023-07-15'),
 				},
 			],
 		},
-	]);
-
-	const [processOrders, setProcessOrders] = useState<ExtendedOrder[]>([
 		{
 			_id: 'ord-002',
-			memberId: 'mem-001',
-			orderDate: new Date('2023-07-10'),
-			orderStatus: OrderStatus.PROCESSING,
-			orderShippingAddress: '789 Pine Rd, Village',
-			orderSubTotal: 92.98,
-			orderShippingCost: 5.99,
-			orderTotalAmount: 98.97,
-			createdAt: new Date('2023-07-10'),
-			updatedAt: new Date('2023-07-11'),
+			memberId: 'mem-002',
+			orderDate: new Date('2023-08-20'),
+			orderStatus: OrderStatus.PAUSED,
+			orderShippingAddress: '456 Elm St, Townsville',
+			orderSubTotal: 120.45,
+			orderShippingCost: 10.0,
+			orderTotalAmount: 130.45,
+			createdAt: new Date('2023-08-20'),
+			updatedAt: new Date('2023-08-20'),
 			items: [
 				{
 					_id: 'item-003',
 					orderId: 'ord-002',
 					productId: 'prod-003',
 					variantId: 'var-003',
+					productName: 'Red Jacket',
 					itemQuantity: 1,
-					itemUnitPrice: 79.99,
-					size: '9',
-					color: 'White',
-					createdAt: new Date('2023-07-10'),
-					updatedAt: new Date('2023-07-10'),
+					itemUnitPrice: 50.0,
+					productCategory: ProductCategory.JACKETS,
+					productGender: ProductGender.MEN,
+					productImage: '/img/t-shirt.jpg',
+					size: 'L',
+					color: 'RED',
+					createdAt: new Date('2023-08-20'),
+					updatedAt: new Date('2023-08-20'),
 				},
 				{
 					_id: 'item-004',
 					orderId: 'ord-002',
 					productId: 'prod-004',
 					variantId: 'var-004',
-					itemQuantity: 1,
-					itemUnitPrice: 12.99,
-					size: 'One Size',
-					color: 'Black',
-					createdAt: new Date('2023-07-10'),
-					updatedAt: new Date('2023-07-10'),
+					productName: 'Black Jeans',
+					itemQuantity: 2,
+					itemUnitPrice: 35.22,
+					productCategory: ProductCategory.JEANS,
+					productGender: ProductGender.WOMEN,
+					productImage: '/img/t-shirt.jpg',
+					size: 'M',
+					color: 'BLACK',
+					createdAt: new Date('2023-08-20'),
+					updatedAt: new Date('2023-08-20'),
 				},
 			],
 		},
 	]);
 
-	const [finishedOrders, setFinishedOrders] = useState<ExtendedOrder[]>([
+	const [processOrders, setProcessOrders] = useState<Order[]>([
 		{
 			_id: 'ord-003',
-			memberId: 'mem-001',
-			orderDate: new Date('2023-07-05'),
-			orderStatus: OrderStatus.FINISHED,
-			orderShippingAddress: '321 Elm Blvd, City',
-			orderSubTotal: 54.98,
-			orderShippingCost: 5.99,
-			orderTotalAmount: 60.97,
-			createdAt: new Date('2023-07-05'),
-			updatedAt: new Date('2023-07-07'),
+			memberId: 'mem-003',
+			orderDate: new Date('2023-09-10'),
+			orderStatus: OrderStatus.PROCESSING,
+			orderShippingAddress: '789 Oak St, Villagetown',
+			orderSubTotal: 89.99,
+			orderShippingCost: 7.5,
+			orderTotalAmount: 97.49,
+			createdAt: new Date('2023-09-10'),
+			updatedAt: new Date('2023-09-10'),
 			items: [
 				{
 					_id: 'item-005',
 					orderId: 'ord-003',
 					productId: 'prod-005',
 					variantId: 'var-005',
-					itemQuantity: 1,
-					itemUnitPrice: 19.99,
-					size: 'One Size',
-					color: 'Navy',
-					createdAt: new Date('2023-07-05'),
-					updatedAt: new Date('2023-07-05'),
+					productName: 'Green Polo Shirt',
+					itemQuantity: 3,
+					itemUnitPrice: 29.99,
+					productCategory: ProductCategory.TOPS,
+					productGender: ProductGender.MEN,
+					productImage: '/img/t-shirt.jpg',
+					size: 'S',
+					color: 'GREEN',
+					createdAt: new Date('2023-09-10'),
+					updatedAt: new Date('2023-09-10'),
 				},
+			],
+		},
+		{
+			_id: 'ord-004',
+			memberId: 'mem-004',
+			orderDate: new Date('2023-09-15'),
+			orderStatus: OrderStatus.PROCESSING,
+			orderShippingAddress: '321 Pine St, Hamlet',
+			orderSubTotal: 150.0,
+			orderShippingCost: 12.0,
+			orderTotalAmount: 162.0,
+			createdAt: new Date('2023-09-15'),
+			updatedAt: new Date('2023-09-15'),
+			items: [
 				{
 					_id: 'item-006',
-					orderId: 'ord-003',
+					orderId: 'ord-004',
 					productId: 'prod-006',
 					variantId: 'var-006',
+					productName: 'Black Leather Jacket',
 					itemQuantity: 1,
-					itemUnitPrice: 34.99,
-					size: 'One Size',
-					color: 'Black',
-					createdAt: new Date('2023-07-05'),
-					updatedAt: new Date('2023-07-05'),
+					itemUnitPrice: 150.0,
+					productCategory: ProductCategory.JACKETS,
+					productGender: ProductGender.UNISEX,
+					productImage: '/img/t-shirt.jpg',
+					size: 'XL',
+					color: 'BLACK',
+					createdAt: new Date('2023-09-15'),
+					updatedAt: new Date('2023-09-15'),
 				},
 			],
 		},
 	]);
 
-	// Product names mapping (in a real app, would be fetched from API)
-	const [productNames, setProductNames] = useState<Record<string, string>>({
-		'prod-001': 'Blue T-Shirt',
-		'prod-002': 'White Socks',
-		'prod-003': 'White Sneakers',
-		'prod-004': 'Sport Socks',
-		'prod-005': 'Baseball Cap',
-		'prod-006': 'Sunglasses',
-	});
+	const [finishedOrders, setFinishedOrders] = useState<Order[]>([
+		{
+			_id: 'ord-005',
+			memberId: 'mem-005',
+			orderDate: new Date('2023-06-01'),
+			orderStatus: OrderStatus.FINISHED,
+			orderShippingAddress: '654 Maple St, Metropolis',
+			orderSubTotal: 200.0,
+			orderShippingCost: 15.0,
+			orderTotalAmount: 215.0,
+			createdAt: new Date('2023-06-01'),
+			updatedAt: new Date('2023-06-05'),
+			items: [
+				{
+					_id: 'item-007',
+					orderId: 'ord-005',
+					productId: 'prod-007',
+					variantId: 'var-007',
+					productName: 'Formal Suit',
+					itemQuantity: 2,
+					itemUnitPrice: 100.0,
+					productCategory: ProductCategory.FORMALWEAR,
+					productGender: ProductGender.MEN,
+					productImage: '/img/t-shirt.jpg',
+					size: 'M',
+					color: 'NAVY',
+					createdAt: new Date('2023-06-01'),
+					updatedAt: new Date('2023-06-05'),
+				},
+			],
+		},
+		{
+			_id: 'ord-006',
+			memberId: 'mem-006',
+			orderDate: new Date('2023-05-20'),
+			orderStatus: OrderStatus.FINISHED,
+			orderShippingAddress: '987 Birch St, Cityville',
+			orderSubTotal: 75.0,
+			orderShippingCost: 5.0,
+			orderTotalAmount: 80.0,
+			createdAt: new Date('2023-05-20'),
+			updatedAt: new Date('2023-05-22'),
+			items: [
+				{
+					_id: 'item-008',
+					orderId: 'ord-006',
+					productId: 'prod-008',
+					variantId: 'var-008',
+					productName: 'Blue Denim Jeans',
+					itemQuantity: 1,
+					itemUnitPrice: 75.0,
+					productCategory: ProductCategory.JEANS,
+					productGender: ProductGender.WOMEN,
+					productImage: '/img/t-shirt.jpg',
+					size: 'L',
+					color: 'BLUE',
+					createdAt: new Date('2023-05-20'),
+					updatedAt: new Date('2023-05-22'),
+				},
+			],
+		},
+	]);
+
+	const allOrders = [...pausedOrders, ...processOrders, ...finishedOrders];
 
 	// Handle tab change
 	const handleChange = (event: SyntheticEvent, newValue: string) => {
@@ -184,6 +258,9 @@ export default function OrdersPage() {
 			};
 			setPausedOrders(pausedOrders.filter((order) => order._id !== orderId));
 			setProcessOrders([...processOrders, updatedOrder]);
+
+			// Switch to the Processing tab
+			setValue(OrderStatus.PROCESSING);
 		}
 	};
 
@@ -198,179 +275,58 @@ export default function OrdersPage() {
 			};
 			setProcessOrders(processOrders.filter((order) => order._id !== orderId));
 			setFinishedOrders([...finishedOrders, updatedOrder]);
+
+			// Switch to the Finished tab
+			setValue(OrderStatus.FINISHED);
 		}
 	};
 
-	// Helper function to get product name
-	const getProductName = (productId: string): string => {
-		return productNames[productId] || 'Unknown Product';
-	};
-
-	// Order Card Component
-	const OrderCard = ({ order, actionButton }: { order: ExtendedOrder; actionButton?: JSX.Element }) => (
-		<Card className="order-card" variant="outlined" sx={{ mb: 2 }}>
-			<Box className="card-header">
-				<Typography variant="h6">Order #{order._id}</Typography>
-				<Typography variant="body2" className="order-date">
-					Ordered on {moment(order.orderDate).format('MMMM D, YYYY')}
-				</Typography>
-			</Box>
-			<CardContent className="card-content">
-				<Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-					<span
-						className={`status-indicator status-${order.orderStatus ? order.orderStatus.toLowerCase() : 'unknown'}`}
-					></span>
-					<Typography variant="body2" sx={{ textTransform: 'capitalize' }}>
-						{order.orderStatus || 'Unknown Status'}
-					</Typography>
-				</Box>
-
-				<Divider sx={{ my: 1.5 }} />
-
-				<Typography variant="subtitle1" className="items-heading">
-					Order Items
-				</Typography>
-
-				<List className="order-items-list">
-					{order.items.map((item) => (
-						<ListItem key={item._id} className="order-item">
-							<Box className="item-details">
-								<Typography variant="body1" className="item-name">
-									{getProductName(item.productId)}
-								</Typography>
-								<Typography variant="body2" color="text.secondary">
-									Size: {item.size}, Color: {item.color}
-								</Typography>
-								<Typography variant="body2" className="item-price">
-									${item.itemUnitPrice.toFixed(2)} × {item.itemQuantity}
-								</Typography>
-								<Typography variant="body2" className="item-subtotal">
-									Subtotal: ${(item.itemUnitPrice * item.itemQuantity).toFixed(2)}
-								</Typography>
-							</Box>
-						</ListItem>
-					))}
-				</List>
-
-				<Divider sx={{ my: 1.5 }} />
-
-				<Box className="order-summary">
-					<Typography variant="body2">Subtotal: ${order.orderSubTotal.toFixed(2)}</Typography>
-					<Typography variant="body2">Shipping: ${order.orderShippingCost.toFixed(2)}</Typography>
-					<Typography variant="h6" color="primary" className="order-total">
-						Total: ${order.orderTotalAmount.toFixed(2)}
-					</Typography>
-				</Box>
-
-				<Box className="order-address">
-					<LocationOnIcon fontSize="small" sx={{ mr: 1 }} />
-					<Typography variant="body2">{order.orderShippingAddress}</Typography>
-				</Box>
-			</CardContent>
-			{actionButton && <CardActions className="card-actions">{actionButton}</CardActions>}
-		</Card>
-	);
-
 	return (
-		<Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-			<Typography variant="h4" component="h1" className="orders-title">
-				My Orders
-			</Typography>
+		<div className="orders">
+			<Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+				<Typography variant="h4" component="h1" className="orders-title">
+					My Orders
+				</Typography>
 
-			<TabContext value={value}>
-				<Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-					<Tabs
-						value={value}
-						onChange={handleChange}
-						aria-label="order tabs"
-						className="order-tabs"
-						variant="fullWidth"
-					>
-						<Tab label={`Paused (${pausedOrders.length})`} value={OrderStatus.PAUSED} />
-						<Tab label={`Processing (${processOrders.length})`} value={OrderStatus.PROCESSING} />
-						<Tab label={`Completed (${finishedOrders.length})`} value={OrderStatus.FINISHED} />
-					</Tabs>
-				</Box>
+				<TabContext value={value}>
+					{/* Navbar */}
+					<Stack sx={{ borderBottom: 1, borderColor: 'divider' }}>
+						<Tabs
+							value={value}
+							onChange={handleChange}
+							aria-label="order tabs"
+							className="order-tabs"
+							variant="fullWidth"
+							sx={{ '& .MuiTabs-indicator': { backgroundColor: '#e60023' } }}
+						>
+							<Tab label={`All (${pausedOrders.length})`} value={'ALL'} />
+							<Tab label={`Paused (${pausedOrders.length})`} value={OrderStatus.PAUSED} />
+							<Tab label={`Processing (${processOrders.length})`} value={OrderStatus.PROCESSING} />
+							<Tab label={`Completed (${finishedOrders.length})`} value={OrderStatus.FINISHED} />
+						</Tabs>
+					</Stack>
 
-				<TabPanel value={OrderStatus.PAUSED}>
-					<Grid container spacing={2}>
-						{pausedOrders.length === 0 ? (
-							<Box className="empty-orders" sx={{ width: '100%' }}>
-								<Typography variant="body1">You don't have any paused orders.</Typography>
-							</Box>
-						) : (
-							pausedOrders.map((order) => (
-								<Grid item xs={12} md={6} key={order._id}>
-									<OrderCard
-										order={order}
-										actionButton={
-											<Button
-												variant="contained"
-												color="primary"
-												onClick={() => moveToProcess(order._id)}
-												className="action-btn process-btn"
-											>
-												Move to Processing
-											</Button>
-										}
-									/>
-								</Grid>
-							))
-						)}
-					</Grid>
-				</TabPanel>
+					{/* ALL */}
+					<TabPanel value={'ALL'} className="order-tab-panel">
+						<AllOrders orders={allOrders} moveToProcess={moveToProcess} moveToFinished={moveToFinished} />
+					</TabPanel>
 
-				<TabPanel value={OrderStatus.PROCESSING}>
-					<Grid container spacing={2}>
-						{processOrders.length === 0 ? (
-							<Box className="empty-orders" sx={{ width: '100%' }}>
-								<Typography variant="body1">No orders are currently being processed.</Typography>
-							</Box>
-						) : (
-							processOrders.map((order) => (
-								<Grid item xs={12} md={6} key={order._id}>
-									<OrderCard
-										order={order}
-										actionButton={
-											<Button
-												variant="contained"
-												color="success"
-												onClick={() => moveToFinished(order._id)}
-												className="action-btn finish-btn"
-											>
-												Mark as Completed
-											</Button>
-										}
-									/>
-								</Grid>
-							))
-						)}
-					</Grid>
-				</TabPanel>
+					{/* PAUSED */}
+					<TabPanel value={OrderStatus.PAUSED} className="order-tab-panel">
+						<PausedOrders orders={pausedOrders} moveToProcess={moveToProcess} />
+					</TabPanel>
 
-				<TabPanel value={OrderStatus.FINISHED}>
-					<Grid container spacing={2}>
-						{finishedOrders.length === 0 ? (
-							<Box className="empty-orders" sx={{ width: '100%' }}>
-								<Typography variant="body1">You haven't completed any orders yet.</Typography>
-							</Box>
-						) : (
-							finishedOrders.map((order) => (
-								<Grid item xs={12} md={6} key={order._id}>
-									<OrderCard
-										order={order}
-										actionButton={
-											<Button variant="outlined" color="secondary" disabled className="action-btn">
-												Order Completed
-											</Button>
-										}
-									/>
-								</Grid>
-							))
-						)}
-					</Grid>
-				</TabPanel>
-			</TabContext>
-		</Container>
+					{/* PROCESSING */}
+					<TabPanel value={OrderStatus.PROCESSING} className="order-tab-panel">
+						<ProcessOrders orders={processOrders} moveToFinished={moveToFinished} />
+					</TabPanel>
+
+					{/* FINISHED */}
+					<TabPanel value={OrderStatus.FINISHED} className="order-tab-panel">
+						<FinishedOrders orders={finishedOrders} />
+					</TabPanel>
+				</TabContext>
+			</Container>
+		</div>
 	);
 }
