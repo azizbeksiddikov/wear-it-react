@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { LoginInput, Member, MemberInput } from '../../libs/types/member';
+import { LoginInput, Member, MemberInput, MemberUpdateInput } from '../../libs/types/member';
 import { serverApi } from '../../libs/config';
 
 class MemberService {
@@ -51,6 +51,38 @@ class MemberService {
 			localStorage.removeItem('memberData');
 		} catch (err) {
 			console.log('Error, login', err);
+			throw err;
+		}
+	}
+
+	public async update(input: MemberUpdateInput): Promise<Member> {
+		try {
+			const formData = new FormData();
+			formData.append('memberEmail', input.memberEmail || '');
+			formData.append('memberPhone', input.memberPhone || '');
+			formData.append('memberPassword', input.memberPassword || '');
+			formData.append('memberFullName', input.memberFullName || '');
+			formData.append('memberAddress', input.memberAddress || '');
+			formData.append('memberDesc', input.memberDesc || '');
+			formData.append('memberImage', input.memberImage || '');
+
+			const url = `${this.path}/member/update`;
+			const result = await axios(url, {
+				method: 'POST',
+				data: formData,
+				withCredentials: true,
+				headers: {
+					'Content-Type': 'multipart/form-data',
+				},
+			});
+
+			console.log('updateMember:', result);
+
+			const member: Member = result.data;
+			localStorage.setItem('memberData', JSON.stringify(member));
+			return member;
+		} catch (err) {
+			console.log('Error, update', err);
 			throw err;
 		}
 	}

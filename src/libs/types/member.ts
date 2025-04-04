@@ -16,6 +16,11 @@ export interface Member {
 	updatedAt: Date;
 }
 
+/*
+	memberPassword?: string;
+	memberFullName?: string;
+	memberPoints?: number;
+*/
 export interface MemberInput {
 	memberPhone: string;
 	memberPassword: string;
@@ -30,10 +35,9 @@ export interface MemberInput {
 }
 
 export interface MemberUpdateInput {
-	_id: string;
+	memberEmail?: string;
 	memberPhone?: string;
 	memberPassword?: string;
-	memberEmail?: string;
 	memberFullName?: string;
 	memberAddress?: string;
 	memberDesc?: string;

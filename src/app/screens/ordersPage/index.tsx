@@ -16,6 +16,7 @@ import { Dispatch } from '@reduxjs/toolkit';
 import { setPausedOrders, setProcessOrders, setFinishedOrders, setAllOrders } from './slice';
 import OrderService from '../../services/OrderService';
 import { useGlobals } from '../../hooks/useGlobals';
+import { useHistory } from 'react-router-dom';
 import '../../../css/orders.css';
 
 /** redux slice & selector */
@@ -27,8 +28,11 @@ const actionDispatch = (dispatch: Dispatch) => ({
 });
 
 export default function OrdersPage() {
+	const history = useHistory();
+	const { authMember, orderBuilder } = useGlobals();
+	if (!authMember) history.push('/');
+
 	const { setAllOrders, setPausedOrders, setProcessOrders, setFinishedOrders } = actionDispatch(useDispatch());
-	const { orderBuilder } = useGlobals();
 
 	const [value, setValue] = useState<string>(OrderStatus.PAUSED);
 	const [orderInquiry, setOrderInquiry] = useState<OrderInquiry>({
