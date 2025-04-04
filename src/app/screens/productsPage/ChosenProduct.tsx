@@ -267,11 +267,17 @@ export default function ChosenProduct(props: ChosenProductProps) {
 							<Button
 								onClick={() => {
 									onAdd({
-										_id: chosenVariant._id,
-										name: chosenProduct.productName,
-										price: chosenVariant?.salePrice ?? chosenVariant.productPrice,
-										quantity: quantity,
-										image: chosenProduct.productImages[0],
+										productId: productId,
+										variantId: chosenVariant._id,
+										productName: chosenProduct.productName,
+										productCategory: chosenProduct.productCategory,
+										productGender: chosenProduct.productGender,
+										productImage: chosenProduct.productImages[0],
+										productSize: chosenVariant.size,
+										productColor: chosenVariant.color,
+										itemUnitPrice: chosenVariant.productPrice,
+										salePrice: chosenVariant?.salePrice ?? null,
+										itemQuantity: quantity,
 									});
 								}}
 								style={{ backgroundColor: '#4caf50', color: 'white' }}

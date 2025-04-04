@@ -7,10 +7,10 @@ const useBasket = () => {
 	const [cartItems, setCartItems] = useState<CartItem[]>(currentCart);
 
 	const onAdd = (input: CartItem) => {
-		const exist: any = cartItems.find((item: CartItem) => item._id === input._id);
+		const exist: any = cartItems.find((item: CartItem) => item.variantId === input.variantId);
 		if (exist) {
 			const cartUpdate = cartItems.map((item: CartItem) =>
-				item._id === input._id ? { ...exist, quantity: exist.quantity + 1 } : item,
+				item.variantId === input.variantId ? { ...exist, itemQuantity: exist.itemQuantity + 1 } : item,
 			);
 			setCartItems(cartUpdate);
 			localStorage.setItem('cartData', JSON.stringify(cartUpdate));
@@ -22,14 +22,14 @@ const useBasket = () => {
 	};
 
 	const onRemove = (input: CartItem) => {
-		const exist: any = cartItems.find((item: CartItem) => item._id === input._id);
-		if (exist.quantity === 1) {
-			const cartUpdate = cartItems.filter((item: CartItem) => item._id !== input._id);
+		const exist: any = cartItems.find((item: CartItem) => item.variantId === input.variantId);
+		if (exist.itemQuantity === 1) {
+			const cartUpdate = cartItems.filter((item: CartItem) => item.variantId !== input.variantId);
 			setCartItems(cartUpdate);
 			localStorage.setItem('cartData', JSON.stringify(cartUpdate));
 		} else {
 			const cartUpdate = cartItems.map((item: CartItem) =>
-				item._id === input._id ? { ...exist, quantity: exist.quantity - 1 } : item,
+				item.variantId === input.variantId ? { ...exist, itemQuantity: exist.itemQuantity - 1 } : item,
 			);
 			setCartItems(cartUpdate);
 			localStorage.setItem('cartData', JSON.stringify(cartUpdate));
@@ -37,7 +37,7 @@ const useBasket = () => {
 	};
 
 	const onDelete = (input: CartItem) => {
-		const cartUpdate = cartItems.filter((item: CartItem) => item._id !== input._id);
+		const cartUpdate = cartItems.filter((item: CartItem) => item.variantId !== input.variantId);
 		setCartItems(cartUpdate);
 		localStorage.setItem('cartData', JSON.stringify(cartUpdate));
 	};

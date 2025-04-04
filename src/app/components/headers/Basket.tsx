@@ -6,9 +6,14 @@ import Menu from '@mui/material/Menu';
 import CancelIcon from '@mui/icons-material/Cancel';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useHistory } from 'react-router-dom';
-import { CartItem } from '../../../libs/types/search';
+import { BasketData, CartItem } from '../../../libs/types/search';
 import DeletForeverIcon from '@mui/icons-material/DeleteForever';
 import '../../../css/components/basket.css';
+import { Messages, serverApi } from '../../../libs/config';
+import { sweetErrorHandling } from '../../../libs/sweetAlert';
+import { useGlobals } from '../../hooks/useGlobals';
+import OrderService from '../../services/OrderService';
+import { T } from '../../../libs/types/common';
 
 interface BasketProps {
 	cartItems: CartItem[];
@@ -19,11 +24,18 @@ interface BasketProps {
 }
 
 export default function Basket(props: BasketProps) {
-	const authMember = null;
+	const { authMember } = useGlobals();
 	const { cartItems, onAdd, onRemove, onDelete, onDeleteAll } = props;
-	const itemsPrice = cartItems.reduce((a: number, c: CartItem) => a + c.price * c.quantity, 0);
-	const shippingCost = itemsPrice < 100 ? 5 : 0;
-	const totalPrice = (itemsPrice + shippingCost).toFixed(1);
+	const history = useHistory();
+
+	const orderSubTotal = cartItems.reduce((a: number, c: CartItem) => {
+		if (c.salePrice) {
+			return a + c.salePrice * c.itemQuantity;
+		}
+		return a + c.itemUnitPrice * c.itemQuantity;
+	}, 0);
+	const orderShippingCost = orderSubTotal < 50 ? 5 : 0;
+	const orderTotalAmount = parseFloat((orderSubTotal + orderShippingCost).toFixed(1));
 
 	const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 	const open = Boolean(anchorEl);
@@ -35,7 +47,30 @@ export default function Basket(props: BasketProps) {
 	const handleClose = () => {
 		setAnchorEl(null);
 	};
+	const proceedOrderHandler = async () => {
+		try {
+			handleClose();
+			if (!authMember) throw Error(Messages.error2);
 
+			const order = new OrderService();
+
+			const basketData: BasketData = {
+				cartItems: cartItems,
+				orderSubTotal: orderSubTotal,
+				orderShippingCost: orderShippingCost,
+				orderTotalAmount: orderTotalAmount,
+			};
+
+			console.log('basketData', basketData);
+			// await order.createOrder(basketData, 'SEOUL');
+
+			onDeleteAll();
+			history.push('/orders');
+		} catch (err) {
+			console.log(err);
+			sweetErrorHandling(err).then();
+		}
+	};
 	return (
 		<Box className={'basket'}>
 			<IconButton
@@ -55,7 +90,6 @@ export default function Basket(props: BasketProps) {
 				id="account-menu"
 				open={open}
 				onClose={handleClose}
-				// onClick={handleClose}
 				PaperProps={{
 					elevation: 0,
 					sx: {
@@ -104,16 +138,16 @@ export default function Basket(props: BasketProps) {
 					<Box className={'orders-main-wrapper'}>
 						<Box className={'orders-wrapper'}>
 							{cartItems.map((item: CartItem) => {
-								const imagePath = `${item.image}`;
+								const imagePath = `${item.productImage}`;
 								return (
-									<Box className={'basket-info-box'} key={item._id}>
+									<Box className={'basket-info-box'} key={item.variantId}>
 										<div className={'cancel-btn'}>
 											<CancelIcon color={'primary'} onClick={() => onDelete(item)} />
 										</div>
 										<img src={imagePath} className={'product-img'} />
-										<span className={'product-name'}>{item.name}</span>
+										<span className={'product-name'}>{item.productName}</span>
 										<p className={'product-price'}>
-											${item.price} x {item.quantity}
+											${item?.salePrice ?? item.itemUnitPrice} x {item.itemQuantity}
 										</p>
 										<Box sx={{ minWidth: 120 }}>
 											<div className="col-2">
@@ -133,9 +167,9 @@ export default function Basket(props: BasketProps) {
 					{cartItems.length !== 0 ? (
 						<Box className={'basket-order'}>
 							<span className={'price'}>
-								Total: ${totalPrice} ({itemsPrice} + {shippingCost})
+								Total: ${orderTotalAmount} ({orderSubTotal} + {orderShippingCost})
 							</span>
-							<Button startIcon={<ShoppingCartIcon />} variant={'contained'}>
+							<Button startIcon={<ShoppingCartIcon />} variant={'contained'} onClick={proceedOrderHandler}>
 								Order
 							</Button>
 						</Box>
