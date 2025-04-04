@@ -5,9 +5,19 @@ import PersonIcon from '@mui/icons-material/Person';
 import LogoutIcon from '@mui/icons-material/Logout';
 import LoginIcon from '@mui/icons-material/Login';
 import Basket from './Basket';
+import { CartItem } from '../../../libs/types/search';
 import '../../../css/components/navbar.css';
 
-export default function Navbar() {
+interface NavbarProps {
+	cartItems: CartItem[];
+	onAdd: (item: CartItem) => void;
+	onRemove: (item: CartItem) => void;
+	onDelete: (item: CartItem) => void;
+	onDeleteAll: () => void;
+}
+
+export default function Navbar(props: NavbarProps) {
+	const { cartItems, onAdd, onRemove, onDelete, onDeleteAll } = props;
 	const [authMember, setAuthMember] = useState(true);
 
 	return (
@@ -28,7 +38,13 @@ export default function Navbar() {
 				<div className="auth-section">
 					{authMember ? (
 						<>
-							<Basket />
+							<Basket
+								cartItems={cartItems}
+								onAdd={onAdd}
+								onRemove={onRemove}
+								onDelete={onDelete}
+								onDeleteAll={onDeleteAll}
+							/>
 							<NavLink to="/my-page">
 								<IconButton>
 									<PersonIcon />

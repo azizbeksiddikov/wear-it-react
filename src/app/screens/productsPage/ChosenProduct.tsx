@@ -12,12 +12,13 @@ import 'swiper/css/thumbs';
 import { FreeMode, Navigation, Thumbs } from 'swiper';
 import { Dispatch } from '@reduxjs/toolkit';
 import { setChosenProduct } from './slice';
-import { Product } from '../../../libs/types/product';
+import { Product, ProductVariant } from '../../../libs/types/product';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { retrieveChosenProduct } from './selector';
 import ProductService from '../../services/ProductServices';
 import { useParams, useHistory } from 'react-router-dom';
+import { CartItem } from '../../../libs/types/search';
 import '../../../css/productsPage/chosenProduct.css';
 
 const actionDispatch = (dispatch: Dispatch) => ({
@@ -26,11 +27,18 @@ const actionDispatch = (dispatch: Dispatch) => ({
 
 const chosenProductRetriever = createSelector(retrieveChosenProduct, (chosenProduct) => ({ chosenProduct }));
 
-export default function ChosenProduct() {
+interface ChosenProductProps {
+	cartItems: CartItem[];
+	onAdd: (item: CartItem) => void;
+}
+export default function ChosenProduct(props: ChosenProductProps) {
+	const { cartItems, onAdd } = props;
+
 	const { productId } = useParams<{ productId: string }>();
 	const { setChosenProduct } = actionDispatch(useDispatch());
 	const { chosenProduct }: { chosenProduct: Product | null } = useSelector(chosenProductRetriever);
 
+	const [chosenVariant, setChosenVariant] = useState<ProductVariant>();
 	const [selectedSize, setSelectedSize] = useState('');
 	const [selectedColor, setSelectedColor] = useState('');
 	const [selectedPrice, setSelectedPrice] = useState<number>();
@@ -50,7 +58,6 @@ export default function ChosenProduct() {
 					history.push('/products');
 					return;
 				}
-				console.log('**** Product data:', data);
 
 				if (data.productVariants && data.productVariants.length > 0) {
 					const firstColor = data.productVariants[0].color;
@@ -65,6 +72,7 @@ export default function ChosenProduct() {
 
 					if (sizesForFirstColor.length > 0) {
 						setSelectedSize(sizesForFirstColor[0]);
+						setChosenVariant(data.productVariants[0]);
 					}
 				}
 			})
@@ -79,6 +87,8 @@ export default function ChosenProduct() {
 		);
 
 		if (selectedVariant) {
+			setChosenVariant(selectedVariant);
+
 			setSelectedPrice(selectedVariant.productPrice);
 			if (selectedVariant.salePrice) {
 				setSelectedPrice(selectedVariant.salePrice);
@@ -252,8 +262,21 @@ export default function ChosenProduct() {
 								)}
 							</div>
 						)}
+
 						<div className={'button-box'}>
-							<Button variant="contained" style={{ backgroundColor: '#4caf50', color: 'white' }}>
+							<Button
+								onClick={() => {
+									onAdd({
+										_id: chosenVariant._id,
+										name: chosenProduct.productName,
+										price: chosenVariant?.salePrice ?? chosenVariant.productPrice,
+										quantity: quantity,
+										image: chosenProduct.productImages[0],
+									});
+								}}
+								style={{ backgroundColor: '#4caf50', color: 'white' }}
+								variant="contained"
+							>
 								Add To Basket
 							</Button>
 						</div>

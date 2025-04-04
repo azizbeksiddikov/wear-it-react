@@ -6,11 +6,24 @@ import Menu from '@mui/material/Menu';
 import CancelIcon from '@mui/icons-material/Cancel';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useHistory } from 'react-router-dom';
+import { CartItem } from '../../../libs/types/search';
+import DeletForeverIcon from '@mui/icons-material/DeleteForever';
 import '../../../css/components/basket.css';
 
-export default function Basket() {
+interface BasketProps {
+	cartItems: CartItem[];
+	onAdd: (item: CartItem) => void;
+	onRemove: (item: CartItem) => void;
+	onDelete: (item: CartItem) => void;
+	onDeleteAll: () => void;
+}
+
+export default function Basket(props: BasketProps) {
 	const authMember = null;
-	const history = useHistory();
+	const { cartItems, onAdd, onRemove, onDelete, onDeleteAll } = props;
+	const itemsPrice = cartItems.reduce((a: number, c: CartItem) => a + c.price * c.quantity, 0);
+	const shippingCost = itemsPrice < 100 ? 5 : 0;
+	const totalPrice = (itemsPrice + shippingCost).toFixed(1);
 
 	const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 	const open = Boolean(anchorEl);
@@ -33,11 +46,10 @@ export default function Basket() {
 				aria-expanded={open ? 'true' : undefined}
 				onClick={handleClick}
 			>
-				<Badge badgeContent={3} color="secondary">
+				<Badge badgeContent={cartItems.length} color="secondary">
 					<ShoppingCartIcon />
 				</Badge>
 			</IconButton>
-
 			<Menu
 				anchorEl={anchorEl}
 				id="account-menu"
@@ -75,32 +87,61 @@ export default function Basket() {
 			>
 				<Stack className={'basket-frame'}>
 					<Box className={'all-check-box'}>
-						<div>Cart is empty!</div>
+						{cartItems.length === 0 ? (
+							<div>Cart is empty!</div>
+						) : (
+							<Stack flexDirection={'row'}>
+								<div>Cart products:</div>
+								<DeletForeverIcon
+									sx={{ ml: '5px', cursor: 'pointer' }}
+									color={'primary'}
+									onClick={() => onDeleteAll()}
+								/>
+							</Stack>
+						)}
 					</Box>
 
 					<Box className={'orders-main-wrapper'}>
 						<Box className={'orders-wrapper'}>
-							<Box className={'basket-info-box'}>
-								<div className={'cancel-btn'}>
-									<CancelIcon color={'primary'} />
-								</div>
-								<img src={'/img/fresh.webp'} className={'product-img'} />
-								<span className={'product-name'}>Kebab</span>
-								<p className={'product-price'}>$10 x 1</p>
-								<Box sx={{ minWidth: 120 }}>
-									<div className="col-2">
-										<button className="remove">-</button> <button className="add">+</button>
-									</div>
-								</Box>
-							</Box>
+							{cartItems.map((item: CartItem) => {
+								const imagePath = `${item.image}`;
+								return (
+									<Box className={'basket-info-box'} key={item._id}>
+										<div className={'cancel-btn'}>
+											<CancelIcon color={'primary'} onClick={() => onDelete(item)} />
+										</div>
+										<img src={imagePath} className={'product-img'} />
+										<span className={'product-name'}>{item.name}</span>
+										<p className={'product-price'}>
+											${item.price} x {item.quantity}
+										</p>
+										<Box sx={{ minWidth: 120 }}>
+											<div className="col-2">
+												<button onClick={() => onRemove(item)} className="remove">
+													-
+												</button>
+												<button onClick={() => onAdd(item)} className="add">
+													+
+												</button>
+											</div>
+										</Box>
+									</Box>
+								);
+							})}
 						</Box>
 					</Box>
-					<Box className={'basket-order'}>
-						<span className={'price'}>Total: $100 (98 +2)</span>
-						<Button startIcon={<ShoppingCartIcon />} variant={'contained'}>
-							Order
-						</Button>
-					</Box>
+					{cartItems.length !== 0 ? (
+						<Box className={'basket-order'}>
+							<span className={'price'}>
+								Total: ${totalPrice} ({itemsPrice} + {shippingCost})
+							</span>
+							<Button startIcon={<ShoppingCartIcon />} variant={'contained'}>
+								Order
+							</Button>
+						</Box>
+					) : (
+						<></>
+					)}
 				</Stack>
 			</Menu>
 		</Box>
