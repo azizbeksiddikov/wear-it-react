@@ -10,37 +10,70 @@ import 'swiper/css/free-mode';
 import 'swiper/css/navigation';
 import 'swiper/css/thumbs';
 import { FreeMode, Navigation, Thumbs } from 'swiper';
+import { Dispatch } from '@reduxjs/toolkit';
+import { setChosenProduct } from './slice';
+import { Product } from '../../../libs/types/product';
+import { useDispatch, useSelector } from 'react-redux';
+import { createSelector } from 'reselect';
+import { retrieveChosenProduct } from './selector';
+import ProductService from '../../services/ProductServices';
+import { useParams, useHistory } from 'react-router-dom';
 import '../../../css/productsPage/chosenProduct.css';
-import { chosenProduct } from './data';
+
+const actionDispatch = (dispatch: Dispatch) => ({
+	setChosenProduct: (data: Product) => dispatch(setChosenProduct(data)),
+});
+
+const chosenProductRetriever = createSelector(retrieveChosenProduct, (chosenProduct) => ({ chosenProduct }));
 
 export default function ChosenProduct() {
+	const { productId } = useParams<{ productId: string }>();
+	const { setChosenProduct } = actionDispatch(useDispatch());
+	const { chosenProduct }: { chosenProduct: Product | null } = useSelector(chosenProductRetriever);
+
 	const [selectedSize, setSelectedSize] = useState('');
 	const [selectedColor, setSelectedColor] = useState('');
-	const [selectedPrice, setSelectedPrice] = useState(chosenProduct.productVariants[0].productPrice);
-	const swiperRef = useRef<any>(null);
-	const [swiperIndex, setSwiperIndex] = useState(0);
+	const [selectedPrice, setSelectedPrice] = useState<number | undefined>();
 	const [quantity, setQuantity] = useState(1);
+	const [swiperIndex, setSwiperIndex] = useState(0);
+	const history = useHistory();
 
-	const handleSizeChange = (size: string) => {
-		setSelectedSize((prevSize) => (prevSize === size ? '' : size));
-	};
-
-	const handleColorChange = (color: string) => {
-		setSelectedColor((prevColor) => (prevColor === color ? '' : color));
-	};
-
-	const handleIncrementQuantity = () => {
-		setQuantity((prevQuantity) => prevQuantity + 1);
-	};
-
-	const handleDecrementQuantity = () => {
-		if (quantity > 1) {
-			setQuantity((prevQuantity) => prevQuantity - 1);
-		}
-	};
+	const swiperRef = useRef<any>(null);
 
 	useEffect(() => {
-		// Find the selected variant and update the price
+		const productService = new ProductService();
+		productService
+			.getProductById(productId)
+			.then((data) => {
+				setChosenProduct(data);
+				if (!data.productVariants || data.productVariants.length === 0) {
+					history.push('/products');
+					return;
+				}
+				console.log('**** Product data:', data);
+
+				if (data.productVariants && data.productVariants.length > 0) {
+					const firstColor = data.productVariants[0].color;
+					setSelectedColor(firstColor);
+
+					// Calculate available sizes for this color directly from data
+					const sizesForFirstColor = [
+						...new Set(
+							data.productVariants.filter((variant) => variant.color === firstColor).map((variant) => variant.size),
+						),
+					];
+
+					if (sizesForFirstColor.length > 0) {
+						setSelectedSize(sizesForFirstColor[0]);
+					}
+				}
+			})
+			.catch((err) => console.log(err));
+	}, []);
+
+	useEffect(() => {
+		if (!chosenProduct || !chosenProduct.productVariants || !chosenProduct.productVariants.length) return;
+
 		const selectedVariant = chosenProduct.productVariants.find(
 			(variant) => variant.size === selectedSize && variant.color === selectedColor,
 		);
@@ -52,6 +85,27 @@ export default function ChosenProduct() {
 			}
 		}
 	}, [selectedSize, selectedColor]);
+
+	if (!chosenProduct || !chosenProduct.productVariants || !chosenProduct.productVariants.length) return;
+
+	// Handlers
+	const handleSizeChange = (size: string) => {
+		setSelectedSize((prevSize) => (prevSize === size ? '' : size));
+	};
+
+	const handleColorChange = (color: string) => {
+		setSelectedColor((prevColor) => (prevColor === color ? '' : color));
+	};
+
+	const handleIncrementQuantity = () => {
+		setQuantity(quantity + 1);
+	};
+
+	const handleDecrementQuantity = () => {
+		if (quantity > 0) {
+			setQuantity(quantity - 1);
+		}
+	};
 
 	// Extract unique sizes and colors from product variants
 	const availableSizes = [...new Set(chosenProduct.productVariants.map((variant) => variant.size))];
@@ -89,6 +143,7 @@ export default function ChosenProduct() {
 		<div className={'chosen-product'}>
 			<Box className={'title'}>Product Detail</Box>
 			<Container className={'product-container'}>
+				{/* Product Image Slider */}
 				<Stack className={'chosen-product-slider'}>
 					<Swiper
 						loop={true}
@@ -119,20 +174,22 @@ export default function ChosenProduct() {
 						))}
 					</Box>
 				</Stack>
+
+				{/* Product Info */}
 				<Stack className={'chosen-product-info'}>
 					<Box className={'info-box'}>
 						<strong className={'product-name'}>{chosenProduct.productName}</strong>
 						<Box className={'category-box'}>
 							<span>{chosenProduct.productCategory}</span>
-							{chosenProduct.isFeatured && <span className="featured-badge">Featured</span>}
+							{chosenProduct.isFeatured && <span className="feature-badge">Featured</span>}
 							{chosenProduct.onSale && <span className="on-sale-badge">On Sale</span>}
 						</Box>
 						<Box className={'rating-box'}>
-							<Rating name="half-rating" defaultValue={4.5} precision={0.5} readOnly />
+							<Rating name="half-rating" defaultValue={chosenProduct.reviewsRating ?? 0} precision={0.5} readOnly />
 							<div className={'evaluation-box'}>
 								<div className={'product-view'}>
 									<RemoveRedEyeIcon sx={{ mr: '10px' }} />
-									<span>20</span>
+									<span>{chosenProduct.productViews ?? 0}</span>
 								</div>
 							</div>
 						</Box>
@@ -172,12 +229,7 @@ export default function ChosenProduct() {
 						{/* Quantity selection */}
 						<Box className={'quantity-selector'}>
 							<span>Quantity:</span>
-							<Button
-								variant="outlined"
-								className="quantity-button"
-								onClick={handleDecrementQuantity}
-								disabled={quantity <= 1}
-							>
+							<Button variant="outlined" className="quantity-button" onClick={handleDecrementQuantity}>
 								-
 							</Button>
 							<span className="quantity-value">{quantity}</span>

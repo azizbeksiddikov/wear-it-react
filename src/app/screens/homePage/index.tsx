@@ -6,12 +6,11 @@ import Advertisement from './Advertisement';
 import { useDispatch } from 'react-redux';
 import { Dispatch } from '@reduxjs/toolkit';
 import { setFeaturedProducts, setSaleProducts } from './slice';
-import { Product, Products } from '../../../libs/types/product';
+import { Product, ProductsOutput } from '../../../libs/types/product';
 import ProductService from '../../services/ProductServices';
 import { Direction } from '../../../libs/enums/common.enum';
 import '../../../css/homePage/home.css';
 
-/** Redux slice & selector */
 const actionDispatch = (dispatch: Dispatch) => ({
 	setFeaturedProducts: (data: Product[]) => dispatch(setFeaturedProducts(data)),
 	setSaleProducts: (data: Product[]) => dispatch(setSaleProducts(data)),

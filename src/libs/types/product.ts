@@ -66,7 +66,7 @@ export interface TotalCounter {
 	total?: number;
 }
 
-export interface Products {
-	list: Products[];
+export interface ProductsOutput {
+	list: Product[];
 	count: TotalCounter;
 }
