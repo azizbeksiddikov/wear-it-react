@@ -19,6 +19,7 @@ function App() {
 	/** Handlers */
 	const handleSignUpClose = () => setSignupOpen(false);
 	const handleLoginClose = () => setLoginOpen(false);
+
 	return (
 		<>
 			{/* Header */}
@@ -53,8 +54,8 @@ function App() {
 			<AuthenticationModal
 				signupOpen={signupOpen}
 				loginOpen={loginOpen}
-				handleSignupClose={handleSignUpClose}
 				handleLoginClose={handleLoginClose}
+				handleSignupClose={handleSignUpClose}
 			/>
 		</>
 	);

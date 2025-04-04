@@ -2,19 +2,20 @@
 import Swal from 'sweetalert2';
 import { Messages } from './config';
 
-export const sweetErrorHandling = async (err: any) => {
+export const sweetErrorHandling = async (err: any, duration: number = 1500) => {
 	const error = err.response?.data ?? err;
 	const message = error?.message ?? Messages.error1;
 	await Swal.fire({
 		icon: 'error',
 		text: message,
 		showConfirmButton: false,
+		timer: duration,
 	});
 };
 
-export const sweetTopSuccessAlert = async (msg: string, duration: number = 2000) => {
+export const sweetTopSuccessAlert = async (msg: string, duration: number = 1500) => {
 	await Swal.fire({
-		position: 'top-end',
+		position: 'center',
 		icon: 'success',
 		title: msg,
 		showConfirmButton: false,
@@ -22,7 +23,7 @@ export const sweetTopSuccessAlert = async (msg: string, duration: number = 2000)
 	});
 };
 
-export const sweetTopSmallSuccessAlert = async (msg: string, duration: number = 2000) => {
+export const sweetTopSmallSuccessAlert = async (msg: string, duration: number = 1500) => {
 	const Toast = Swal.mixin({
 		toast: true,
 		position: 'top-end',

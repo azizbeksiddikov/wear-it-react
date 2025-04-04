@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
-import { Box, Button, Container, IconButton } from '@mui/material';
+import React from 'react';
 import { NavLink } from 'react-router-dom';
 import PersonIcon from '@mui/icons-material/Person';
 import LogoutIcon from '@mui/icons-material/Logout';
 import LoginIcon from '@mui/icons-material/Login';
 import Basket from './Basket';
 import { CartItem } from '../../../libs/types/search';
+import { Box, Button, Container, IconButton } from '@mui/material';
+import { useGlobals } from '../../hooks/useGlobals';
+import MemberService from '../../services/MemberService';
+import { sweetErrorHandling, sweetTopSuccessAlert } from '../../../libs/sweetAlert';
+import { Messages } from '../../../libs/config';
 import '../../../css/components/navbar.css';
 
 interface NavbarProps {
@@ -20,7 +24,19 @@ interface NavbarProps {
 
 export default function Navbar(props: NavbarProps) {
 	const { cartItems, onAdd, onRemove, onDelete, onDeleteAll, setSignupOpen, setLoginOpen } = props;
-	const [authMember, setAuthMember] = useState(false);
+	const { authMember, setAuthMember } = useGlobals();
+
+	const handleLogoutRequest = async () => {
+		try {
+			await new MemberService().logout();
+			setAuthMember(null);
+
+			await sweetTopSuccessAlert('success', 700);
+		} catch (err) {
+			console.log(err);
+			sweetErrorHandling(Messages.error1);
+		}
+	};
 
 	return (
 		<div className="navbar">
@@ -48,11 +64,9 @@ export default function Navbar(props: NavbarProps) {
 								onDeleteAll={onDeleteAll}
 							/>
 							<NavLink to="/my-page">
-								<IconButton>
-									<PersonIcon />
-								</IconButton>
+								<IconButton>{authMember?.memberImage ? authMember.memberImage : <PersonIcon />}</IconButton>
 							</NavLink>
-							<Button variant="outlined" startIcon={<LogoutIcon />} onClick={() => setAuthMember(false)}>
+							<Button variant="outlined" startIcon={<LogoutIcon />} onClick={handleLogoutRequest}>
 								Logout
 							</Button>
 						</>
