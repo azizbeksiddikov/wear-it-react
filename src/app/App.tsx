@@ -14,7 +14,7 @@ import '../css/app.css';
 function App() {
 	const { cartItems, onAdd, onRemove, onDelete, onDeleteAll } = useBasket();
 	const [signupOpen, setSignupOpen] = useState(false);
-	const [loginOpen, setLoginOpen] = useState(true);
+	const [loginOpen, setLoginOpen] = useState(false);
 
 	/** Handlers */
 	const handleSignUpClose = () => setSignupOpen(false);
@@ -22,7 +22,15 @@ function App() {
 	return (
 		<>
 			{/* Header */}
-			<Navbar cartItems={cartItems} onAdd={onAdd} onRemove={onRemove} onDelete={onDelete} onDeleteAll={onDeleteAll} />
+			<Navbar
+				cartItems={cartItems}
+				onAdd={onAdd}
+				onRemove={onRemove}
+				onDelete={onDelete}
+				onDeleteAll={onDeleteAll}
+				setSignupOpen={setSignupOpen}
+				setLoginOpen={setLoginOpen}
+			/>
 			{/* Main content */}
 			<Switch>
 				<Route exact path="/" component={HomePage} />

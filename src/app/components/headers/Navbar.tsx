@@ -14,11 +14,13 @@ interface NavbarProps {
 	onRemove: (item: CartItem) => void;
 	onDelete: (item: CartItem) => void;
 	onDeleteAll: () => void;
+	setSignupOpen: (isOpen: boolean) => void;
+	setLoginOpen: (isOpen: boolean) => void;
 }
 
 export default function Navbar(props: NavbarProps) {
-	const { cartItems, onAdd, onRemove, onDelete, onDeleteAll } = props;
-	const [authMember, setAuthMember] = useState(true);
+	const { cartItems, onAdd, onRemove, onDelete, onDeleteAll, setSignupOpen, setLoginOpen } = props;
+	const [authMember, setAuthMember] = useState(false);
 
 	return (
 		<div className="navbar">
@@ -56,10 +58,10 @@ export default function Navbar(props: NavbarProps) {
 						</>
 					) : (
 						<>
-							<Button variant="outlined" startIcon={<LoginIcon />} onClick={() => setAuthMember(true)}>
+							<Button variant="outlined" startIcon={<LoginIcon />} onClick={() => setLoginOpen(true)}>
 								Login
 							</Button>
-							<Button variant="contained" onClick={() => setAuthMember(true)}>
+							<Button variant="contained" onClick={() => setSignupOpen(true)}>
 								Sign Up
 							</Button>
 						</>

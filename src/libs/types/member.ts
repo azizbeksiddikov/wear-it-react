@@ -17,11 +17,11 @@ export interface Member {
 }
 
 export interface MemberInput {
-	memberType?: MemberType;
-	memberStatus?: MemberStatus;
 	memberPhone: string;
 	memberPassword: string;
 	memberEmail: string;
+	memberType?: MemberType;
+	memberStatus?: MemberStatus;
 	memberFullName?: string;
 	memberAddress?: string;
 	memberDesc?: string;
