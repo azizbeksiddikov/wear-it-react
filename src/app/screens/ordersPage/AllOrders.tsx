@@ -4,31 +4,11 @@ import { OrderCard } from './OrderCard';
 import { Order } from '../../../libs/types/order';
 import { OrderStatus } from '../../../libs/enums/order.enum';
 
-interface AllOrdersProps {
-	orders: Order[];
-	moveToProcess: (orderId: string) => void;
-	moveToFinished: (orderId: string) => void;
-}
-
-const EmptyState: React.FC = () => (
-	<Stack className="empty-orders">
-		<Typography variant="body1" className="pinterest-text-secondary">
-			You don't have any orders to display.
-		</Typography>
-	</Stack>
-);
-
-const AllOrders: React.FC<AllOrdersProps> = ({ orders, moveToProcess, moveToFinished }) => {
-	const ordersContainerRef = useRef<HTMLDivElement | null>(null);
-
-	if (orders.length === 0) {
-		return <EmptyState />;
-	}
-
-	const pausedOrders = orders.filter((order) => order.orderStatus === OrderStatus.PAUSED);
+export default function AllOrders() {
+	const orders = [];
 
 	return (
-		<Stack className="orders-container" ref={ordersContainerRef}>
+		<Stack className="orders-container">
 			{orders.map((order) => {
 				if (order.orderStatus === OrderStatus.PAUSED) {
 					return (
@@ -81,13 +61,13 @@ const AllOrders: React.FC<AllOrdersProps> = ({ orders, moveToProcess, moveToFini
 				return null;
 			})}
 
-			{pausedOrders.length === 0 && (
-				<Typography variant="body1" className="pinterest-text-secondary">
-					No paused orders to display.
-				</Typography>
+			{orders.length === 0 && (
+				<Stack className="empty-orders">
+					<Typography variant="body1" className="pinterest-text-secondary">
+						You don't have any orders to display.
+					</Typography>
+				</Stack>
 			)}
 		</Stack>
 	);
-};
-
-export default AllOrders;
+}

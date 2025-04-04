@@ -1,5 +1,6 @@
 import { OrderStatus } from '../enums/order.enum';
 import { ProductCategory, ProductGender } from '../enums/product.enum';
+import { Product, ProductVariant } from './product';
 
 export interface Order {
 	_id: string;
@@ -12,6 +13,11 @@ export interface Order {
 	orderTotalAmount: number;
 	createdAt: Date;
 	updatedAt: Date;
+
+	/** from aggregations */
+	orderItems: OrderItem[];
+	productData: Product[];
+	productVariants: ProductVariant[];
 }
 
 export interface OrderInput {
