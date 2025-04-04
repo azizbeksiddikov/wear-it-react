@@ -60,7 +60,6 @@ export default function Basket(props: BasketProps) {
 				orderTotalAmount: orderTotalAmount,
 			};
 
-			console.log('basketData', basketData);
 			await order.createOrder(basketData, 'SEOUL');
 
 			onDeleteAll();

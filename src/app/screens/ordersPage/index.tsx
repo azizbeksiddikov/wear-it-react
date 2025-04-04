@@ -76,7 +76,6 @@ export default function OrdersPage() {
 				setPausedOrders(paused);
 				setProcessOrders(processing);
 				setFinishedOrders(finished);
-				console.log('all orders', all);
 			})
 			.catch((err) => console.log('Error fetching orders:', err));
 	}, [orderInquiry, orderBuilder]);
