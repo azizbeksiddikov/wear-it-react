@@ -3,25 +3,22 @@ import Introduction from './Introduction';
 import FeaturedProducts from './FeaturedProducts';
 import SaleProducts from './SaleProducts';
 import Advertisement from './Advertisement';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Dispatch } from '@reduxjs/toolkit';
-import { createSelector } from 'reselect';
 import { setFeaturedProducts, setSaleProducts } from './slice';
-import { retrieveFeaturedProducts, retrieveSaleProducts } from './selector';
 import { Product, Products } from '../../../libs/types/product';
 import ProductService from '../../services/ProductServices';
-import '../../../css/homePage/home.css';
 import { Direction } from '../../../libs/enums/common.enum';
+import '../../../css/homePage/home.css';
 
 /** Redux slice & selector */
 const actionDispatch = (dispatch: Dispatch) => ({
 	setFeaturedProducts: (data: Product[]) => dispatch(setFeaturedProducts(data)),
+	setSaleProducts: (data: Product[]) => dispatch(setSaleProducts(data)),
 });
-const popularDishesRetriever = createSelector(retrieveFeaturedProducts, (featuredProducts) => ({ featuredProducts }));
 
 export default function HomePage() {
-	const { setFeaturedProducts } = actionDispatch(useDispatch());
-	const { featuredProducts } = useSelector(popularDishesRetriever);
+	const { setFeaturedProducts, setSaleProducts } = actionDispatch(useDispatch());
 
 	useEffect(() => {
 		const product = new ProductService();
@@ -33,8 +30,19 @@ export default function HomePage() {
 				isFeatured: true,
 			})
 			.then((data: Products) => {
-				const featuredProductsList = data.list;
-				setFeaturedProducts(featuredProductsList);
+				setFeaturedProducts(data.list);
+			})
+			.catch((err) => console.log(err));
+
+		product
+			.getProducts({
+				page: 1,
+				limit: 4,
+				direction: Direction.DESC,
+				onSale: true,
+			})
+			.then((data: Products) => {
+				setSaleProducts(data.list);
 			})
 			.catch((err) => console.log(err));
 	}, []);
