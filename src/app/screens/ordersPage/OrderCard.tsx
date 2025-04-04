@@ -6,15 +6,14 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import moment from 'moment';
 import { Order } from '../../../libs/types/order';
 import { OrderStatus } from '../../../libs/enums/order.enum';
-import { Link } from 'react-router-dom';
 
 interface OrderCardProps {
 	order: Order;
 	actionButton?: JSX.Element;
-	onViewDetails?: (orderId: string) => void;
 }
 
-export const OrderCard: React.FC<OrderCardProps> = ({ order, actionButton, onViewDetails }) => {
+export default function OrderCard(props: OrderCardProps) {
+	const { order, actionButton } = props;
 	const status: OrderStatus = order.orderStatus;
 
 	const statusIcons = {
@@ -39,12 +38,6 @@ export const OrderCard: React.FC<OrderCardProps> = ({ order, actionButton, onVie
 		PROCESSING: '#1e40af', // blue-800
 		PAUSED: '#92400e', // amber-800
 		FINISHED: '#065f46', // green-800
-	};
-
-	const handleViewDetails = () => {
-		if (onViewDetails) {
-			onViewDetails(order._id);
-		}
 	};
 
 	return (
@@ -88,7 +81,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({ order, actionButton, onVie
 			{/* Card Content */}
 			<CardContent className="card-content" sx={{ p: 3 }}>
 				<Stack spacing={2}>
-					{order.items.map((item) => (
+					{order.orderItems.map((item) => (
 						<Stack key={item._id} direction="row" spacing={2} alignItems="center" className="order-item-row">
 							<Box
 								className="item-image-container"
@@ -130,7 +123,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({ order, actionButton, onVie
 					spacing={2}
 				>
 					<Typography variant="body2" className="pinterest-text-secondary" sx={{ mb: { xs: 2, sm: 0 } }}>
-						{order.items.reduce((acc, item) => acc + item.itemQuantity, 0)} items
+						{order.orderItems.reduce((acc, item) => acc + item.itemQuantity, 0)} items
 					</Typography>
 
 					<Stack direction="row" spacing={2} alignItems="center">
@@ -146,4 +139,4 @@ export const OrderCard: React.FC<OrderCardProps> = ({ order, actionButton, onVie
 			</Box>
 		</Card>
 	);
-};
+}

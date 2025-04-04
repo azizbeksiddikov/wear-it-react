@@ -55,14 +55,14 @@ export default function Basket(props: BasketProps) {
 			const order = new OrderService();
 
 			const basketData: BasketData = {
-				cartItems: cartItems,
+				orderItems: cartItems,
 				orderSubTotal: orderSubTotal,
 				orderShippingCost: orderShippingCost,
 				orderTotalAmount: orderTotalAmount,
 			};
 
 			console.log('basketData', basketData);
-			// await order.createOrder(basketData, 'SEOUL');
+			await order.createOrder(basketData, 'SEOUL');
 
 			onDeleteAll();
 			history.push('/orders');

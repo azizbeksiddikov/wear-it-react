@@ -16,7 +16,7 @@ export interface CartItem {
 }
 
 export interface BasketData {
-	cartItems: CartItem[];
+	orderItems: CartItem[];
 	orderSubTotal: number;
 	orderShippingCost: number;
 	orderTotalAmount: number;

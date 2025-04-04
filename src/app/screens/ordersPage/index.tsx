@@ -1,20 +1,20 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Container, Typography, Stack } from '@mui/material';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import { useState, SyntheticEvent } from 'react';
 import TabPanel from '@mui/lab/TabPanel';
-import { Order } from '../../../libs/types/order';
+import { Order, OrderInquiry } from '../../../libs/types/order';
 import { OrderStatus } from '../../../libs/enums/order.enum';
 import PausedOrders from './PausedOrders';
 import ProcessOrders from './ProcessOrders';
 import FinishedOrders from './FinishedOrders';
-import { ProductCategory, ProductGender } from '../../../libs/enums/product.enum';
 import AllOrders from './AllOrders';
 import { useDispatch } from 'react-redux';
 import { Dispatch } from '@reduxjs/toolkit';
 import { setPausedOrders, setProcessOrders, setFinishedOrders, setAllOrders } from './slice';
+import OrderService from '../../services/OrderService';
 import '../../../css/orders.css';
 
 /** redux slice & selector */
@@ -29,8 +29,52 @@ export default function OrdersPage() {
 	const { setAllOrders, setPausedOrders, setProcessOrders, setFinishedOrders } = actionDispatch(useDispatch());
 
 	const [value, setValue] = useState<string>(OrderStatus.PAUSED);
+	const [orderInquiry, setOrderInquiry] = useState<OrderInquiry>({
+		page: 1,
+		limit: 8,
+		orderStatus: OrderStatus.PAUSED,
+	});
 
-	// Handle tab change
+	useEffect(() => {
+		const order = new OrderService();
+		// Get All Orders
+		order
+			.getMyOrders({
+				...orderInquiry,
+				orderStatus: undefined,
+			})
+			.then((data) => setAllOrders(data))
+			.catch((err) => console.log(err));
+
+		// Get Paused Orders
+		order
+			.getMyOrders({
+				...orderInquiry,
+				orderStatus: OrderStatus.PAUSED,
+			})
+			.then((data) => setPausedOrders(data))
+			.catch((err) => console.log(err));
+
+		// Get Processing Orders
+		order
+			.getMyOrders({
+				...orderInquiry,
+				orderStatus: OrderStatus.PROCESSING,
+			})
+			.then((data) => setProcessOrders(data))
+			.catch((err) => console.log(err));
+
+		// Get Finished Orders
+		order
+			.getMyOrders({
+				...orderInquiry,
+				orderStatus: OrderStatus.FINISHED,
+			})
+			.then((data) => setFinishedOrders(data))
+			.catch((err) => console.log(err));
+	}, [orderInquiry]);
+
+	/** HANDLERS */
 	const handleChange = (event: SyntheticEvent, newValue: string) => {
 		setValue(newValue);
 	};

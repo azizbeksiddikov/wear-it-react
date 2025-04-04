@@ -1,8 +1,7 @@
 import axios from 'axios';
 import { serverApi } from '../../libs/config';
-import { BasketData, CartItem } from '../../libs/types/search';
+import { BasketData } from '../../libs/types/search';
 import { Order, OrderInquiry } from '../../libs/types/order';
-import { T } from '../../libs/types/common';
 
 class OrderService {
 	private readonly path: string;

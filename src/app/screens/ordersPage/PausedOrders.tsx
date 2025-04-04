@@ -1,28 +1,25 @@
 import React from 'react';
 import { Box, Typography, Button, Stack } from '@mui/material';
-import { OrderCard } from './OrderCard';
-import { Order } from '../../../libs/types/order';
+import OrderCard from './OrderCard';
+import { useSelector } from 'react-redux';
+import { createSelector } from '@reduxjs/toolkit';
+import { retrieverPausedOrders } from './selector';
+
+const pausedOrdersRetriever = createSelector(retrieverPausedOrders, (pausedOrders) => ({ pausedOrders }));
 
 export default function PausedOrders() {
-	const orders = [];
+	const { pausedOrders } = useSelector(pausedOrdersRetriever);
 
 	return (
 		<>
 			<Stack className="orders-container">
-				{orders.map((order) => (
+				{pausedOrders.map((order) => (
 					<Box key={order._id} className="order-wrapper">
-						<OrderCard
-							order={order}
-							actionButton={
-								<Button variant="contained" className="pinterest-button action-btn process-btn" onClick={() => {}}>
-									Move to Processing
-								</Button>
-							}
-						/>
+						<OrderCard order={order} />
 					</Box>
 				))}
 
-				{orders.length === 0 && (
+				{pausedOrders.length === 0 && (
 					<Stack className="empty-orders">
 						<Typography variant="body1" className="pinterest-text-secondary">
 							You don't have any orders to display.
