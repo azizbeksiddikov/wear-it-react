@@ -1,19 +1,27 @@
 import React from 'react';
-import { Box, Typography, Card, CardContent, Stack, IconButton, Chip } from '@mui/material';
+import { Box, Typography, Card, CardContent, Stack, Chip, Button } from '@mui/material';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import DeleteIcon from '@mui/icons-material/Delete';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import DoneIcon from '@mui/icons-material/Done';
 import moment from 'moment';
 import { Order } from '../../../libs/types/order';
 import { OrderStatus } from '../../../libs/enums/order.enum';
+import { T } from '../../../libs/types/common';
 
 interface OrderCardProps {
 	order: Order;
-	actionButton?: JSX.Element;
+	deleteOrderHandler?: (e: T) => {};
+	processOrderHandler?: (e: T) => {};
+	cancelOrderHandler?: (e: T) => {};
+	finishOrderHandler?: (e: T) => {};
 }
 
 export default function OrderCard(props: OrderCardProps) {
-	const { order, actionButton } = props;
+	const { order, deleteOrderHandler, processOrderHandler, cancelOrderHandler, finishOrderHandler } = props;
+
 	const status: OrderStatus = order.orderStatus;
 
 	const statusIcons = {
@@ -38,6 +46,88 @@ export default function OrderCard(props: OrderCardProps) {
 		PROCESSING: '#1e40af', // blue-800
 		PAUSED: '#92400e', // amber-800
 		FINISHED: '#065f46', // green-800
+		DELETE: '#dc2626', // red-600
+	};
+
+	// Render action buttons based on order status
+	const renderActionButtons = () => {
+		switch (status) {
+			case OrderStatus.PAUSED:
+				return (
+					<Stack direction="row" spacing={1}>
+						{processOrderHandler && (
+							<Button
+								size="small"
+								variant="outlined"
+								startIcon={<PlayArrowIcon />}
+								value={order._id}
+								onClick={processOrderHandler}
+								sx={{ color: statusTextColors.PROCESSING, borderColor: statusTextColors.PROCESSING }}
+							>
+								Process
+							</Button>
+						)}
+						{deleteOrderHandler && (
+							<Button
+								size="small"
+								variant="outlined"
+								startIcon={<DeleteIcon />}
+								value={order._id}
+								onClick={deleteOrderHandler}
+								sx={{ color: statusTextColors.DELETE, borderColor: statusTextColors.DELETE }}
+							>
+								Delete
+							</Button>
+						)}
+					</Stack>
+				);
+			case OrderStatus.PROCESSING:
+				return (
+					<Stack direction="row" spacing={1}>
+						{finishOrderHandler && (
+							<Button
+								size="small"
+								variant="outlined"
+								startIcon={<DoneIcon />}
+								value={order._id}
+								onClick={finishOrderHandler}
+								sx={{ color: statusTextColors.FINISHED, borderColor: statusTextColors.FINISHED }}
+							>
+								Finish
+							</Button>
+						)}
+						{cancelOrderHandler && (
+							<Button
+								size="small"
+								variant="outlined"
+								startIcon={<DeleteIcon />}
+								value={order._id}
+								onClick={cancelOrderHandler}
+								sx={{ color: statusTextColors.DELETE, borderColor: statusTextColors.DELETE }}
+							>
+								Cancel
+							</Button>
+						)}
+					</Stack>
+				);
+			case OrderStatus.FINISHED:
+				return (
+					<Stack direction="row" spacing={1}>
+						<Button
+							size="small"
+							variant="outlined"
+							startIcon={<DeleteIcon />}
+							value={order._id}
+							onClick={deleteOrderHandler}
+							sx={{ color: statusTextColors.DELETE, borderColor: statusTextColors.DELETE }}
+						>
+							Delete
+						</Button>
+					</Stack>
+				);
+			default:
+				return null;
+		}
 	};
 
 	return (
@@ -127,7 +217,7 @@ export default function OrderCard(props: OrderCardProps) {
 					</Typography>
 
 					<Stack direction="row" spacing={2} alignItems="center">
-						{actionButton && <div className="action-button-container">{actionButton}</div>}
+						{renderActionButtons()}
 
 						<Box sx={{ textAlign: 'right' }}>
 							<Typography variant="h6" className="pinterest-text-title">

@@ -4,31 +4,33 @@ import OrderCard from './OrderCard';
 import { useSelector } from 'react-redux';
 import { createSelector } from '@reduxjs/toolkit';
 import { retrieveAllOrders } from './selector';
-import { useGlobals } from '../../hooks/useGlobals';
-import { sweetErrorHandling } from '../../../libs/sweetAlert';
-import { OrderStatus } from '../../../libs/enums/order.enum';
-import OrderService from '../../services/OrderService';
-import { Messages } from '../../../libs/config';
 import { T } from '../../../libs/types/common';
-import { OrderUpdateInput } from '../../../libs/types/order';
 
 const allOrdersRetriever = createSelector(retrieveAllOrders, (allOrders) => ({ allOrders }));
 
 interface ProcessedOrdersProps {
-	setValue: (input: string) => void;
+	deleteOrderHandler: (e: T) => {};
+	processOrderHandler: (e: T) => {};
+	cancelOrderHandler: (e: T) => {};
+	finishOrderHandler: (e: T) => {};
 }
 
 export default function AllOrders(props: ProcessedOrdersProps) {
 	const { allOrders } = useSelector(allOrdersRetriever);
-	const { authMember, setOrderBuilder } = useGlobals();
-	const { setValue } = props;
+	const { deleteOrderHandler, processOrderHandler, cancelOrderHandler, finishOrderHandler } = props;
 
 	return (
 		<>
 			<Stack className="orders-container">
 				{allOrders.map((order) => (
 					<Box key={order._id} className={'order-wrapper pinterest-card'}>
-						<OrderCard order={order} />
+						<OrderCard
+							order={order}
+							deleteOrderHandler={deleteOrderHandler}
+							processOrderHandler={processOrderHandler}
+							cancelOrderHandler={cancelOrderHandler}
+							finishOrderHandler={finishOrderHandler}
+						/>
 					</Box>
 				))}
 			</Stack>
