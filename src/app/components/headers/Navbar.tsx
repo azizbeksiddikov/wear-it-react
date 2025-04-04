@@ -5,7 +5,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import LoginIcon from '@mui/icons-material/Login';
 import Basket from './Basket';
 import { CartItem } from '../../../libs/types/search';
-import { Box, Button, Container, IconButton } from '@mui/material';
+import { Avatar, Box, Button, Container, IconButton } from '@mui/material';
 import { useGlobals } from '../../hooks/useGlobals';
 import MemberService from '../../services/MemberService';
 import { sweetErrorHandling, sweetTopSuccessAlert } from '../../../libs/sweetAlert';
@@ -64,7 +64,15 @@ export default function Navbar(props: NavbarProps) {
 								onDeleteAll={onDeleteAll}
 							/>
 							<NavLink to="/my-page">
-								<IconButton>{authMember?.memberImage ? authMember.memberImage : <PersonIcon />}</IconButton>
+								<IconButton>
+									{authMember?.memberImage ? (
+										<Avatar src={authMember.memberImage} alt={authMember.memberFullName || 'Profile'} />
+									) : (
+										<Avatar>
+											<PersonIcon />
+										</Avatar>
+									)}
+								</IconButton>
 							</NavLink>
 							<Button variant="outlined" startIcon={<LogoutIcon />} onClick={handleLogoutRequest}>
 								Logout

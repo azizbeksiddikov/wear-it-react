@@ -58,13 +58,13 @@ class MemberService {
 	public async update(input: MemberUpdateInput): Promise<Member> {
 		try {
 			const formData = new FormData();
-			formData.append('memberEmail', input.memberEmail || '');
-			formData.append('memberPhone', input.memberPhone || '');
-			formData.append('memberPassword', input.memberPassword || '');
-			formData.append('memberFullName', input.memberFullName || '');
-			formData.append('memberAddress', input.memberAddress || '');
-			formData.append('memberDesc', input.memberDesc || '');
-			formData.append('memberImage', input.memberImage || '');
+			if (input.memberEmail) formData.append('memberEmail', input.memberEmail);
+			if (input.memberPhone) formData.append('memberPhone', input.memberPhone);
+			if (input.memberFullName) formData.append('memberFullName', input.memberFullName);
+			if (input.memberAddress) formData.append('memberAddress', input.memberAddress);
+			if (input.memberDesc) formData.append('memberDesc', input.memberDesc);
+			if (input.memberImage) formData.append('memberImage', input.memberImage);
+			if (input.memberPoints) formData.append('memberPoints', input.memberPoints.toString());
 
 			const url = `${this.path}/member/update`;
 			const result = await axios(url, {
