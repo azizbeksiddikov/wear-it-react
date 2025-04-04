@@ -1,5 +1,5 @@
-import React from 'react';
-import { Switch, Route, useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Switch, Route } from 'react-router-dom';
 import Navbar from './components/headers/Navbar';
 import HomePage from './screens/homePage';
 import HelpPage from './screens/helpPage';
@@ -8,22 +8,25 @@ import ProductsPage from './screens/productsPage';
 import UserPage from './screens/userPage';
 import Footer from './components/footer';
 import useBasket from './hooks/useBasket';
-
+import AuthenticationModal from './components/auth';
 import '../css/app.css';
 
 function App() {
 	const { cartItems, onAdd, onRemove, onDelete, onDeleteAll } = useBasket();
+	const [signupOpen, setSignupOpen] = useState(false);
+	const [loginOpen, setLoginOpen] = useState(true);
 
+	/** Handlers */
+	const handleSignUpClose = () => setSignupOpen(false);
+	const handleLoginClose = () => setLoginOpen(false);
 	return (
-		<div>
+		<>
 			{/* Header */}
 			<Navbar cartItems={cartItems} onAdd={onAdd} onRemove={onRemove} onDelete={onDelete} onDeleteAll={onDeleteAll} />
-
 			{/* Main content */}
 			<Switch>
 				<Route exact path="/" component={HomePage} />
 				<Route path="/help" component={HelpPage} />
-				{/* <Route path="/products" component={ProductsPage} /> */}
 				<Route path="/products">
 					<ProductsPage
 						cartItems={cartItems}
@@ -36,10 +39,16 @@ function App() {
 				<Route path="/orders" component={OrdersPage} />
 				<Route path="/my-page" component={UserPage} />
 			</Switch>
-
 			{/* Footer */}
 			<Footer />
-		</div>
+
+			<AuthenticationModal
+				signupOpen={signupOpen}
+				loginOpen={loginOpen}
+				handleSignupClose={handleSignUpClose}
+				handleLoginClose={handleLoginClose}
+			/>
+		</>
 	);
 }
 
