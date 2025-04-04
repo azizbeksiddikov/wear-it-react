@@ -1,4 +1,6 @@
 import { ProductCategory, ProductGender } from '../enums/product.enum';
+import { Direction } from '../enums/common.enum';
+import { Review } from './review';
 
 export interface Product {
 	_id: string;
@@ -6,23 +8,35 @@ export interface Product {
 	productCategory: ProductCategory;
 	productGender: ProductGender;
 	productDesc?: string;
-	productImages?: string[];
+	productImages: string[];
 	isActive: boolean;
 	isFeatured: boolean;
 	onSale: boolean;
+	productViews: number;
 	createdAt: Date;
 	updatedAt: Date;
+	reviewsCount: number;
+	reviewsRating: number;
 
 	productVariants?: ProductVariant[];
+	productReviews?: Review[];
+}
+
+export interface ProductInput {
+	productName: string;
+	productCategory: ProductCategory;
+	productGender: ProductGender;
+	productDesc?: string;
+	productImages: string[];
 }
 
 export interface ProductVariant {
 	_id: string;
-	productId: string; // Product
+	productId: string;
 	size: string;
 	color: string;
-	stockQuantity: number;
 	productPrice: number;
+	stockQuantity: number;
 	salePrice?: number;
 	createdAt: Date;
 	updatedAt: Date;
@@ -37,58 +51,22 @@ export interface ProductVariantInput {
 	salePrice?: number;
 }
 
-export interface ProductVariantUpdate {
-	_id: string;
-	size?: string;
-	color?: string;
-	stockQuantity?: number;
-	productPrice?: number;
-	salePrice?: number;
-}
-
-export interface ProductInput {
-	productName: string;
-	productCategory: ProductCategory;
-	productGender: ProductGender;
-	productDesc?: string;
-	productImages?: string[];
-}
-
-export interface ProductUpdateInput {
-	_id: string;
-	productName?: string;
-	productCategory?: ProductCategory;
-	productGender?: ProductGender;
-	productDesc?: string;
-	productImages?: string[];
-	isActive?: boolean;
-	isFeatured?: boolean;
-	onSale?: boolean;
-}
-
 export interface ProductInquiry {
-	// Pagination
 	page: number;
 	limit: number;
-
-	// Sorting
-	sort: 'createdAt' | 'productName' | 'productPrice' | 'popularity' | 'rating';
-	order: 'ASC' | 'DESC';
-
-	// Filters
-	productCategory?: ProductCategory | ProductCategory[];
-	productGender?: ProductGender | ProductGender[];
-	isActive?: boolean;
+	direction: Direction;
+	productCategory?: ProductCategory;
+	productGender?: ProductGender;
 	isFeatured?: boolean;
 	onSale?: boolean;
-
-	// Price range
-	minPrice?: number;
-	maxPrice?: number;
-
-	// In stock only
-	inStock?: boolean;
-
-	// Text search
 	search?: string;
+}
+
+export interface TotalCounter {
+	total?: number;
+}
+
+export interface Products {
+	list: Products[];
+	count: TotalCounter;
 }

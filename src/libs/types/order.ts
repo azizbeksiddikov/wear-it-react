@@ -12,26 +12,25 @@ export interface Order {
 	orderTotalAmount: number;
 	createdAt: Date;
 	updatedAt: Date;
-	items?: OrderItem[];
 }
 
 export interface OrderInput {
 	memberId: string;
-	orderDate?: Date;
-	orderStatus?: OrderStatus;
 	orderShippingAddress: string;
 	orderSubTotal: number;
 	orderShippingCost: number;
-	orderTotalAmount?: number;
+	orderTotalAmount: number;
+
+	orderItems: OrderItemInput[];
 }
 
-export interface OrderUpdate {
+export interface OrderUpdateInput {
 	_id: string;
 	orderStatus?: OrderStatus;
-	orderShippingAddress?: string;
-	orderSubTotal?: number;
-	orderShippingCost?: number;
-	orderTotalAmount?: number;
+	// orderShippingAddress?: string;
+	// orderSubTotal?: number;
+	// orderShippingCost?: number;
+	// orderTotalAmount?: number;
 }
 
 export interface OrderItem {
@@ -40,23 +39,36 @@ export interface OrderItem {
 	productId: string;
 	variantId: string;
 	productName: string;
-	itemQuantity: number;
-	itemUnitPrice: number;
 	productCategory: ProductCategory;
 	productGender: ProductGender;
 	productImage: string;
-	size: string;
-	color: string;
+	productSize: string;
+	productColor: string;
+	itemUnitPrice: number;
+	salePrice?: number;
+	itemQuantity: number;
 	createdAt: Date;
 	updatedAt: Date;
 }
 
 export interface OrderItemInput {
-	orderId: string;
+	orderId?: string;
+
 	productId: string;
 	variantId: string;
-	itemQuantity: number;
+	productName: string;
+	productCategory: ProductCategory;
+	productGender: ProductGender;
+	productImage: string;
+	productSize: string;
+	productColor: string;
 	itemUnitPrice: number;
-	size: string;
-	color: string;
+	salePrice: number | null;
+	itemQuantity: number;
+}
+
+export interface OrderInquiry {
+	page: number;
+	limit: number;
+	orderStatus?: OrderStatus;
 }

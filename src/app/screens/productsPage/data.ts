@@ -139,4 +139,7 @@ export const chosenProduct: Product = {
 	isActive: true,
 	createdAt: new Date(),
 	updatedAt: new Date(),
+	productViews: 0,
+	reviewsCount: 0,
+	reviewsRating: 0,
 };
