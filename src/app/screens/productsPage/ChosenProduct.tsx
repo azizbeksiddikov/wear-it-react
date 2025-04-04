@@ -33,7 +33,7 @@ export default function ChosenProduct() {
 
 	const [selectedSize, setSelectedSize] = useState('');
 	const [selectedColor, setSelectedColor] = useState('');
-	const [selectedPrice, setSelectedPrice] = useState<number | undefined>();
+	const [selectedPrice, setSelectedPrice] = useState<number>();
 	const [quantity, setQuantity] = useState(1);
 	const [swiperIndex, setSwiperIndex] = useState(0);
 	const history = useHistory();
@@ -244,11 +244,11 @@ export default function ChosenProduct() {
 									(variant) => variant.size === selectedSize && variant.color === selectedColor,
 								)?.salePrice ? (
 									<>
-										<span className="sale-price">${selectedPrice}</span>
-										<span className="original-price">${chosenProduct.productVariants[0].productPrice}</span>
+										<span className="sale-price">${selectedPrice * quantity}</span>
+										<span className="original-price">${chosenProduct.productVariants[0].productPrice * quantity}</span>
 									</>
 								) : (
-									<span>${selectedPrice}</span>
+									<span>${selectedPrice * quantity}</span>
 								)}
 							</div>
 						)}

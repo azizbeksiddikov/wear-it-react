@@ -79,7 +79,7 @@ export default function Footer() {
 												<Link to="/products?category=tops">Tops</Link>
 											</li>
 											<li>
-												<Link to="/products?category=bottoms">Bottoms</Link>
+												<Link to="/products?category=other">Other</Link>
 											</li>
 										</ul>
 									</Grid>

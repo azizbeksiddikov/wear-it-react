@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useEffect, ChangeEvent } from 'react';
 import {
 	Box,
 	Button,
@@ -18,8 +18,10 @@ import {
 	Pagination,
 	Stack,
 	Divider,
+	FormGroup,
+	FormControlLabel,
+	Checkbox,
 } from '@mui/material';
-import { Link } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
 import { ProductCategory, ProductGender } from '../../../libs/enums/product.enum';
 import { useDispatch, useSelector } from 'react-redux';
@@ -28,9 +30,10 @@ import { setProducts } from './slice';
 import { createSelector } from 'reselect';
 import { retrieveProducts } from './selector';
 import ProductService from '../../services/ProductServices';
-import { ProductsOutput } from '../../../libs/types/product';
+import { ProductInquiry, ProductsOutput } from '../../../libs/types/product';
 import { Direction } from '../../../libs/enums/common.enum';
 import '../../../css/productsPage/products.css';
+import { Link, useLocation, useHistory } from 'react-router-dom';
 
 const actionDispatch = (dispatch: Dispatch) => ({
 	setProducts: (data: ProductsOutput) => dispatch(setProducts(data)),
@@ -39,70 +42,174 @@ const productsRetriever = createSelector(retrieveProducts, (products) => ({
 	products,
 }));
 
-// Categories and genders for filters
-const categories = Object.values(ProductCategory);
-const genders = Object.values(ProductGender);
+const categoriesOptions = ['All Categories', ...Object.values(ProductCategory)];
+const gendersOptions = ['All Genders', ...Object.values(ProductGender)];
 
 export default function Products() {
 	const { setProducts } = actionDispatch(useDispatch());
-
-	const [searchQuery, setSearchQuery] = useState('');
-	const [sortBy, setSortBy] = useState('new');
-	const [page, setPage] = useState(1);
-	const [selectedCategory, setSelectedCategory] = useState<string>('');
-	const [selectedGender, setSelectedGender] = useState<string>('');
-	const [productStatus, setProductStatus] = useState<string>('');
-	const [totalPages, setTotalPages] = useState(0);
-
 	const { products } = useSelector(productsRetriever);
+
+	const [productSearch, setProductSearch] = useState<ProductInquiry>({
+		page: 1,
+		limit: 6,
+		direction: Direction.DESC,
+		search: '',
+		isFeatured: false,
+		onSale: false,
+	});
+	const [searchText, setSearchText] = useState('');
+	const [totalPages, setTotalPages] = useState(1);
+	const [sortValue, setSortValue] = useState('new');
+	const location = useLocation();
+	const history = useHistory();
+	const getQueryParams = () => {
+		const searchParams = new URLSearchParams(location.search);
+		const params: Record<string, string> = {};
+
+		searchParams.forEach((value, key) => {
+			params[key] = value;
+		});
+
+		return params;
+	};
 
 	useEffect(() => {
 		const productService = new ProductService();
 		productService
-			.getProducts({
-				page: 1,
-				limit: 8,
-				direction: Direction.DESC,
-			})
+			.getProducts(productSearch)
 			.then((data) => {
 				setProducts(data);
 				const total = data.count[0]?.total ?? 0;
 				setTotalPages(Math.ceil(total / 8) || 1);
 			})
 			.catch((err) => console.log(err));
-	}, []);
+	}, [productSearch]);
+
+	useEffect(() => {
+		if (searchText === '') {
+			productSearch.search = '';
+			setProductSearch({ ...productSearch });
+		}
+	}, [searchText]);
+
+	// Add this useEffect to read URL parameters when component mounts
+	useEffect(() => {
+		const params = getQueryParams();
+
+		productSearch.page = 1;
+		productSearch.direction = Direction.DESC;
+		setSortValue('new');
+		productSearch.productCategory = undefined;
+		productSearch.productGender = undefined;
+		productSearch.isFeatured = false;
+		productSearch.onSale = false;
+		productSearch.search = '';
+
+		// Check for filters in the URL
+		if (params.isFeatured) {
+			productSearch.isFeatured = params.isFeatured === 'true';
+		}
+
+		if (params.onSale) {
+			productSearch.onSale = params.onSale === 'true';
+		}
+
+		if (params.category) {
+			productSearch.productCategory = params.category.toUpperCase() as ProductCategory;
+		}
+
+		if (params.gender) {
+			productSearch.productGender = params.gender.toUpperCase() as ProductGender;
+		}
+
+		if (params.search) {
+			const search = params.search || '';
+			productSearch.search = search;
+			setSearchText(search);
+		}
+
+		setProductSearch({ ...productSearch });
+	}, [location.search]);
 
 	// HANDLERS
-	const handleFilterChange = useCallback(
-		(filterSetter: React.Dispatch<React.SetStateAction<string>>) => (event: React.ChangeEvent<HTMLInputElement>) => {
-			const newValue = event.target.value;
-			filterSetter(newValue);
-			setPage(1);
-		},
-		[setPage],
-	);
-	const handleCategoryChange = useCallback(handleFilterChange(setSelectedCategory), [handleFilterChange]);
-	const handleGenderChange = useCallback(handleFilterChange(setSelectedGender), [handleFilterChange]);
-	const handleProductStatusChange = useCallback(handleFilterChange(setProductStatus), [handleFilterChange]);
-
-	const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
-		setPage(value);
-		window.scrollTo({
-			top: (document.querySelector('.products-grid-container')?.offsetTop as number) - 120,
-			behavior: 'smooth',
-		});
+	// const PaginationHandler = (e: ChangeEvent) => {
+	// 	productSearch.page = value;
+	// 	setProductSearch({ ...productSearch });
+	// 	window.scrollTo({
+	// 		top: (document.querySelector('.products-grid-container')?.offsetTop as number) - 120,
+	// 		behavior: 'smooth',
+	// 	});
+	// };
+	const PaginationHandler = (e: ChangeEvent, value: number) => {
+		productSearch.page = value;
+		setProductSearch({ ...productSearch });
 	};
 
-	const handleSearch = () => {
-		setPage(1);
+	const directionHandler = (value: string) => {
+		setSortValue(value);
+		if (value === 'new') {
+			productSearch.direction = Direction.DESC;
+		} else if (value === 'old') {
+			productSearch.direction = Direction.ASC;
+		}
+		productSearch.page = 1;
+		setProductSearch({ ...productSearch });
 	};
 
-	const clearAllFilters = () => {
-		setSelectedCategory('');
-		setSelectedGender('');
-		setProductStatus('');
-		setSearchQuery('');
-		setPage(1);
+	const categoryHandler = (value: string) => {
+		if (value === 'All Categories') {
+			productSearch.productCategory = undefined;
+		} else {
+			productSearch.productCategory = value as ProductCategory;
+		}
+		productSearch.page = 1;
+
+		setProductSearch({ ...productSearch });
+	};
+
+	const searchProductHandler = () => {
+		productSearch.page = 1;
+		productSearch.search = searchText;
+		productSearch.page = 1;
+
+		setProductSearch({ ...productSearch });
+	};
+
+	const genderProductHandler = (value: string) => {
+		if (value === 'All Genders') {
+			productSearch.productGender = undefined;
+		} else {
+			productSearch.productGender = value as ProductGender;
+		}
+		productSearch.page = 1;
+
+		setProductSearch({ ...productSearch });
+	};
+
+	const isFeaturedHandler = (value: boolean) => {
+		productSearch.isFeatured = value;
+		productSearch.page = 1;
+
+		setProductSearch({ ...productSearch });
+	};
+
+	const onSaledHandler = (value: boolean) => {
+		productSearch.onSale = value;
+		productSearch.page = 1;
+
+		setProductSearch({ ...productSearch });
+	};
+
+	const clearAllFiltersHandler = (e: ChangeEvent) => {
+		productSearch.page = 1;
+		productSearch.direction = Direction.DESC;
+		setSortValue('new');
+		productSearch.productCategory = undefined;
+		productSearch.productGender = undefined;
+		productSearch.isFeatured = false;
+		productSearch.onSale = false;
+		productSearch.search = '';
+		setProductSearch({ ...productSearch });
 	};
 
 	return (
@@ -123,12 +230,10 @@ export default function Products() {
 						<Stack className="search-container">
 							<TextField
 								placeholder="Search products..."
-								value={searchQuery}
-								onChange={(e) => setSearchQuery(e.target.value)}
-								onKeyPress={(event) => {
-									if (event.key === 'Enter') {
-										handleSearch();
-									}
+								value={searchText}
+								onChange={(e) => setSearchText(e.target.value)}
+								onKeyDown={(e) => {
+									if (e.key === 'Enter') searchProductHandler();
 								}}
 								InputProps={{
 									startAdornment: (
@@ -141,14 +246,14 @@ export default function Products() {
 								size="small"
 								className="search-input"
 							/>
-							<Button variant="contained" className="search-button" onClick={handleSearch}>
+							<Button variant="contained" className="search-button" onClick={searchProductHandler}>
 								Search
 							</Button>
 						</Stack>
 
 						<FormControl variant="outlined" size="small" className="sort-select">
 							<InputLabel>Sort by</InputLabel>
-							<Select value={sortBy} onChange={(e) => setSortBy(e.target.value as string)} label="Sort by">
+							<Select value={sortValue} onChange={(e) => directionHandler(e.target.value)} label="Sort by">
 								<MenuItem value="new">Newest</MenuItem>
 								<MenuItem value="old">Oldest</MenuItem>
 							</Select>
@@ -173,13 +278,13 @@ export default function Products() {
 								<Select
 									labelId="category-select-label"
 									id="category-select"
-									value={selectedCategory}
-									onChange={handleCategoryChange}
+									value={productSearch.productCategory ?? 'All Categories'}
+									onChange={(e) => {
+										categoryHandler(e.target.value);
+									}}
 									displayEmpty
-									renderValue={(selected) => (selected ? selected : 'All Categories')}
 								>
-									<MenuItem value="">All Categories</MenuItem>
-									{categories.map((category) => (
+									{categoriesOptions.map((category) => (
 										<MenuItem key={category} value={category}>
 											{category}
 										</MenuItem>
@@ -199,13 +304,13 @@ export default function Products() {
 								<Select
 									labelId="gender-select-label"
 									id="gender-select"
-									value={selectedGender}
-									onChange={handleGenderChange}
+									value={productSearch.productGender ?? 'All Genders'}
+									onChange={(e) => {
+										genderProductHandler(e.target.value);
+									}}
 									displayEmpty
-									renderValue={(selected) => (selected ? selected : 'All Genders')}
 								>
-									<MenuItem value="">All Genders</MenuItem>
-									{genders.map((gender) => (
+									{gendersOptions.map((gender) => (
 										<MenuItem key={gender} value={gender}>
 											{gender}
 										</MenuItem>
@@ -221,89 +326,93 @@ export default function Products() {
 							<Typography variant="subtitle1" className="filter-subheading">
 								Product Status
 							</Typography>
-							<FormControl fullWidth variant="outlined" size="small">
-								<Select
-									labelId="status-select-label"
-									id="status-select"
-									value={productStatus}
-									onChange={handleProductStatusChange}
-									displayEmpty
-									renderValue={(selected) => (selected ? selected : 'All Products')}
-								>
-									<MenuItem value="">All Products</MenuItem>
-									<MenuItem value="featured">Featured</MenuItem>
-									<MenuItem value="sale">Sale</MenuItem>
-								</Select>
-							</FormControl>
+							<FormGroup>
+								<FormControlLabel
+									control={
+										<Checkbox
+											checked={!!productSearch.isFeatured}
+											onChange={(e) => isFeaturedHandler(e.target.checked)}
+											name="isFeatured"
+										/>
+									}
+									label="Featured Products"
+								/>
+								<FormControlLabel
+									control={
+										<Checkbox
+											checked={!!productSearch.onSale}
+											onChange={(e) => onSaledHandler(e.target.checked)}
+											name="isSale"
+										/>
+									}
+									label="Sale Products"
+								/>
+							</FormGroup>
 						</Box>
 
 						{/* Clear All Filters Button */}
-						{(selectedCategory !== '' || selectedGender !== '' || productStatus !== '') && (
-							<Button variant="outlined" onClick={clearAllFilters} className="clear-filters-btn">
-								Clear All Filters
-							</Button>
-						)}
+						<Button variant="outlined" onClick={clearAllFiltersHandler} className="clear-filters-btn">
+							Clear All Filters
+						</Button>
 					</Grid>
 
 					{/* Products Grid with Pagination */}
-					<Grid item xs={12} md={9}>
-						<Box className="products-grid-container">
-							{products.list.length > 0 ? (
-								<>
-									<Grid container spacing={3} className="products-grid">
-										{products.list.map((product) => (
-											<Grid item xs={12} sm={6} lg={4} key={product._id}>
-												<Link to={`/products/${product._id}`} className="product-link">
-													<Card className="product-card">
-														{/* Product image with badges */}
-														<Box className="product-image-container">
-															<CardMedia
-																component="img"
-																image={product.productImages[0]}
-																alt={product.productName}
-																className="product-image"
-															/>
-															{product.isFeatured && <Chip label="Featured" className="featured-badge" />}
-															{product.onSale && <Chip label="Sale" className="sale-badge" />}
-														</Box>
+					<Stack className="products-container">
+						{products.list.length > 0 ? (
+							<>
+								<Grid container spacing={3} className="products-grid">
+									{products.list.map((product) => (
+										<Grid item xs={12} sm={6} lg={4} key={product._id}>
+											<Link to={`/products/${product._id}`} className="product-link">
+												<Card className="product-card">
+													{/* Product image with badges */}
+													<Box className="product-image-container">
+														<CardMedia
+															component="img"
+															image={product.productImages[0]}
+															alt={product.productName}
+															className="product-image"
+														/>
+														{product.isFeatured && <Chip label="Featured" className="featured-badge" />}
+														{product.onSale && <Chip label="Sale" className="sale-badge" />}
+													</Box>
 
-														{/* Product details */}
-														<CardContent className="product-card-content">
-															<Typography variant="body1" className="product-name">
-																{product.productName}
-															</Typography>
-															<Typography variant="body2" className="product-category">
-																{product.productCategory}
-															</Typography>
-														</CardContent>
-													</Card>
-												</Link>
-											</Grid>
-										))}
-									</Grid>
+													{/* Product details */}
+													<CardContent className="product-card-content">
+														<Typography variant="body1" className="product-name">
+															{product.productName}
+														</Typography>
+														<Typography variant="body2" className="product-category">
+															{product.productCategory}
+														</Typography>
+													</CardContent>
+												</Card>
+											</Link>
+										</Grid>
+									))}
+								</Grid>
 
-									{/* Pagination - Always shown regardless of page count */}
-									<Box className="pagination-container">
-										<Pagination
-											count={Math.max(totalPages, 1)}
-											page={page}
-											onChange={handlePageChange}
-											color="primary"
-											size="large"
-											className="pagination"
-										/>
-									</Box>
-								</>
-							) : (
-								<Box className="no-products">
-									<Typography variant="h6">No products found matching your criteria.</Typography>
-									<Button variant="outlined" onClick={clearAllFilters} className="reset-button">
-										Reset Filters
-									</Button>
+								{/* Pagination - Always shown regardless of page count */}
+								<Box className="pagination-container">
+									<Pagination
+										count={Math.max(totalPages, 1)}
+										page={productSearch.page}
+										onChange={PaginationHandler}
+										color="primary"
+										size="large"
+										className="pagination"
+									/>
 								</Box>
-							)}
-						</Box>
-					</Grid>
+							</>
+						) : (
+							<Box className="no-products">
+								<Typography variant="h6">No products found matching your criteria.</Typography>
+								<Button variant="outlined" onClick={clearAllFiltersHandler} className="reset-button">
+									Reset Filters
+								</Button>
+							</Box>
+						)}
+					</Stack>
 				</Stack>
 			</Container>
 		</div>

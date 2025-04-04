@@ -24,7 +24,7 @@ export default function SaleProducts() {
 						<Typography variant="body1">Special offers with amazing discounts</Typography>
 					</Stack>
 
-					<Link to="/products" className="view-all-link">
+					<Link to="/products?onSale=true" className="view-all-link">
 						<Button endIcon={<ArrowForwardIcon />}>View All</Button>
 					</Link>
 				</Stack>

@@ -24,7 +24,7 @@ export default function FeaturedProducts() {
 						<Typography variant="body1">Handpicked selections just for you</Typography>
 					</Stack>
 
-					<Link to="/products" className="view-all-link">
+					<Link to="/products?isFeatured=true" className="view-all-link">
 						<Button endIcon={<ArrowForwardIcon />}>View All</Button>
 					</Link>
 				</Stack>
