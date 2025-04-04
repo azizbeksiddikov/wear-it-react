@@ -8,8 +8,10 @@ import { Dispatch } from '@reduxjs/toolkit';
 import { createSelector } from 'reselect';
 import { setFeaturedProducts, setSaleProducts } from './slice';
 import { retrieveFeaturedProducts, retrieveSaleProducts } from './selector';
-import { Product } from '../../../libs/types/product';
+import { Product, Products } from '../../../libs/types/product';
+import ProductService from '../../services/ProductServices';
 import '../../../css/homePage/home.css';
+import { Direction } from '../../../libs/enums/common.enum';
 
 /** Redux slice & selector */
 const actionDispatch = (dispatch: Dispatch) => ({
@@ -21,7 +23,21 @@ export default function HomePage() {
 	const { setFeaturedProducts } = actionDispatch(useDispatch());
 	const { featuredProducts } = useSelector(popularDishesRetriever);
 
-	useEffect(() => {}, []);
+	useEffect(() => {
+		const product = new ProductService();
+		product
+			.getProducts({
+				page: 1,
+				limit: 4,
+				direction: Direction.DESC,
+				isFeatured: true,
+			})
+			.then((data: Products) => {
+				const featuredProductsList = data.list;
+				setFeaturedProducts(featuredProductsList);
+			})
+			.catch((err) => console.log(err));
+	}, []);
 
 	return (
 		<div className={'homepage'}>

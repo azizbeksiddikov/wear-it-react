@@ -1,4 +1,4 @@
-import { ProductInquiry, Product, Products } from '../../libs/types/product';
+import { ProductInquiry, Products } from '../../libs/types/product';
 import { serverApi } from '../../libs/config';
 import axios from 'axios';
 
@@ -17,9 +17,7 @@ class ProductService {
 			if (input.isFeatured) url += `&isFeatured=${input.isFeatured}`;
 			if (input.onSale) url += `&onSale=${input.onSale}`;
 			if (input.search) url += `&search=${input.search}`;
-
 			const result = await axios.get(url);
-			console.log('getProducts', result);
 			return result.data;
 		} catch (err) {
 			console.log('Error, getProducts', err);

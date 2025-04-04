@@ -13,19 +13,19 @@ const products = [
 		category: 'Tops',
 	},
 	{
-		id: 100,
+		id: 101,
 		name: 'Classic White T-shirt',
 		image: 'img/t-shirt.jpg',
 		category: 'Tops',
 	},
 	{
-		id: 100,
+		id: 102,
 		name: 'Classic White T-shirt',
 		image: 'img/t-shirt.jpg',
 		category: 'Tops',
 	},
 	{
-		id: 100,
+		id: 103,
 		name: 'Classic White T-shirt',
 		image: 'img/t-shirt.jpg',
 		category: 'Tops',
