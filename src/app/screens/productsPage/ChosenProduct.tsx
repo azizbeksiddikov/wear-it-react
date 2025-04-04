@@ -28,11 +28,10 @@ const actionDispatch = (dispatch: Dispatch) => ({
 const chosenProductRetriever = createSelector(retrieveChosenProduct, (chosenProduct) => ({ chosenProduct }));
 
 interface ChosenProductProps {
-	cartItems: CartItem[];
 	onAdd: (item: CartItem) => void;
 }
 export default function ChosenProduct(props: ChosenProductProps) {
-	const { cartItems, onAdd } = props;
+	const { onAdd } = props;
 
 	const { productId } = useParams<{ productId: string }>();
 	const { setChosenProduct } = actionDispatch(useDispatch());

@@ -1,21 +1,17 @@
 import React, { useState } from 'react';
-import { Box, Button, Container, Stack, Grid, Avatar, Typography, Paper, Chip, Tooltip, Fade } from '@mui/material';
-import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
+import { Box, Button, Container, Stack, Typography, Paper } from '@mui/material';
 import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
 import HomeIcon from '@mui/icons-material/Home';
 import DescriptionIcon from '@mui/icons-material/Description';
-import StarsIcon from '@mui/icons-material/Stars';
 import { useHistory } from 'react-router-dom';
 import { useGlobals } from '../../hooks/useGlobals';
-import { Member, MemberUpdateInput } from '../../../libs/types/member';
 import { sweetErrorHandling, sweetTopSmallSuccessAlert } from '../../../libs/sweetAlert';
-import { Messages, serverApi } from '../../../libs/config';
+import { Messages } from '../../../libs/config';
 import { T } from '../../../libs/types/common';
 import MemberService from '../../services/MemberService.ts';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import SaveIcon from '@mui/icons-material/Save';
-import AddIcon from '@mui/icons-material/Add';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import PersonIcon from '@mui/icons-material/Person';
 import '../../../css/user.css';
@@ -66,10 +62,11 @@ export default function UserPage() {
 		});
 	};
 
-	const memberPasswordHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-		memberUpdateInput.memberPassword = e.target.value;
-		setMemberUpdateInput({ ...memberUpdateInput });
-	};
+	// TODO: Reset password
+	// const memberPasswordHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+	// 	memberUpdateInput.memberPassword = e.target.value;
+	// 	setMemberUpdateInput({ ...memberUpdateInput });
+	// };
 
 	const memberFullNameHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
 		memberUpdateInput.memberFullName = e.target.value;

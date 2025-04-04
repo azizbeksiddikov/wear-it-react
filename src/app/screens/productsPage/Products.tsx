@@ -33,7 +33,7 @@ import ProductService from '../../services/ProductServices';
 import { ProductInquiry, ProductsOutput } from '../../../libs/types/product';
 import { Direction } from '../../../libs/enums/common.enum';
 import '../../../css/productsPage/products.css';
-import { Link, useLocation, useHistory } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 const actionDispatch = (dispatch: Dispatch) => ({
 	setProducts: (data: ProductsOutput) => dispatch(setProducts(data)),
@@ -61,7 +61,6 @@ export default function Products() {
 	const [totalPages, setTotalPages] = useState(1);
 	const [sortValue, setSortValue] = useState('new');
 	const location = useLocation();
-	const history = useHistory();
 	const getQueryParams = () => {
 		const searchParams = new URLSearchParams(location.search);
 		const params: Record<string, string> = {};

@@ -6,7 +6,7 @@ import Advertisement from './Advertisement';
 import { useDispatch } from 'react-redux';
 import { Dispatch } from '@reduxjs/toolkit';
 import { setFeaturedProducts, setSaleProducts } from './slice';
-import { Product, ProductsOutput } from '../../../libs/types/product';
+import { Product } from '../../../libs/types/product';
 import ProductService from '../../services/ProductServices';
 import { Direction } from '../../../libs/enums/common.enum';
 import '../../../css/homePage/home.css';

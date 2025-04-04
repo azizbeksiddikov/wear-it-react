@@ -14,13 +14,13 @@ interface ProductsPageProps {
 
 export default function ProductsPage(props: ProductsPageProps) {
 	const products = useRouteMatch();
-	const { cartItems, onAdd, onRemove, onDelete, onDeleteAll } = props;
+	const { onAdd } = props;
 
 	return (
 		<div className="products-page">
 			<Switch>
 				<Route path={`${products.path}/:productId`}>
-					<ChosenProduct cartItems={cartItems} onAdd={onAdd} />
+					<ChosenProduct onAdd={onAdd} />
 				</Route>
 				<Route path={`${products.path}/`}>
 					<Products />

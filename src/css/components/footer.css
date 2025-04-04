@@ -97,7 +97,7 @@
 }
 
 .footer .legal-links {
-	flex-direction: row !important;
+	flex-direction: row;
 	justify-content: center;
 	gap: 1.5rem;
 }
@@ -110,9 +110,9 @@
 /* Responsive styles */
 @media (min-width: 768px) {
 	.footer .copyright-content {
-		flex-direction: row !important;
-		justify-content: space-between !important;
-		align-items: center !important;
+		flex-direction: row;
+		justify-content: space-between;
+		align-items: center;
 	}
 
 	.footer .copyright-text {
