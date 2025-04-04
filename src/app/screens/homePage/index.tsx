@@ -22,27 +22,24 @@ export default function HomePage() {
 
 	useEffect(() => {
 		const product = new ProductService();
-		product
-			.getProducts({
+
+		Promise.all([
+			product.getProducts({
 				page: 1,
 				limit: 4,
 				direction: Direction.DESC,
 				isFeatured: true,
-			})
-			.then((data: Products) => {
-				setFeaturedProducts(data.list);
-			})
-			.catch((err) => console.log(err));
-
-		product
-			.getProducts({
+			}),
+			product.getProducts({
 				page: 1,
 				limit: 4,
 				direction: Direction.DESC,
 				onSale: true,
-			})
-			.then((data: Products) => {
-				setSaleProducts(data.list);
+			}),
+		])
+			.then(([featuredData, saleData]: [Products, Products]) => {
+				setFeaturedProducts(featuredData.list);
+				setSaleProducts(saleData.list);
 			})
 			.catch((err) => console.log(err));
 	}, []);
