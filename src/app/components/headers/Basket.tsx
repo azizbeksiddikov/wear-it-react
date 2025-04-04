@@ -8,12 +8,11 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useHistory } from 'react-router-dom';
 import { BasketData, CartItem } from '../../../libs/types/search';
 import DeletForeverIcon from '@mui/icons-material/DeleteForever';
-import '../../../css/components/basket.css';
-import { Messages, serverApi } from '../../../libs/config';
+import { Messages } from '../../../libs/config';
 import { sweetErrorHandling } from '../../../libs/sweetAlert';
 import { useGlobals } from '../../hooks/useGlobals';
 import OrderService from '../../services/OrderService';
-import { T } from '../../../libs/types/common';
+import '../../../css/components/basket.css';
 
 interface BasketProps {
 	cartItems: CartItem[];
@@ -24,7 +23,7 @@ interface BasketProps {
 }
 
 export default function Basket(props: BasketProps) {
-	const { authMember } = useGlobals();
+	const { authMember, setOrderBuilder } = useGlobals();
 	const { cartItems, onAdd, onRemove, onDelete, onDeleteAll } = props;
 	const history = useHistory();
 
@@ -65,6 +64,8 @@ export default function Basket(props: BasketProps) {
 			await order.createOrder(basketData, 'SEOUL');
 
 			onDeleteAll();
+			setOrderBuilder(new Date());
+
 			history.push('/orders');
 		} catch (err) {
 			console.log(err);

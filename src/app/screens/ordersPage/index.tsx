@@ -15,6 +15,7 @@ import { useDispatch } from 'react-redux';
 import { Dispatch } from '@reduxjs/toolkit';
 import { setPausedOrders, setProcessOrders, setFinishedOrders, setAllOrders } from './slice';
 import OrderService from '../../services/OrderService';
+import { useGlobals } from '../../hooks/useGlobals';
 import '../../../css/orders.css';
 
 /** redux slice & selector */
@@ -27,6 +28,7 @@ const actionDispatch = (dispatch: Dispatch) => ({
 
 export default function OrdersPage() {
 	const { setAllOrders, setPausedOrders, setProcessOrders, setFinishedOrders } = actionDispatch(useDispatch());
+	const { orderBuilder } = useGlobals();
 
 	const [value, setValue] = useState<string>(OrderStatus.PAUSED);
 	const [orderInquiry, setOrderInquiry] = useState<OrderInquiry>({
@@ -72,46 +74,12 @@ export default function OrdersPage() {
 			})
 			.then((data) => setFinishedOrders(data))
 			.catch((err) => console.log(err));
-	}, [orderInquiry]);
+	}, [orderInquiry, orderBuilder]);
 
 	/** HANDLERS */
 	const handleChange = (event: SyntheticEvent, newValue: string) => {
 		setValue(newValue);
 	};
-
-	// Move order from Paused to Process
-	// const moveToProcess = (orderId: string) => {
-	// 	const orderToMove = pausedOrders.find((order) => order._id === orderId);
-	// 	if (orderToMove) {
-	// 		const updatedOrder = {
-	// 			...orderToMove,
-	// 			orderStatus: OrderStatus.PROCESSING,
-	// 			updatedAt: new Date(),
-	// 		};
-	// 		setPausedOrders(pausedOrders.filter((order) => order._id !== orderId));
-	// 		setProcessOrders([...processOrders, updatedOrder]);
-
-	// 		// Switch to the Processing tab
-	// 		setValue(OrderStatus.PROCESSING);
-	// 	}
-	// };
-
-	// // Move order from Process to Finished
-	// const moveToFinished = (orderId: string) => {
-	// 	const orderToMove = processOrders.find((order) => order._id === orderId);
-	// 	if (orderToMove) {
-	// 		const updatedOrder = {
-	// 			...orderToMove,
-	// 			orderStatus: OrderStatus.FINISHED,
-	// 			updatedAt: new Date(),
-	// 		};
-	// 		setProcessOrders(processOrders.filter((order) => order._id !== orderId));
-	// 		setFinishedOrders([...finishedOrders, updatedOrder]);
-
-	// 		// Switch to the Finished tab
-	// 		setValue(OrderStatus.FINISHED);
-	// 	}
-	// };
 
 	return (
 		<div className="orders">
@@ -140,17 +108,17 @@ export default function OrdersPage() {
 
 					{/* ALL */}
 					<TabPanel value={'ALL'} className="order-tab-panel">
-						<AllOrders />
+						<AllOrders setValue={setValue} />
 					</TabPanel>
 
 					{/* PAUSED */}
 					<TabPanel value={OrderStatus.PAUSED} className="order-tab-panel">
-						<PausedOrders />
+						<PausedOrders setValue={setValue} />
 					</TabPanel>
 
 					{/* PROCESSING */}
 					<TabPanel value={OrderStatus.PROCESSING} className="order-tab-panel">
-						<ProcessOrders />
+						<ProcessOrders setValue={setValue} />
 					</TabPanel>
 
 					{/* FINISHED */}
