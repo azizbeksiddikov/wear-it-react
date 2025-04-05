@@ -1,28 +1,33 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
+import { useState, SyntheticEvent } from 'react';
+import { useQueries } from '@tanstack/react-query';
+import { useDispatch } from 'react-redux';
+import { Dispatch } from '@reduxjs/toolkit';
+import { setPausedOrders, setProcessOrders, setFinishedOrders, setAllOrders } from './slice';
+import { useGlobals } from '../../hooks/useGlobals';
+import { useHistory } from 'react-router-dom';
+
+import { T } from '../../../libs/types/common';
+import { Messages } from '../../../libs/config';
+import { sweetErrorHandling } from '../../../libs/sweetAlert';
+
 import { Container, Typography, Stack } from '@mui/material';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
-import { useState, SyntheticEvent } from 'react';
 import TabPanel from '@mui/lab/TabPanel';
-import { Order, OrderInquiry, OrderUpdateInput } from '../../../libs/types/order';
-import { OrderStatus } from '../../../libs/enums/order.enum';
+
 import PausedOrders from './PausedOrders';
 import ProcessOrders from './ProcessOrders';
 import FinishedOrders from './FinishedOrders';
 import AllOrders from './AllOrders';
-import { useDispatch } from 'react-redux';
-import { Dispatch } from '@reduxjs/toolkit';
-import { setPausedOrders, setProcessOrders, setFinishedOrders, setAllOrders } from './slice';
+
+import { Order, OrderInquiry, OrderUpdateInput } from '../../../libs/types/order';
+import { OrderStatus } from '../../../libs/enums/order.enum';
 import OrderService from '../../services/OrderService';
-import { useGlobals } from '../../hooks/useGlobals';
-import { useHistory } from 'react-router-dom';
-import { T } from '../../../libs/types/common';
-import { Messages } from '../../../libs/config';
-import { sweetErrorHandling } from '../../../libs/sweetAlert';
+
 import '../../../css/orders.css';
 
-/** redux slice & selector */
 const actionDispatch = (dispatch: Dispatch) => ({
 	setAllOrders: (data: Order[]) => dispatch(setAllOrders(data)),
 	setPausedOrders: (data: Order[]) => dispatch(setPausedOrders(data)),
@@ -37,39 +42,28 @@ export default function OrdersPage() {
 
 	const { setAllOrders, setPausedOrders, setProcessOrders, setFinishedOrders } = actionDispatch(useDispatch());
 
-	const [value, setValue] = useState<string>(OrderStatus.PAUSED);
-	const [orderInquiry, setOrderInquiry] = useState<OrderInquiry>({
-		page: 1,
-		limit: 10,
-		orderStatus: OrderStatus.PAUSED,
-	});
+	const [value, setValue] = useState<string>('ALL');
+
 	const orderService = new OrderService();
 
-	useEffect(() => {
-		// Helper function to fetch orders with specific status
-		const fetchOrders = (status?: OrderStatus) => {
-			const queryParams = {
-				...orderInquiry,
-				page: 1,
-				limit: 10,
-			};
-
-			// If we want all orders, remove the orderStatus property
-			if (!status) {
-				delete queryParams.orderStatus;
-			} else {
-				queryParams.orderStatus = status;
-			}
-
-			return orderService.getMyOrders(queryParams);
+	const fetchOrders = (status?: OrderStatus) => {
+		const queryParams: OrderInquiry = {
+			page: 1,
+			limit: 10,
 		};
+		if (status) queryParams.orderStatus = status;
 
-		// Fetch all order types in parallel
+		return orderService.getMyOrders(queryParams);
+	};
+
+	console.log('orderBuilder', orderBuilder);
+
+	useEffect(() => {
 		Promise.all([
-			fetchOrders(), // All orders
-			fetchOrders(OrderStatus.PAUSED), // Paused orders
-			fetchOrders(OrderStatus.PROCESSING), // Processing orders
-			fetchOrders(OrderStatus.FINISHED), // Finished orders
+			fetchOrders(),
+			fetchOrders(OrderStatus.PAUSED),
+			fetchOrders(OrderStatus.PROCESSING),
+			fetchOrders(OrderStatus.FINISHED),
 		])
 			.then(([all, paused, processing, finished]) => {
 				setAllOrders(all);
@@ -78,10 +72,9 @@ export default function OrdersPage() {
 				setFinishedOrders(finished);
 			})
 			.catch((err) => console.log('Error fetching orders:', err));
-	}, [orderInquiry, orderBuilder]);
+	}, [orderBuilder]);
 
 	/** HANDLERS */
-
 	const handleChange = (event: SyntheticEvent, newValue: string) => {
 		setValue(newValue);
 	};
@@ -112,6 +105,7 @@ export default function OrdersPage() {
 			if (!authMember) throw Error(Messages.error2);
 
 			const orderId = e.target.value;
+
 			const input: OrderUpdateInput = {
 				_id: orderId,
 				orderStatus: OrderStatus.PROCESSING,

@@ -283,6 +283,9 @@ export default function ChosenProduct(props: ChosenProductProps) {
 						<div className={'button-box'}>
 							<Button
 								onClick={() => {
+									if (chosenVariant.productPrice === 0) {
+										return;
+									}
 									onAdd({
 										productId: productId,
 										variantId: chosenVariant._id,

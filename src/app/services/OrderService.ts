@@ -30,13 +30,14 @@ class OrderService {
 	public async getMyOrders(input: OrderInquiry): Promise<Order[]> {
 		try {
 			axios.defaults.withCredentials = true;
+
 			const url = `${this.path}/order/all/`;
 			let query = `?page=${input.page}&limit=${input.limit}`;
 			if (input.orderStatus) {
 				query += `&orderStatus=${input.orderStatus}`;
 			}
-			const result = await axios.get(url + query);
 
+			const result = await axios.get(url + query);
 			return result.data;
 		} catch (err) {
 			console.log('Error, getMyOrders:', err);
