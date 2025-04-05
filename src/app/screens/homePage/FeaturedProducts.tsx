@@ -1,11 +1,13 @@
 import React from 'react';
-import { Box, Button, Container, Grid, Stack, Typography, Tooltip } from '@mui/material';
 import { Link } from 'react-router-dom';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import ReadMoreIcon from '@mui/icons-material/ReadMore';
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { retrieveFeaturedProducts } from './selector';
+
+import { Box, Button, Container, Grid, Stack, Typography, Tooltip } from '@mui/material';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import ReadMoreIcon from '@mui/icons-material/ReadMore';
+
 import '../../../css/homePage/featuredProducts.css';
 
 const FeaturedProductsRetriever = createSelector(retrieveFeaturedProducts, (featuredProducts) => ({

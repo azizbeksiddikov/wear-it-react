@@ -1,6 +1,8 @@
-import { Button, Typography } from '@mui/material';
 import React from 'react';
 import { NavLink } from 'react-router-dom';
+
+import { Button, Typography } from '@mui/material';
+
 import '../../../css/homePage/introduction.css';
 
 export default function Introduction() {
