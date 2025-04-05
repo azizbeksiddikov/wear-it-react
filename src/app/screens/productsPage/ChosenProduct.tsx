@@ -1,30 +1,35 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
+import { useParams, useHistory } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { useQuery } from '@tanstack/react-query';
+
+import { Dispatch } from '@reduxjs/toolkit';
+import { createSelector } from 'reselect';
+import { setChosenProduct } from './slice';
+import { retrieveChosenProduct } from './selector';
+
 import { Container, Stack, Box } from '@mui/material';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
-import Divider from '../../components/divider';
 import Button from '@mui/material/Button';
 import Rating from '@mui/material/Rating';
+import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
+
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { FreeMode, Navigation, Thumbs } from 'swiper';
 import 'swiper/css';
 import 'swiper/css/free-mode';
 import 'swiper/css/navigation';
 import 'swiper/css/thumbs';
-import { FreeMode, Navigation, Thumbs } from 'swiper';
-import { Dispatch } from '@reduxjs/toolkit';
-import { setChosenProduct } from './slice';
-import { Product, ProductVariant } from '../../../libs/types/product';
-import { useDispatch, useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
-import { retrieveChosenProduct } from './selector';
+
+import Divider from '../../components/divider';
 import ProductService from '../../services/ProductServices';
-import { useParams, useHistory } from 'react-router-dom';
+import { Product, ProductVariant } from '../../../libs/types/product';
 import { CartItem } from '../../../libs/types/search';
+
 import '../../../css/productsPage/chosenProduct.css';
 
 const actionDispatch = (dispatch: Dispatch) => ({
 	setChosenProduct: (data: Product) => dispatch(setChosenProduct(data)),
 });
-
 const chosenProductRetriever = createSelector(retrieveChosenProduct, (chosenProduct) => ({ chosenProduct }));
 
 interface ChosenProductProps {
@@ -32,87 +37,89 @@ interface ChosenProductProps {
 }
 export default function ChosenProduct(props: ChosenProductProps) {
 	const { onAdd } = props;
-
 	const { productId } = useParams<{ productId: string }>();
 	const { setChosenProduct } = actionDispatch(useDispatch());
-	const { chosenProduct }: { chosenProduct: Product | null } = useSelector(chosenProductRetriever);
-
-	const [chosenVariant, setChosenVariant] = useState<ProductVariant>();
-	const [selectedSize, setSelectedSize] = useState('');
-	const [selectedColor, setSelectedColor] = useState('');
-	const [selectedPrice, setSelectedPrice] = useState<number>();
-	const [quantity, setQuantity] = useState(1);
+	const { chosenProduct } = useSelector(chosenProductRetriever);
 	const [swiperIndex, setSwiperIndex] = useState(0);
-	const history = useHistory();
-
 	const swiperRef = useRef<any>(null);
+	const history = useHistory();
+	const productService = new ProductService();
 
-	useEffect(() => {
-		const productService = new ProductService();
-		productService
-			.getProductById(productId)
-			.then((data) => {
-				setChosenProduct(data);
-				if (!data.productVariants || data.productVariants.length === 0) {
-					history.push('/products');
-					return;
-				}
+	const [chosenVariant, setChosenVariant] = useState<ProductVariant>({
+		_id: '',
+		productId: '',
+		size: '',
+		color: '',
+		productPrice: 0,
+		stockQuantity: 0,
+		salePrice: undefined,
+		createdAt: new Date(),
+		updatedAt: new Date(),
+	});
+	const [quantity, setQuantity] = useState(1);
 
-				if (data.productVariants && data.productVariants.length > 0) {
-					const firstColor = data.productVariants[0].color;
-					setSelectedColor(firstColor);
+	useQuery({
+		queryKey: ['product', productId],
+		queryFn: async () => {
+			const data: Product = await productService.getProductById(productId);
 
-					// Calculate available sizes for this color directly from data
-					const sizesForFirstColor = [
-						...new Set(
-							data.productVariants.filter((variant) => variant.color === firstColor).map((variant) => variant.size),
-						),
-					];
-
-					if (sizesForFirstColor.length > 0) {
-						setSelectedSize(sizesForFirstColor[0]);
-						setChosenVariant(data.productVariants[0]);
-					}
-				}
-			})
-			.catch((err) => console.log(err));
-	}, []);
-
-	useEffect(() => {
-		if (!chosenProduct || !chosenProduct.productVariants || !chosenProduct.productVariants.length) return;
-
-		const selectedVariant = chosenProduct.productVariants.find(
-			(variant) => variant.size === selectedSize && variant.color === selectedColor,
-		);
-
-		if (selectedVariant) {
-			setChosenVariant(selectedVariant);
-
-			setSelectedPrice(selectedVariant.productPrice);
-			if (selectedVariant.salePrice) {
-				setSelectedPrice(selectedVariant.salePrice);
+			if (!data.productVariants || data.productVariants.length === 0) {
+				history.push('/products');
+				return null;
 			}
-		}
-	}, [selectedSize, selectedColor]);
+			setChosenProduct(data);
+			setChosenVariant(data.productVariants[0]);
+			return data;
+		},
+		retry: false,
+		staleTime: 1 * 60 * 1000,
+	});
 
-	if (!chosenProduct || !chosenProduct.productVariants || !chosenProduct.productVariants.length) return;
+	if (!chosenProduct || !chosenProduct.productVariants || !chosenProduct.productVariants.length || !chosenVariant)
+		return;
 
 	// Handlers
-	const handleSizeChange = (size: string) => {
-		setSelectedSize((prevSize) => (prevSize === size ? '' : size));
+	const sizeHandler = (size: string) => {
+		const newSize = chosenVariant.size === size ? '' : size;
+
+		if (newSize === '') {
+			setChosenVariant({ ...chosenVariant, size: newSize, productPrice: 0, salePrice: 0 });
+			return;
+		}
+
+		const newColor = chosenVariant.color === '' ? '' : chosenVariant.color;
+
+		if (newColor !== '' && availableColorsForSize.includes(newColor)) {
+			const newVariant = chosenProduct.productVariants.find(
+				(variant) => variant.size === newSize && variant.color === newColor,
+			);
+			if (newVariant) {
+				setChosenVariant(newVariant);
+			}
+		} else {
+			setChosenVariant({ ...chosenVariant, size: newSize, color: '', productPrice: 0, salePrice: 0 });
+		}
 	};
 
-	const handleColorChange = (color: string) => {
-		setSelectedColor((prevColor) => (prevColor === color ? '' : color));
-	};
+	const colorHandler = (color: string) => {
+		const newColor = chosenVariant.color === color ? '' : color;
 
-	const handleIncrementQuantity = () => {
-		setQuantity(quantity + 1);
-	};
+		if (newColor === '') {
+			setChosenVariant({ ...chosenVariant, color: newColor, productPrice: 0, salePrice: 0 });
+			return;
+		}
 
-	const handleDecrementQuantity = () => {
-		if (quantity > 0) {
-			setQuantity(quantity - 1);
+		const newSize = chosenVariant.size === '' ? '' : chosenVariant.size;
+
+		if (newSize !== '' && availableSizesForColor.includes(newSize)) {
+			const newVariant = chosenProduct.productVariants.find(
+				(variant) => variant.color === newColor && variant.size === newSize,
+			);
+			if (newVariant) {
+				setChosenVariant(newVariant);
+			}
+		} else {
+			setChosenVariant({ ...chosenVariant, color: newColor, size: newSize, productPrice: 0, salePrice: 0 });
 		}
 	};
 
@@ -121,22 +128,22 @@ export default function ChosenProduct(props: ChosenProductProps) {
 	const availableColors = [...new Set(chosenProduct.productVariants.map((variant) => variant.color))];
 
 	// Get available colors for the selected size
-	const availableColorsForSize = selectedSize
+	const availableColorsForSize = chosenVariant.size
 		? [
 				...new Set(
 					chosenProduct.productVariants
-						.filter((variant) => variant.size === selectedSize)
+						.filter((variant) => variant.size === chosenVariant.size)
 						.map((variant) => variant.color),
 				),
 		  ]
 		: availableColors;
 
 	// Get available sizes for the selected color
-	const availableSizesForColor = selectedColor
+	const availableSizesForColor = chosenVariant.color
 		? [
 				...new Set(
 					chosenProduct.productVariants
-						.filter((variant) => variant.color === selectedColor)
+						.filter((variant) => variant.color === chosenVariant.color)
 						.map((variant) => variant.size),
 				),
 		  ]
@@ -148,6 +155,15 @@ export default function ChosenProduct(props: ChosenProductProps) {
 		}
 	};
 
+	const incrementQuantityHandler = () => {
+		setQuantity(quantity + 1);
+	};
+
+	const decrementQuantityHandler = () => {
+		if (quantity > 0) {
+			setQuantity(quantity - 1);
+		}
+	};
 	return (
 		<div className={'chosen-product'}>
 			<Box className={'title'}>Product Detail</Box>
@@ -186,14 +202,14 @@ export default function ChosenProduct(props: ChosenProductProps) {
 
 				{/* Product Info */}
 				<Stack className={'chosen-product-info'}>
-					<Box className={'info-box'}>
-						<strong className={'product-name'}>{chosenProduct.productName}</strong>
-						<Box className={'category-box'}>
+					<Stack className={'info-box'}>
+						<Box className={'product-name'}>{chosenProduct.productName}</Box>
+						<Stack className={'category-box'}>
 							<span>{chosenProduct.productCategory}</span>
 							{chosenProduct.isFeatured && <span className="feature-badge">Featured</span>}
 							{chosenProduct.onSale && <span className="on-sale-badge">On Sale</span>}
-						</Box>
-						<Box className={'rating-box'}>
+						</Stack>
+						<Stack className={'rating-box'}>
 							<Rating name="half-rating" defaultValue={chosenProduct.reviewsRating ?? 0} precision={0.5} readOnly />
 							<div className={'evaluation-box'}>
 								<div className={'product-view'}>
@@ -201,65 +217,67 @@ export default function ChosenProduct(props: ChosenProductProps) {
 									<span>{chosenProduct.productViews ?? 0}</span>
 								</div>
 							</div>
-						</Box>
+						</Stack>
 						<p className={'product-desc'}>{chosenProduct.productDesc}</p>
 						{/* Size selection */}
-						<Box className={'size-options'}>
+						<Stack className={'size-options'}>
 							<span>Size:</span>
 							{availableSizes.map((size) => (
 								<Box
 									key={size}
-									className={`size-option ${selectedSize === size ? 'selected' : ''} ${
+									className={`size-option ${chosenVariant?.size === size ? 'selected' : ''} ${
 										!availableSizesForColor.includes(size) ? 'disabled' : ''
 									}`}
-									onClick={() => (!availableSizesForColor.includes(size) ? null : handleSizeChange(size))}
+									onClick={() => (!availableSizesForColor.includes(size) ? null : sizeHandler(size))}
 								>
 									{size}
 								</Box>
 							))}
-						</Box>
+						</Stack>
 
 						{/* Color selection */}
-						<Box className={'color-options'}>
+						<Stack className={'color-options'}>
 							<span>Color:</span>
 							{availableColors.map((color) => (
 								<Box
 									key={color}
-									className={`color-option ${selectedColor === color ? 'selected' : ''} ${
+									className={`color-option ${chosenVariant?.color === color ? 'selected' : ''} ${
 										!availableColorsForSize.includes(color) ? 'disabled' : ''
 									}`}
-									onClick={() => (!availableColorsForSize.includes(color) ? null : handleColorChange(color))}
+									onClick={() => (!availableColorsForSize.includes(color) ? null : colorHandler(color))}
 								>
 									{color}
 								</Box>
 							))}
-						</Box>
+						</Stack>
 						<Divider height="1" width="100%" bg="#000000" />
 						{/* Quantity selection */}
-						<Box className={'quantity-selector'}>
+						<Stack className={'quantity-selector'}>
 							<span>Quantity:</span>
-							<Button variant="outlined" className="quantity-button" onClick={handleDecrementQuantity}>
+							<Button variant="outlined" className="quantity-button" onClick={decrementQuantityHandler}>
 								-
 							</Button>
 							<span className="quantity-value">{quantity}</span>
-							<Button variant="outlined" className="quantity-button" onClick={handleIncrementQuantity}>
+							<Button variant="outlined" className="quantity-button" onClick={incrementQuantityHandler}>
 								+
 							</Button>
-						</Box>
-						{selectedSize && selectedColor && (
-							<div className={'product-price'}>
+						</Stack>
+
+						{/* Price display */}
+						{chosenVariant && (
+							<Stack className={'product-price'}>
 								<span>Price:</span>
-								{chosenProduct.productVariants.find(
-									(variant) => variant.size === selectedSize && variant.color === selectedColor,
-								)?.salePrice ? (
+								{chosenVariant?.salePrice && chosenVariant.salePrice !== 0 ? (
 									<>
-										<span className="sale-price">${selectedPrice * quantity}</span>
-										<span className="original-price">${chosenProduct.productVariants[0].productPrice * quantity}</span>
+										<span className="sale-price">${chosenVariant.salePrice * quantity}</span>
+										<span className="original-price">${chosenVariant?.productPrice * quantity}</span>
 									</>
+								) : chosenVariant?.productPrice && chosenVariant.productPrice !== 0 ? (
+									<span>${chosenVariant.productPrice * quantity}</span>
 								) : (
-									<span>${selectedPrice * quantity}</span>
+									<></>
 								)}
-							</div>
+							</Stack>
 						)}
 
 						<div className={'button-box'}>
@@ -278,6 +296,7 @@ export default function ChosenProduct(props: ChosenProductProps) {
 										salePrice: chosenVariant?.salePrice ?? null,
 										itemQuantity: quantity,
 									});
+									setQuantity(1);
 								}}
 								style={{ backgroundColor: '#4caf50', color: 'white' }}
 								variant="contained"
@@ -285,7 +304,7 @@ export default function ChosenProduct(props: ChosenProductProps) {
 								Add To Basket
 							</Button>
 						</div>
-					</Box>
+					</Stack>
 				</Stack>
 			</Container>
 		</div>

@@ -46,12 +46,11 @@ export interface ProductVariantInput {
 	productId: string;
 	size: string;
 	color: string;
-	stockQuantity: number;
 	productPrice: number;
 	salePrice?: number;
 }
 
-export interface ProductInquiry {
+export interface ProductsInquiry {
 	page: number;
 	limit: number;
 	direction: Direction;

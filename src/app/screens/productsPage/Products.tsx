@@ -1,4 +1,12 @@
 import React, { useState, useEffect, ChangeEvent } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+
+import { useDispatch, useSelector } from 'react-redux';
+import { Dispatch } from '@reduxjs/toolkit';
+import { createSelector } from 'reselect';
+import { setProducts } from './slice';
+import { retrieveProducts } from './selector';
+
 import {
 	Box,
 	Button,
@@ -23,17 +31,13 @@ import {
 	Checkbox,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import { ProductCategory, ProductGender } from '../../../libs/enums/product.enum';
-import { useDispatch, useSelector } from 'react-redux';
-import { Dispatch } from '@reduxjs/toolkit';
-import { setProducts } from './slice';
-import { createSelector } from 'reselect';
-import { retrieveProducts } from './selector';
+
 import ProductService from '../../services/ProductServices';
-import { ProductInquiry, ProductsOutput } from '../../../libs/types/product';
+import { ProductCategory, ProductGender } from '../../../libs/enums/product.enum';
+import { ProductsInquiry, ProductsOutput } from '../../../libs/types/product';
 import { Direction } from '../../../libs/enums/common.enum';
+
 import '../../../css/productsPage/products.css';
-import { Link, useLocation } from 'react-router-dom';
 
 const actionDispatch = (dispatch: Dispatch) => ({
 	setProducts: (data: ProductsOutput) => dispatch(setProducts(data)),
@@ -50,7 +54,7 @@ export default function Products() {
 	const { products } = useSelector(productsRetriever);
 	const [isInitialized, setIsInitialized] = useState(false);
 
-	const [productSearch, setProductSearch] = useState<ProductInquiry>({
+	const [productSearch, setProductSearch] = useState<ProductsInquiry>({
 		page: 1,
 		limit: 6,
 		direction: Direction.DESC,

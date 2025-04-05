@@ -1,4 +1,4 @@
-import { Product, ProductInquiry, ProductsOutput } from '../../libs/types/product';
+import { Product, ProductsInquiry, ProductsOutput } from '../../libs/types/product';
 import { serverApi } from '../../libs/config';
 import axios from 'axios';
 
@@ -9,7 +9,7 @@ class ProductService {
 		this.path = serverApi;
 	}
 
-	public async getProducts(input: ProductInquiry): Promise<ProductsOutput> {
+	public async getProducts(input: ProductsInquiry): Promise<ProductsOutput> {
 		try {
 			let url = `${this.path}/product/all?direction=${input.direction}&page=${input.page}&limit=${input.limit}`;
 			if (input.productCategory) url += `&productCategory=${input.productCategory}`;
@@ -18,7 +18,6 @@ class ProductService {
 			if (input.onSale) url += `&onSale=${input.onSale}`;
 			if (input.search) url += `&search=${input.search}`;
 			const result = await axios.get(url);
-
 			return result.data;
 		} catch (err) {
 			console.log('Error, getProducts', err);
@@ -28,7 +27,9 @@ class ProductService {
 
 	public async getProductById(id: string): Promise<Product> {
 		try {
-			const result = await axios.get(`${this.path}/product/${id}`);
+			const url = `${this.path}/product/${id}`;
+			console.log('****** url', url);
+			const result = await axios.get(url);
 			return result.data;
 		} catch (err) {
 			console.log('Error, getProductById', err);

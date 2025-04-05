@@ -1,14 +1,13 @@
 import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import { Dispatch } from '@reduxjs/toolkit';
 import { useQueries } from '@tanstack/react-query';
+import { Dispatch } from '@reduxjs/toolkit';
+import { useDispatch } from 'react-redux';
+import { setFeaturedProducts, setSaleProducts } from './slice';
 
 import Advertisement from './Advertisement';
 import FeaturedProducts from './FeaturedProducts';
 import Introduction from './Introduction';
 import SaleProducts from './SaleProducts';
-
-import { setFeaturedProducts, setSaleProducts } from './slice';
 
 import ProductService from '../../services/ProductServices';
 import { Direction } from '../../../libs/enums/common.enum';

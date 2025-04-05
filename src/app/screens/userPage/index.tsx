@@ -15,6 +15,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import PersonIcon from '@mui/icons-material/Person';
 import '../../../css/user.css';
+import { MemberUpdateInput } from '../../../libs/types/member.ts';
 
 export default function UserPage() {
 	const history = useHistory();

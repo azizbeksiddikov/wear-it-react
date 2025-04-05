@@ -105,6 +105,7 @@
 	margin-top: 15px;
 	display: flex;
 	align-items: center;
+	flex-direction: row;
 }
 
 .products-page .chosen-product .info-box .category-box span {
@@ -251,9 +252,10 @@
 .products-page .chosen-product .size-options,
 .products-page .chosen-product .color-options {
 	display: flex;
+	flex-direction: row;
 	align-items: center;
 	margin-top: 20px;
-	flex-wrap: wrap; /* Allow wrapping */
+	flex-wrap: wrap;
 }
 
 .products-page .chosen-product .size-options span,
@@ -346,6 +348,7 @@
 /* Quantity Selector */
 .products-page .chosen-product .quantity-selector {
 	display: flex;
+	flex-direction: row;
 	align-items: center;
 	margin-top: 20px;
 }
@@ -358,19 +361,18 @@
 }
 
 .products-page .chosen-product .quantity-selector .quantity-button {
-	width: 30px;
-	height: 30px;
+	width: 40px;
+	height: 40px;
+	min-width: 30px;
 	border-radius: 50%;
+	margin: 0 3px;
 	border: 2px solid #ddd;
+	justify-content: center;
+	cursor: pointer;
+	color: #555;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	cursor: pointer;
-	transition: border-color 0.3s ease;
-	font-weight: 600;
-	font-size: 16px;
-	color: #555;
-	margin: 0 5px;
 }
 
 .products-page .chosen-product .quantity-selector .quantity-button:hover {
