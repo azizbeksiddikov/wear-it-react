@@ -48,6 +48,7 @@ const gendersOptions = ['All Genders', ...Object.values(ProductGender)];
 export default function Products() {
 	const { setProducts } = actionDispatch(useDispatch());
 	const { products } = useSelector(productsRetriever);
+	const [isInitialized, setIsInitialized] = useState(false);
 
 	const [productSearch, setProductSearch] = useState<ProductInquiry>({
 		page: 1,
@@ -71,9 +72,11 @@ export default function Products() {
 
 		return params;
 	};
+	const productService = new ProductService();
 
 	useEffect(() => {
-		const productService = new ProductService();
+		if (!isInitialized) return;
+
 		productService
 			.getProducts(productSearch)
 			.then((data) => {
@@ -85,13 +88,14 @@ export default function Products() {
 	}, [productSearch]);
 
 	useEffect(() => {
+		if (!isInitialized) return;
+
 		if (searchText === '') {
 			productSearch.search = '';
 			setProductSearch({ ...productSearch });
 		}
 	}, [searchText]);
 
-	// Add this useEffect to read URL parameters when component mounts
 	useEffect(() => {
 		const params = getQueryParams();
 
@@ -127,18 +131,16 @@ export default function Products() {
 			setSearchText(search);
 		}
 
+		if (Object.keys(params).length > 0) {
+			const cleanUrl = window.location.pathname;
+			window.history.replaceState({}, document.title, cleanUrl);
+		}
+
+		setIsInitialized(true);
 		setProductSearch({ ...productSearch });
 	}, [location.search]);
 
 	// HANDLERS
-	// const PaginationHandler = (e: ChangeEvent) => {
-	// 	productSearch.page = value;
-	// 	setProductSearch({ ...productSearch });
-	// 	window.scrollTo({
-	// 		top: (document.querySelector('.products-grid-container')?.offsetTop as number) - 120,
-	// 		behavior: 'smooth',
-	// 	});
-	// };
 	const PaginationHandler = (e: ChangeEvent, value: number) => {
 		productSearch.page = value;
 		setProductSearch({ ...productSearch });
@@ -357,7 +359,7 @@ export default function Products() {
 
 					{/* Products Grid with Pagination */}
 					<Stack className="products-container">
-						{products.list.length > 0 ? (
+						{products && products.list.length > 0 ? (
 							<>
 								<Grid container spacing={3} className="products-grid">
 									{products.list.map((product) => (
