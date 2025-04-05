@@ -30,7 +30,7 @@ export default function SaleProducts() {
 				</Stack>
 
 				<Grid container spacing={3} className="products-grid">
-					{saleProducts.length > 0 ? (
+					{saleProducts && saleProducts.length > 0 ? (
 						saleProducts.map((product) => (
 							<Grid item xs={12} sm={6} md={3} key={product._id}>
 								<Stack className="product-card">

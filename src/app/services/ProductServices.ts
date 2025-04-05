@@ -18,6 +18,7 @@ class ProductService {
 			if (input.onSale) url += `&onSale=${input.onSale}`;
 			if (input.search) url += `&search=${input.search}`;
 			const result = await axios.get(url);
+
 			return result.data;
 		} catch (err) {
 			console.log('Error, getProducts', err);

@@ -1,14 +1,19 @@
 import React, { useEffect } from 'react';
-import Introduction from './Introduction';
-import FeaturedProducts from './FeaturedProducts';
-import SaleProducts from './SaleProducts';
-import Advertisement from './Advertisement';
 import { useDispatch } from 'react-redux';
 import { Dispatch } from '@reduxjs/toolkit';
+import { useQueries } from '@tanstack/react-query';
+
+import Advertisement from './Advertisement';
+import FeaturedProducts from './FeaturedProducts';
+import Introduction from './Introduction';
+import SaleProducts from './SaleProducts';
+
 import { setFeaturedProducts, setSaleProducts } from './slice';
-import { Product } from '../../../libs/types/product';
+
 import ProductService from '../../services/ProductServices';
 import { Direction } from '../../../libs/enums/common.enum';
+import { Product } from '../../../libs/types/product';
+
 import '../../../css/homePage/home.css';
 
 const actionDispatch = (dispatch: Dispatch) => ({
@@ -18,30 +23,48 @@ const actionDispatch = (dispatch: Dispatch) => ({
 
 export default function HomePage() {
 	const { setFeaturedProducts, setSaleProducts } = actionDispatch(useDispatch());
+	const productService = new ProductService();
+
+	const queries = [
+		{
+			queryKey: ['featured-products'],
+			queryFn: () =>
+				productService.getProducts({
+					page: 1,
+					limit: 4,
+					direction: Direction.DESC,
+					isFeatured: true,
+				}),
+		},
+		{
+			queryKey: ['sale-products'],
+			queryFn: () =>
+				productService.getProducts({
+					page: 1,
+					limit: 4,
+					direction: Direction.DESC,
+					onSale: true,
+				}),
+		},
+	];
+
+	const results = useQueries({ queries });
 
 	useEffect(() => {
-		const product = new ProductService();
+		const [featuredResult, saleResult] = results;
 
-		Promise.all([
-			product.getProducts({
-				page: 1,
-				limit: 4,
-				direction: Direction.DESC,
-				isFeatured: true,
-			}),
-			product.getProducts({
-				page: 1,
-				limit: 4,
-				direction: Direction.DESC,
-				onSale: true,
-			}),
-		])
-			.then(([featuredData, saleData]: [Products, Products]) => {
-				setFeaturedProducts(featuredData.list);
-				setSaleProducts(saleData.list);
-			})
-			.catch((err) => console.log(err));
-	}, []);
+		if (featuredResult.isSuccess && featuredResult.data) {
+			setFeaturedProducts(featuredResult.data.list);
+		} else if (featuredResult.isError) {
+			console.error('Error fetching featured products:', featuredResult.error);
+		}
+
+		if (saleResult.isSuccess && saleResult.data) {
+			setSaleProducts(saleResult.data.list);
+		} else if (saleResult.isError) {
+			console.error('Error fetching sale products:', saleResult.error);
+		}
+	}, [results]);
 
 	return (
 		<div className={'homepage'}>

@@ -9,21 +9,25 @@ import { ThemeProvider } from '@mui/material/styles';
 import theme from './app/MaterialTheme';
 import { BrowserRouter as Router } from 'react-router-dom';
 import ContextProvider from './app/context/ContextProvider';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import './css/index.css';
 
 const container = document.getElementById('root')!;
 const root = createRoot(container);
+const queryClient = new QueryClient();
 
 root.render(
 	<React.StrictMode>
 		<Provider store={store}>
 			<ContextProvider>
-				<ThemeProvider theme={theme}>
-					<CssBaseline />
-					<Router>
-						<App />
-					</Router>
-				</ThemeProvider>
+				<QueryClientProvider client={queryClient}>
+					<ThemeProvider theme={theme}>
+						<CssBaseline />
+						<Router>
+							<App />
+						</Router>
+					</ThemeProvider>
+				</QueryClientProvider>
 			</ContextProvider>
 		</Provider>
 	</React.StrictMode>,
