@@ -28,8 +28,8 @@ class ProductService {
 	public async getProductById(id: string): Promise<Product> {
 		try {
 			const url = `${this.path}/product/${id}`;
-			console.log('****** url', url);
 			const result = await axios.get(url);
+
 			return result.data;
 		} catch (err) {
 			console.log('Error, getProductById', err);
