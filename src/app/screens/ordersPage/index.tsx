@@ -6,32 +6,23 @@ import { Dispatch } from '@reduxjs/toolkit';
 import { setPausedOrders, setProcessOrders, setFinishedOrders, setAllOrders } from './slice';
 import { useGlobals } from '../../hooks/useGlobals';
 import { useHistory } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { createSelector } from '@reduxjs/toolkit';
-import { retrieverPausedOrders } from './selector';
-import { retrieverProcessedOrders } from './selector';
-import { retrieverFinishedOrders } from './selector';
-
-import { T } from '../../../libs/types/common';
-import { Messages } from '../../../libs/config';
-import { sweetErrorHandling } from '../../../libs/sweetAlert';
 
 import { Container, Typography, Stack } from '@mui/material';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
-import TabPanel from '@mui/lab/TabPanel';
 
 import PausedOrders from './PausedOrders';
 import ProcessOrders from './ProcessOrders';
 import FinishedOrders from './FinishedOrders';
 import AllOrders from './AllOrders';
 
-import { Order, OrderInquiry, OrderUpdateInput } from '../../../libs/types/order';
+import { Order, OrderInquiry } from '../../../libs/types/order';
 import { OrderStatus } from '../../../libs/enums/order.enum';
 import OrderService from '../../services/OrderService';
 
-import '../../../css/orders.css';
+import '../../../css/ordersPage/order.css';
+import '../../../css/ordersPage/orders.css';
 
 const actionDispatch = (dispatch: Dispatch) => ({
 	setAllOrders: (data: Order[]) => dispatch(setAllOrders(data)),
@@ -42,7 +33,7 @@ const actionDispatch = (dispatch: Dispatch) => ({
 
 export default function OrdersPage() {
 	const history = useHistory();
-	const { authMember, orderBuilder, setOrderBuilder } = useGlobals();
+	const { authMember, orderBuilder } = useGlobals();
 	if (!authMember) history.push('/');
 	const { setAllOrders, setPausedOrders, setProcessOrders, setFinishedOrders } = actionDispatch(useDispatch());
 	const [value, setValue] = useState<string>('ALL');

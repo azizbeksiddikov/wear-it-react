@@ -7,7 +7,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import DoneIcon from '@mui/icons-material/Done';
 import moment from 'moment';
-import { Order } from '../../../libs/types/order';
+import { Order, OrderItem } from '../../../libs/types/order';
 import { T } from '../../../libs/types/common';
 import { Messages } from '../../../libs/config';
 import OrderService from '../../services/OrderService';
@@ -26,35 +26,6 @@ export default function OrderCard(props: OrderCardProps) {
 	const { order, setValue } = props;
 
 	console.log('* orderId:', order._id);
-
-	const statusIcons = {
-		PROCESSING: <LocalShippingIcon fontSize="small" />,
-		PAUSED: <InventoryIcon fontSize="small" />,
-		FINISHED: <CheckCircleIcon fontSize="small" />,
-		CANCELLED: <DeleteIcon fontSize="small" />,
-	};
-
-	const statusText = {
-		PROCESSING: 'Processing',
-		PAUSED: 'Paused',
-		FINISHED: 'Finished',
-		CANCELLED: 'Cancelled',
-	};
-
-	const statusColors = {
-		PROCESSING: '#dbeafe', // blue-100
-		PAUSED: '#fef3c7', // amber-100
-		FINISHED: '#d1fae5', // green-100
-		CANCELLED: '#fee2e2', // red-100
-	};
-
-	const statusTextColors = {
-		PROCESSING: '#1e40af', // blue-800
-		PAUSED: '#92400e', // amber-800
-		FINISHED: '#065f46', // green-800
-		DELETE: '#dc2626', // red-600
-		CANCELLED: '#dc2626', // red-600
-	};
 
 	/** HANDLERS */
 	const deleteOrderHandler = async (e: T) => {
@@ -156,8 +127,37 @@ export default function OrderCard(props: OrderCardProps) {
 		}
 	};
 
+	const statusIcons = {
+		PROCESSING: <LocalShippingIcon fontSize="small" />,
+		PAUSED: <InventoryIcon fontSize="small" />,
+		FINISHED: <CheckCircleIcon fontSize="small" />,
+		CANCELLED: <DeleteIcon fontSize="small" />,
+	};
+
+	const statusText = {
+		PROCESSING: 'Processing',
+		PAUSED: 'Paused',
+		FINISHED: 'Finished',
+		CANCELLED: 'Cancelled',
+	};
+
+	const statusColors = {
+		PROCESSING: '#dbeafe',
+		PAUSED: '#fef3c7',
+		FINISHED: '#d1fae5',
+		CANCELLED: '#f3e8ff',
+	};
+
+	const statusTextColors = {
+		PROCESSING: '#1e40af',
+		PAUSED: '#92400e',
+		FINISHED: '#065f46',
+		CANCELLED: '#6b21a8',
+		DELETE: '#dc2626',
+	};
+
 	return (
-		<Card className="order-card pinterest-card" variant="outlined" key={order._id}>
+		<Card className="order-card " variant="outlined" key={order._id}>
 			{/* Card Header */}
 			<Box className="card-header">
 				<Stack
@@ -167,14 +167,14 @@ export default function OrderCard(props: OrderCardProps) {
 					alignItems={{ xs: 'flex-start', sm: 'center' }}
 					p={2}
 				>
-					<Box>
+					<Stack>
 						<Typography variant="subtitle1" className="pinterest-text-title">
 							Order #{order._id}
 						</Typography>
 						<Typography variant="caption" className="order-date pinterest-text-secondary">
 							Ordered on {moment(order.orderDate).format('MMMM D, YYYY')}
 						</Typography>
-					</Box>
+					</Stack>
 
 					<Stack direction="row" spacing={1} alignItems="center">
 						<Chip
@@ -198,36 +198,72 @@ export default function OrderCard(props: OrderCardProps) {
 			<CardContent className="card-content" sx={{ p: 3 }}>
 				<Stack spacing={2}>
 					{order?.orderItems &&
-						order.orderItems.map((item) => (
-							<Stack key={item._id} direction="row" spacing={2} alignItems="center" className="order-item-row">
-								<Box
-									className="item-image-container"
-									sx={{
-										width: 64,
-										height: 64,
-										borderRadius: 1,
-										overflow: 'hidden',
-									}}
-								>
-									<img src={`${item.productImage}`} alt={item.productName} className="item-image" />
-								</Box>
+						order.orderItems.map((item: OrderItem) => {
+							return (
+								<a key={item._id} href={`/products/${item.productId}`} className="order-item-link">
+									<Stack direction="row" spacing={2} alignItems="center" className="order-item-row">
+										{/* Image */}
+										<Box
+											className="item-image-container"
+											sx={{
+												width: 64,
+												height: 64,
+												borderRadius: 1,
+												overflow: 'hidden',
+											}}
+										>
+											<img src={`${item.productImage}`} alt={item.productName} className="item-image" />
+										</Box>
 
-								<Box sx={{ flexGrow: 1 }}>
-									<Typography variant="body1" className="pinterest-text-title">
-										{item.productName}
-									</Typography>
-									<Typography variant="body2" className="pinterest-text-secondary">
-										Qty: {item.itemQuantity}
-									</Typography>
-								</Box>
+										<Box sx={{ flexGrow: 1 }}>
+											<Typography variant="body1" className="pinterest-text-title">
+												{item.productName}
+											</Typography>
+											<div className="item-details">
+												{item.productSize && (
+													<Typography variant="body2" className="item-detail">
+														<span className="detail-label">Size:</span> {item.productSize}
+													</Typography>
+												)}
+												{item.productColor && (
+													<Typography variant="body2" className="item-detail">
+														<span className="detail-label">Color:</span>
+														{item.productColor}
+													</Typography>
+												)}
+												{item.productCategory && (
+													<Typography variant="body2" className="item-detail">
+														<span className="detail-label">Category:</span> {item.productCategory}
+													</Typography>
+												)}
+												<Typography variant="body2" className="pinterest-text-secondary">
+													Qty: {item.itemQuantity}
+												</Typography>
+											</div>
+										</Box>
 
-								<Box sx={{ textAlign: 'right' }}>
-									<Typography variant="body1" className="pinterest-text-title">
-										${item.itemUnitPrice.toFixed(2)}
-									</Typography>
-								</Box>
-							</Stack>
-						))}
+										<Box sx={{ textAlign: 'right' }}>
+											<Stack className="pinterest-text-title price-container">
+												{item.salePrice ? (
+													<>
+														<Typography variant="body2" className="original-price">
+															${item.itemUnitPrice.toFixed(2)}
+														</Typography>
+														<Typography variant="body2" className="sale-price">
+															${item.salePrice.toFixed(2)}
+														</Typography>
+													</>
+												) : (
+													<Typography variant="body2" className="regular-price">
+														${item.itemUnitPrice.toFixed(2)}
+													</Typography>
+												)}
+											</Stack>
+										</Box>
+									</Stack>
+								</a>
+							);
+						})}
 				</Stack>
 			</CardContent>
 
