@@ -8,38 +8,44 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import DoneIcon from '@mui/icons-material/Done';
 import moment from 'moment';
 import { Order } from '../../../libs/types/order';
-import { OrderStatus } from '../../../libs/enums/order.enum';
 import { T } from '../../../libs/types/common';
+import { Messages } from '../../../libs/config';
+import OrderService from '../../services/OrderService';
+import { sweetErrorHandling } from '../../../libs/sweetAlert';
+import { OrderStatus } from '../../../libs/enums/order.enum';
+import { OrderUpdateInput } from '../../../libs/types/order';
+import { useGlobals } from '../../hooks/useGlobals';
 
 interface OrderCardProps {
 	order: Order;
-	deleteOrderHandler?: (e: T) => {};
-	processOrderHandler?: (e: T) => {};
-	cancelOrderHandler?: (e: T) => {};
-	finishOrderHandler?: (e: T) => {};
+	setValue: (input: string) => void;
 }
 
 export default function OrderCard(props: OrderCardProps) {
-	const { order, deleteOrderHandler, processOrderHandler, cancelOrderHandler, finishOrderHandler } = props;
+	const { authMember, setOrderBuilder } = useGlobals();
+	const { order, setValue } = props;
 
-	const status: OrderStatus = order.orderStatus;
+	console.log('* orderId:', order._id);
 
 	const statusIcons = {
 		PROCESSING: <LocalShippingIcon fontSize="small" />,
 		PAUSED: <InventoryIcon fontSize="small" />,
 		FINISHED: <CheckCircleIcon fontSize="small" />,
+		CANCELLED: <DeleteIcon fontSize="small" />,
 	};
 
 	const statusText = {
 		PROCESSING: 'Processing',
 		PAUSED: 'Paused',
 		FINISHED: 'Finished',
+		CANCELLED: 'Cancelled',
 	};
 
 	const statusColors = {
 		PROCESSING: '#dbeafe', // blue-100
 		PAUSED: '#fef3c7', // amber-100
 		FINISHED: '#d1fae5', // green-100
+		CANCELLED: '#fee2e2', // red-100
 	};
 
 	const statusTextColors = {
@@ -47,91 +53,111 @@ export default function OrderCard(props: OrderCardProps) {
 		PAUSED: '#92400e', // amber-800
 		FINISHED: '#065f46', // green-800
 		DELETE: '#dc2626', // red-600
+		CANCELLED: '#dc2626', // red-600
 	};
 
-	// Render action buttons based on order status
-	const renderActionButtons = () => {
-		switch (status) {
-			case OrderStatus.PAUSED:
-				return (
-					<Stack direction="row" spacing={1}>
-						{processOrderHandler && (
-							<Button
-								size="small"
-								variant="outlined"
-								startIcon={<PlayArrowIcon />}
-								value={order._id}
-								onClick={processOrderHandler}
-								sx={{ color: statusTextColors.PROCESSING, borderColor: statusTextColors.PROCESSING }}
-							>
-								Process
-							</Button>
-						)}
-						{deleteOrderHandler && (
-							<Button
-								size="small"
-								variant="outlined"
-								startIcon={<DeleteIcon />}
-								value={order._id}
-								onClick={deleteOrderHandler}
-								sx={{ color: statusTextColors.DELETE, borderColor: statusTextColors.DELETE }}
-							>
-								Delete
-							</Button>
-						)}
-					</Stack>
-				);
-			case OrderStatus.PROCESSING:
-				return (
-					<Stack direction="row" spacing={1}>
-						{finishOrderHandler && (
-							<Button
-								size="small"
-								variant="outlined"
-								startIcon={<DoneIcon />}
-								value={order._id}
-								onClick={finishOrderHandler}
-								sx={{ color: statusTextColors.FINISHED, borderColor: statusTextColors.FINISHED }}
-							>
-								Finish
-							</Button>
-						)}
-						{cancelOrderHandler && (
-							<Button
-								size="small"
-								variant="outlined"
-								startIcon={<DeleteIcon />}
-								value={order._id}
-								onClick={cancelOrderHandler}
-								sx={{ color: statusTextColors.DELETE, borderColor: statusTextColors.DELETE }}
-							>
-								Cancel
-							</Button>
-						)}
-					</Stack>
-				);
-			case OrderStatus.FINISHED:
-				return (
-					<Stack direction="row" spacing={1}>
-						<Button
-							size="small"
-							variant="outlined"
-							startIcon={<DeleteIcon />}
-							value={order._id}
-							onClick={deleteOrderHandler}
-							sx={{ color: statusTextColors.DELETE, borderColor: statusTextColors.DELETE }}
-						>
-							Delete
-						</Button>
-					</Stack>
-				);
-			default:
-				return null;
+	/** HANDLERS */
+	const deleteOrderHandler = async (e: T) => {
+		try {
+			if (!authMember) throw Error(Messages.error2);
+
+			const orderId = e.target.value;
+			console.log('*** deleteOrderHandler orderId:', order._id);
+
+			const input: OrderUpdateInput = {
+				_id: orderId,
+				orderStatus: OrderStatus.DELETED,
+			};
+
+			const confirmation = window.confirm('Do you want to delete this order?');
+			if (confirmation) {
+				const order = new OrderService();
+				await order.updateOrder(input);
+				setOrderBuilder(new Date());
+			}
+		} catch (err) {
+			console.log(err);
+			sweetErrorHandling(err).then();
+		}
+	};
+
+	const processOrderHandler = async (e: T) => {
+		try {
+			if (!authMember) throw Error(Messages.error2);
+			// Payment process
+
+			const orderId = e.target.value;
+			console.log('*** processOrderHandler orderId:', order._id);
+
+			const input: OrderUpdateInput = {
+				_id: orderId,
+				orderStatus: OrderStatus.PROCESSING,
+			};
+
+			const confirmation = window.confirm('Do you want to proceed with payment?');
+			if (confirmation) {
+				const order = new OrderService();
+				await order.updateOrder(input);
+				setValue(OrderStatus.PROCESSING);
+				setOrderBuilder(new Date());
+			}
+		} catch (err) {
+			console.log(err);
+			sweetErrorHandling(err).then();
+		}
+	};
+
+	const finishOrderHandler = async (e: T) => {
+		try {
+			if (!authMember) throw Error(Messages.error2);
+
+			const orderId = e.target.value;
+			console.log('*** finishOrderHandler orderId:', order._id);
+
+			const input: OrderUpdateInput = {
+				_id: orderId,
+				orderStatus: OrderStatus.FINISHED,
+			};
+
+			const confirmation = window.confirm('Have you received your order?');
+			if (confirmation) {
+				const order = new OrderService();
+				await order.updateOrder(input);
+				setValue(OrderStatus.FINISHED);
+				setOrderBuilder(new Date());
+			}
+		} catch (err) {
+			console.log(err);
+			sweetErrorHandling(err).then();
+		}
+	};
+
+	const cancelOrderHandler = async (e: T) => {
+		try {
+			if (!authMember) throw Error(Messages.error2);
+
+			const orderId = e.target.value;
+			console.log('*** cancelOrderHandler orderId:', order._id);
+
+			const input: OrderUpdateInput = {
+				_id: orderId,
+				orderStatus: OrderStatus.CANCELLED,
+			};
+
+			const confirmation = window.confirm('Do you want to return this order?');
+			if (confirmation) {
+				const order = new OrderService();
+				await order.updateOrder(input);
+				setOrderBuilder(new Date());
+			}
+		} catch (err) {
+			console.log(err);
+			sweetErrorHandling(err).then();
 		}
 	};
 
 	return (
-		<Card className="order-card pinterest-card" variant="outlined">
+		<Card className="order-card pinterest-card" variant="outlined" key={order._id}>
 			{/* Card Header */}
 			<Box className="card-header">
 				<Stack
@@ -152,15 +178,15 @@ export default function OrderCard(props: OrderCardProps) {
 
 					<Stack direction="row" spacing={1} alignItems="center">
 						<Chip
-							icon={statusIcons[status]}
-							label={statusText[status]}
+							icon={statusIcons[order.orderStatus]}
+							label={statusText[order.orderStatus]}
 							size="small"
 							sx={{
-								bgcolor: statusColors[status],
-								color: statusTextColors[status],
+								bgcolor: statusColors[order.orderStatus],
+								color: statusTextColors[order.orderStatus],
 								fontWeight: 500,
 								'& .MuiChip-icon': {
-									color: statusTextColors[status],
+									color: statusTextColors[order.orderStatus],
 								},
 							}}
 						/>
@@ -171,36 +197,37 @@ export default function OrderCard(props: OrderCardProps) {
 			{/* Card Content */}
 			<CardContent className="card-content" sx={{ p: 3 }}>
 				<Stack spacing={2}>
-					{order.orderItems.map((item) => (
-						<Stack key={item._id} direction="row" spacing={2} alignItems="center" className="order-item-row">
-							<Box
-								className="item-image-container"
-								sx={{
-									width: 64,
-									height: 64,
-									borderRadius: 1,
-									overflow: 'hidden',
-								}}
-							>
-								<img src={`${item.productImage}`} alt={item.productName} className="item-image" />
-							</Box>
+					{order?.orderItems &&
+						order.orderItems.map((item) => (
+							<Stack key={item._id} direction="row" spacing={2} alignItems="center" className="order-item-row">
+								<Box
+									className="item-image-container"
+									sx={{
+										width: 64,
+										height: 64,
+										borderRadius: 1,
+										overflow: 'hidden',
+									}}
+								>
+									<img src={`${item.productImage}`} alt={item.productName} className="item-image" />
+								</Box>
 
-							<Box sx={{ flexGrow: 1 }}>
-								<Typography variant="body1" className="pinterest-text-title">
-									{item.productName}
-								</Typography>
-								<Typography variant="body2" className="pinterest-text-secondary">
-									Qty: {item.itemQuantity}
-								</Typography>
-							</Box>
+								<Box sx={{ flexGrow: 1 }}>
+									<Typography variant="body1" className="pinterest-text-title">
+										{item.productName}
+									</Typography>
+									<Typography variant="body2" className="pinterest-text-secondary">
+										Qty: {item.itemQuantity}
+									</Typography>
+								</Box>
 
-							<Box sx={{ textAlign: 'right' }}>
-								<Typography variant="body1" className="pinterest-text-title">
-									${item.itemUnitPrice.toFixed(2)}
-								</Typography>
-							</Box>
-						</Stack>
-					))}
+								<Box sx={{ textAlign: 'right' }}>
+									<Typography variant="body1" className="pinterest-text-title">
+										${item.itemUnitPrice.toFixed(2)}
+									</Typography>
+								</Box>
+							</Stack>
+						))}
 				</Stack>
 			</CardContent>
 
@@ -217,7 +244,57 @@ export default function OrderCard(props: OrderCardProps) {
 					</Typography>
 
 					<Stack direction="row" spacing={2} alignItems="center">
-						{renderActionButtons()}
+						{/* Buttons */}
+						<Stack direction="row" spacing={2} alignItems="center">
+							{[OrderStatus.PAUSED, OrderStatus.CANCELLED].includes(order.orderStatus) && (
+								<Button
+									size="small"
+									variant="outlined"
+									startIcon={<DeleteIcon />}
+									value={order._id}
+									onClick={deleteOrderHandler}
+									sx={{ color: statusTextColors.DELETE, borderColor: statusTextColors.DELETE }}
+								>
+									Delete
+								</Button>
+							)}
+							{order.orderStatus === OrderStatus.FINISHED && (
+								<Button
+									size="small"
+									variant="outlined"
+									startIcon={<DeleteIcon />}
+									value={order._id}
+									onClick={cancelOrderHandler}
+									sx={{ color: statusTextColors.DELETE, borderColor: statusTextColors.DELETE }}
+								>
+									Cancel
+								</Button>
+							)}
+							{order.orderStatus === OrderStatus.PAUSED && (
+								<Button
+									size="small"
+									variant="outlined"
+									startIcon={<PlayArrowIcon />}
+									value={order._id}
+									onClick={processOrderHandler}
+									sx={{ color: statusTextColors.PROCESSING, borderColor: statusTextColors.PROCESSING }}
+								>
+									Process
+								</Button>
+							)}
+							{order.orderStatus === OrderStatus.PROCESSING && (
+								<Button
+									size="small"
+									variant="outlined"
+									startIcon={<DoneIcon />}
+									value={order._id}
+									onClick={finishOrderHandler}
+									sx={{ color: statusTextColors.FINISHED, borderColor: statusTextColors.FINISHED }}
+								>
+									Finish
+								</Button>
+							)}
+						</Stack>
 
 						<Box sx={{ textAlign: 'right' }}>
 							<Typography variant="h6" className="pinterest-text-title">

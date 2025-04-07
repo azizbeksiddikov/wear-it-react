@@ -1,27 +1,28 @@
 import React from 'react';
 import { Typography, Stack } from '@mui/material';
 import OrderCard from './OrderCard';
-import { useSelector } from 'react-redux';
+import TabPanel from '@mui/lab/TabPanel';
+import { OrderStatus } from '../../../libs/enums/order.enum';
 import { createSelector } from '@reduxjs/toolkit';
 import { retrieverProcessedOrders } from './selector';
-import { T } from '../../../libs/types/common';
+import { useSelector } from 'react-redux';
 
 const processedOrdersRetriever = createSelector(retrieverProcessedOrders, (processOrders) => ({ processOrders }));
 
 interface ProcessedOrdersProps {
-	finishOrderHandler: (e: T) => {};
+	setValue: (input: string) => void;
 }
 
 export default function ProcessOrders(props: ProcessedOrdersProps) {
 	const { processOrders } = useSelector(processedOrdersRetriever);
-	const { finishOrderHandler } = props;
+	const { setValue } = props;
 
 	return (
-		<>
+		<TabPanel value={OrderStatus.PROCESSING} className="orders-tab-panel">
 			<Stack className="orders-container">
 				{processOrders.map((order) => (
 					<Stack key={order._id} className={`order-wrapper `}>
-						<OrderCard order={order} finishOrderHandler={finishOrderHandler} />
+						<OrderCard order={order} setValue={setValue} />
 					</Stack>
 				))}
 			</Stack>
@@ -33,6 +34,6 @@ export default function ProcessOrders(props: ProcessedOrdersProps) {
 					</Typography>
 				</Stack>
 			)}
-		</>
+		</TabPanel>
 	);
 }

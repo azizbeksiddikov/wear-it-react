@@ -1,33 +1,28 @@
 import React from 'react';
 import { Box, Typography, Stack } from '@mui/material';
 import OrderCard from './OrderCard';
-import { T } from '../../../libs/types/common';
-import { useSelector } from 'react-redux';
+import TabPanel from '@mui/lab/TabPanel';
+import { OrderStatus } from '../../../libs/enums/order.enum';
 import { createSelector } from '@reduxjs/toolkit';
 import { retrieverPausedOrders } from './selector';
+import { useSelector } from 'react-redux';
 
 const pausedOrdersRetriever = createSelector(retrieverPausedOrders, (pausedOrders) => ({ pausedOrders }));
 
 interface PausedOrdersProps {
-	deleteOrderHandler: (e: T) => {};
-	processOrderHandler: (e: T) => {};
+	setValue: (input: string) => void;
 }
 
 export default function PausedOrders(props: PausedOrdersProps) {
-	const { deleteOrderHandler, processOrderHandler } = props;
-
 	const { pausedOrders } = useSelector(pausedOrdersRetriever);
+	const { setValue } = props;
 
 	return (
-		<>
+		<TabPanel value={OrderStatus.PAUSED} className="orders-tab-panel">
 			<Stack className="orders-container">
 				{pausedOrders.map((order) => (
 					<Box key={order._id} className="order-wrapper">
-						<OrderCard
-							order={order}
-							deleteOrderHandler={deleteOrderHandler}
-							processOrderHandler={processOrderHandler}
-						/>
+						<OrderCard order={order} setValue={setValue} />
 					</Box>
 				))}
 
@@ -39,6 +34,6 @@ export default function PausedOrders(props: PausedOrdersProps) {
 					</Stack>
 				)}
 			</Stack>
-		</>
+		</TabPanel>
 	);
 }

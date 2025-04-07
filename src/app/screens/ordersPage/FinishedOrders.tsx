@@ -1,28 +1,27 @@
 import React from 'react';
 import { Box, Typography, Stack } from '@mui/material';
 import OrderCard from './OrderCard';
-import { useSelector } from 'react-redux';
+import TabPanel from '@mui/lab/TabPanel';
+import { OrderStatus } from '../../../libs/enums/order.enum';
 import { createSelector } from '@reduxjs/toolkit';
 import { retrieverFinishedOrders } from './selector';
-import { T } from '../../../libs/types/common';
+import { useSelector } from 'react-redux';
 
 const finishedOrdersRetriever = createSelector(retrieverFinishedOrders, (finishedOrders) => ({ finishedOrders }));
 
 interface FinishedOrdersProps {
-	cancelOrderHandler: (e: T) => {};
-	deleteOrderHandler: (e: T) => {};
+	setValue: (input: string) => void;
 }
-
 export default function FinishedOrders(props: FinishedOrdersProps) {
-	const { cancelOrderHandler, deleteOrderHandler } = props;
 	const { finishedOrders } = useSelector(finishedOrdersRetriever);
+	const { setValue } = props;
 
 	return (
-		<>
+		<TabPanel value={OrderStatus.FINISHED} className="order-tab-panel">
 			<Stack className="orders-container">
 				{finishedOrders.map((order) => (
 					<Box key={order._id} className={'order-wrapper pinterest-card'}>
-						<OrderCard order={order} cancelOrderHandler={cancelOrderHandler} deleteOrderHandler={deleteOrderHandler} />
+						<OrderCard order={order} setValue={setValue} />
 					</Box>
 				))}
 			</Stack>
@@ -34,6 +33,6 @@ export default function FinishedOrders(props: FinishedOrdersProps) {
 					</Typography>
 				</Stack>
 			)}
-		</>
+		</TabPanel>
 	);
 }
