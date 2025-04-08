@@ -217,7 +217,6 @@ export default function Products() {
 		setProductSearch({ ...productSearch });
 	};
 
-	console.log('products', products.list[3]);
 	return (
 		<div className="products-page">
 			<Container>

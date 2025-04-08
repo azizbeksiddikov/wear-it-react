@@ -212,6 +212,7 @@ export default function ChosenProduct(props: ChosenProductProps) {
 			.deleteReview(chosenProduct.memberReview._id)
 			.then(() => {
 				setChosenProduct({ ...chosenProduct, memberReview: undefined });
+				setReviewUpdate({ rating: 0, comment: '' });
 			})
 			.catch((err) => {
 				console.error('Error deleting review:', err);
@@ -280,8 +281,6 @@ export default function ChosenProduct(props: ChosenProductProps) {
 				console.error('Error creating review:', err);
 			});
 	};
-
-	console.log('run');
 
 	return (
 		<div className={'chosen-product'}>
