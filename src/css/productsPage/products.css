@@ -370,3 +370,21 @@
 .products-page .pagination .Mui-disabled {
 	opacity: 0.5;
 }
+
+.product-price {
+	display: flex;
+	gap: 8px;
+	align-items: center;
+	font-weight: 500;
+	margin-top: 8px;
+}
+
+.original-price {
+	text-decoration: line-through;
+	color: #888;
+	font-size: 0.9em;
+}
+
+.sale-price {
+	color: #e53935;
+}

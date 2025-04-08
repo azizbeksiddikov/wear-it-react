@@ -217,6 +217,7 @@ export default function Products() {
 		setProductSearch({ ...productSearch });
 	};
 
+	console.log('products', products.list[3]);
 	return (
 		<div className="products-page">
 			<Container>
@@ -389,6 +390,19 @@ export default function Products() {
 														</Typography>
 														<Typography variant="body2" className="product-category">
 															{product.productCategory}
+														</Typography>
+
+														<Typography variant="body2" className="product-price">
+															{product.cheapestProductVariant?.salePrice ? (
+																<>
+																	<span className="original-price">${product.cheapestProductVariant.productPrice}</span>
+																	<span className="sale-price">${product.cheapestProductVariant.salePrice}</span>
+																</>
+															) : (
+																<span>
+																	${product.cheapestProductVariant ? product.cheapestProductVariant.productPrice : 0}
+																</span>
+															)}
 														</Typography>
 													</CardContent>
 												</Card>
