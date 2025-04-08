@@ -20,6 +20,8 @@ export interface Product {
 
 	productVariants?: ProductVariant[];
 	productReviews?: Review[];
+	memberReview?: Review;
+	isReviewValid?: boolean;
 }
 
 export interface ProductInput {

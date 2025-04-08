@@ -32,7 +32,7 @@ import {
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 
-import ProductService from '../../services/ProductServices';
+import ProductService from '../../services/ProductService';
 import { ProductCategory, ProductGender } from '../../../libs/enums/product.enum';
 import { ProductsInquiry, ProductsOutput } from '../../../libs/types/product';
 import { Direction } from '../../../libs/enums/common.enum';

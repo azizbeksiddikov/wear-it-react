@@ -2,7 +2,6 @@ export interface Review {
 	_id: string;
 	productId: string;
 	memberId: string;
-	orderId: string;
 	rating: number;
 	comment?: string;
 	createdAt: Date;
@@ -11,7 +10,6 @@ export interface Review {
 
 export interface ReviewInput {
 	productId: string;
-	orderId: string;
 	rating: number;
 	comment?: string;
 	memberId?: string;

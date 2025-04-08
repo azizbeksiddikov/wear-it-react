@@ -2,44 +2,41 @@
 .products-page .chosen-product {
 	position: relative;
 	width: 100%;
-	height: auto;
-	background: #fff; /* Change background to white */
+	background: #fff;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	justify-content: center;
 }
 
 .products-page .chosen-product .title {
 	font-family: 'Playfair Display', serif;
 	font-style: normal;
 	font-weight: 700;
-	font-size: 48px; /* Adjust font size */
+	font-size: 48px;
 	line-height: 56px;
-	margin-bottom: 20px;
 	color: #333;
-	text-shadow: none; /* Remove text shadow */
 }
 
 .products-page .chosen-product .product-container {
 	display: flex;
-	flex-direction: row; /* Change to row */
-	justify-content: flex-start; /* Align items to the start */
-	align-items: flex-start; /* Align items to the top */
+	flex-direction: row;
+	justify-content: flex-start;
+	align-items: stretch; /* Change from flex-start to stretch */
 	margin-top: 40px;
-	margin-bottom: 80px;
+	margin-bottom: 40px;
 	width: 95%;
 	max-width: 1400px;
 }
 
 .products-page .chosen-product .chosen-product-slider {
-	width: 55%; /* Adjust width */
+	width: 55%;
 	height: 600px;
 	background: #fff;
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
 	border-radius: 15px;
-	overflow: hidden;
 	transition: transform 0.3s ease;
-	margin-right: 30px; /* Add margin to separate slider and info */
+	margin-right: 30px;
 }
 
 .products-page .chosen-product .chosen-product-slider:hover {
@@ -54,7 +51,7 @@
 .products-page .chosen-product .chosen-product-slider .swiper-area .slider-image {
 	width: 100%;
 	height: 100%;
-	object-fit: contain; /* Ensure images are contained */
+	object-fit: contain;
 	transition: transform 0.3s ease;
 }
 
@@ -64,7 +61,8 @@
 
 .products-page .chosen-product .chosen-product-info {
 	padding: 30px;
-	width: 45%; /* Adjust width */
+	width: 45%;
+
 	height: auto;
 	display: flex;
 	background: #fff;
@@ -226,6 +224,7 @@
 	align-items: center;
 	justify-content: center;
 	margin-top: 20px; /* Add margin */
+	gap: 16px; /* Add space between buttons */
 }
 
 .products-page .chosen-product .button-box button {
@@ -386,7 +385,258 @@
 	margin: 0 10px;
 }
 
-/* Remove color circle styles */
-.products-page .chosen-product .color-circle {
-	display: none;
+/* Reviews */
+
+/* User Review Section */
+.chosen-product .user-review {
+	background-color: #ffffff;
+	border-radius: 8px;
+	padding: 20px 0;
+	margin-top: 40px;
+	margin-bottom: 30px;
+}
+
+.chosen-product .user-review .MuiTypography-h6 {
+	font-size: 1.25rem;
+	font-weight: 600;
+	color: #333333;
+}
+
+.chosen-product .review-card {
+	border-radius: 8px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+	overflow: hidden;
+}
+
+.chosen-product .user-review .review-card {
+	background-color: rgba(33, 150, 243, 0.04);
+	border-left: 4px solid #2196f3;
+}
+
+.chosen-product .review-card:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+/* Review Header and Content */
+.chosen-product .review-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 12px;
+}
+
+.chosen-product .MuiRating-root {
+	color: #f39c12;
+}
+
+.chosen-product .MuiCardContent-root {
+	padding: 20px;
+}
+
+/* Review Edit/Delete Buttons */
+.chosen-product .user-review .MuiButton-root {
+	min-width: 80px;
+	text-transform: none;
+	font-weight: 500;
+}
+
+.chosen-product .user-review .MuiButton-outlinedPrimary {
+	color: #2196f3;
+	border-color: #2196f3;
+}
+
+.chosen-product .user-review .MuiButton-outlinedPrimary:hover {
+	background-color: rgba(33, 150, 243, 0.04);
+}
+
+.chosen-product .user-review .MuiButton-outlinedError {
+	color: #f44336;
+	border-color: #f44336;
+}
+
+.chosen-product .user-review .MuiButton-outlinedError:hover {
+	background-color: rgba(244, 67, 54, 0.04);
+}
+
+.chosen-product .user-review .MuiButton-containedPrimary {
+	background-color: #2196f3;
+}
+
+/* Other Reviews Section */
+.chosen-product .other-reviews {
+	margin-bottom: 40px;
+}
+
+.chosen-product .other-reviews .MuiTypography-h6 {
+	font-size: 1.25rem;
+	font-weight: 600;
+	color: #333333;
+	margin-bottom: 16px;
+}
+
+.chosen-product .other-reviews .MuiListItem-root {
+	margin-bottom: 16px;
+}
+
+.chosen-product .other-reviews .MuiListItem-root:last-child {
+	margin-bottom: 0;
+}
+
+.chosen-product .other-reviews .MuiTypography-subtitle2 {
+	color: #424242;
+	font-weight: 500;
+	margin-top: 4px;
+}
+
+.chosen-product .other-reviews .MuiTypography-body1 {
+	color: #555555;
+	line-height: 1.5;
+}
+
+/* Review Modal Styles */
+.review-modal .MuiPaper-root {
+	border-radius: 12px;
+	overflow: hidden;
+}
+
+.review-modal .review-modal-title {
+	background-color: #f5f5f5;
+	padding-top: 16px;
+	padding-bottom: 16px;
+	font-weight: 600;
+}
+
+.review-modal .MuiRating-root {
+	font-size: 2rem;
+	color: #f39c12;
+}
+
+.review-modal .MuiDialogActions-root {
+	padding: 16px 24px;
+}
+
+.review-modal .MuiButton-containedPrimary {
+	padding: 8px 24px;
+	font-weight: 500;
+	background-color: #2196f3;
+}
+
+.review-modal .MuiButton-outlined {
+	padding: 8px 24px;
+}
+
+/* Button Spacing in Product Info Section */
+.chosen-product .button-box {
+	display: flex;
+	gap: 16px;
+	margin: 24px 0;
+}
+
+.chosen-product .button-box button {
+	width: 200px;
+	height: 50px;
+	font-family: 'Roboto', sans-serif;
+	font-style: normal;
+	font-weight: 600;
+	font-size: 16px;
+	line-height: 24px;
+	color: #f8f8ff;
+	border-radius: 25px;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.chosen-product .button-box button:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.chosen-product .button-box button:first-child {
+	background-color: #4caf50;
+}
+
+.chosen-product .button-box button:last-child {
+	background-color: #2196f3;
+}
+
+/* TextField Styles for Review Editing */
+.chosen-product .user-review .MuiTextField-root {
+	margin-top: 8px;
+}
+
+.chosen-product .user-review .MuiInputBase-multiline {
+	border-radius: 8px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+	.chosen-product .button-box {
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.chosen-product .button-box button {
+		width: 100%;
+		max-width: 300px;
+		margin-bottom: 12px;
+	}
+
+	.chosen-product .review-header {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.chosen-product .review-header .MuiTypography-body2 {
+		margin-top: 4px;
+	}
+
+	.review-modal .MuiRating-root {
+		font-size: 1.5rem;
+	}
+}
+
+@media (max-width: 480px) {
+	.chosen-product .user-review .MuiButton-root {
+		padding: 6px 12px;
+		min-width: 70px;
+		font-size: 0.8rem;
+	}
+}
+
+/* Empty State - No Reviews Yet */
+
+.chosen-product .empty-reviews-message {
+	text-align: center;
+	padding: 32px 20px;
+	background-color: #f7f9fc;
+	border: 1px dashed #c0d3e8;
+	border-radius: 8px;
+	color: #6c757d;
+	font-size: 1rem;
+	font-style: italic;
+	transition: all 0.3s ease;
+}
+
+/* Star icon before the message */
+.chosen-product .empty-reviews-message::before {
+	content: '★';
+	display: block;
+	font-size: 28px;
+	margin-bottom: 12px;
+	color: #c0d3e8;
+	text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+	.chosen-product .empty-reviews-message {
+		padding: 24px 16px;
+	}
+
+	.chosen-product .empty-reviews-message::before {
+		font-size: 24px;
+		margin-bottom: 8px;
+	}
 }

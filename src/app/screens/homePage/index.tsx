@@ -9,7 +9,7 @@ import FeaturedProducts from './FeaturedProducts';
 import Introduction from './Introduction';
 import SaleProducts from './SaleProducts';
 
-import ProductService from '../../services/ProductServices';
+import ProductService from '../../services/ProductService';
 import { Direction } from '../../../libs/enums/common.enum';
 import { Product } from '../../../libs/types/product';
 

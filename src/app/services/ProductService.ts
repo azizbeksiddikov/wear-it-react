@@ -28,7 +28,7 @@ class ProductService {
 	public async getProductById(id: string): Promise<Product> {
 		try {
 			const url = `${this.path}/product/${id}`;
-			const result = await axios.get(url);
+			const result = await axios.get(url, { withCredentials: true });
 
 			return result.data;
 		} catch (err) {
