@@ -20,6 +20,8 @@ function App() {
 	const handleSignUpClose = () => setSignupOpen(false);
 	const handleLoginClose = () => setLoginOpen(false);
 
+	console.log('APP.tsx');
+
 	return (
 		<>
 			{/* Header */}
@@ -35,15 +37,10 @@ function App() {
 			{/* Main content */}
 			<Switch>
 				<Route exact path="/" component={HomePage} />
+				{/* TODO: HelpPage */}
 				<Route path="/help" component={HelpPage} />
 				<Route path="/products">
-					<ProductsPage
-						cartItems={cartItems}
-						onAdd={onAdd}
-						onRemove={onRemove}
-						onDelete={onDelete}
-						onDeleteAll={onDeleteAll}
-					/>
+					<ProductsPage cartItems={cartItems} onAdd={onAdd} />
 				</Route>
 				<Route path="/orders" component={OrdersPage} />
 				<Route path="/my-page" component={UserPage} />

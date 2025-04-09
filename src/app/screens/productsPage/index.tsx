@@ -8,9 +8,6 @@ import { CartItem } from '../../../libs/types/search';
 interface ProductsPageProps {
 	cartItems: CartItem[];
 	onAdd: (item: CartItem) => void;
-	onRemove: (item: CartItem) => void;
-	onDelete: (item: CartItem) => void;
-	onDeleteAll: () => void;
 }
 
 export default function ProductsPage(props: ProductsPageProps) {

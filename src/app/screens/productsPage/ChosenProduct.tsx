@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -44,6 +44,7 @@ export default function ChosenProduct(props: ChosenProductProps) {
 	const { productId } = useParams<{ productId: string }>();
 	const { setChosenProduct } = actionDispatch(useDispatch());
 	const { chosenProduct } = useSelector(chosenProductRetriever);
+
 	const [swiperIndex, setSwiperIndex] = useState(0);
 	const swiperRef = useRef<any>(null);
 	const history = useHistory();
@@ -71,97 +72,93 @@ export default function ChosenProduct(props: ChosenProductProps) {
 		comment: chosenProduct?.memberReview?.comment ?? '',
 	});
 
-	useEffect(() => {
-		productService
-			.getProductById(productId)
-			.then((product: Product) => {
-				if (!product.productVariants || product.productVariants.length === 0) {
+	const fetchProduct = useMemo(
+		() => (id: string) => {
+			return productService
+				.getProductById(id)
+				.then((product: Product) => {
+					if (!product.productVariants || product.productVariants.length === 0) {
+						history.push('/products');
+						return null;
+					}
+
+					setChosenProduct(product);
+					setChosenVariant(product.productVariants[0]);
+
+					setReviewUpdate({
+						rating: product.memberReview?.rating ?? 0,
+						comment: product.memberReview?.comment ?? '',
+					});
+
+					return product;
+				})
+				.catch((err) => {
+					console.error('Error fetching product:', err);
 					history.push('/products');
-					return;
-				}
-
-				setChosenProduct(product);
-				setChosenVariant(product.productVariants[0]);
-
-				setReviewUpdate({
-					rating: product.memberReview?.rating ?? 0,
-					comment: product.memberReview?.comment ?? '',
+					return null;
 				});
-			})
-			.catch((err) => {
-				console.error('Error fetching product:', err);
-				history.push('/products');
-			});
+		},
+		[setChosenProduct],
+	);
+
+	// A single useEffect that handles both initial load and review changes
+	useEffect(() => {
+		// This will trigger on component mount AND when productId changes
+		fetchProduct(productId);
+
+		// Reset component state
+		setQuantity(1);
+		setSwiperIndex(0);
+		setIsEditingReview(false);
 	}, []);
-
-	// const { data: productData } = useQuery({
-	// 	queryKey: ['product', productId],
-	// 	queryFn: async () => {
-	// 		const data: Product = await productService.getProductById(productId);
-
-	// 		if (!data.productVariants || data.productVariants.length === 0) {
-	// 			history.push('/products');
-	// 			return null;
-	// 		}
-	// 		setChosenProduct(data);
-	// 		setChosenVariant(data.productVariants[0]);
-
-	// 		setReviewUpdate({
-	// 			rating: data.memberReview?.rating ?? 0,
-	// 			comment: data.memberReview?.comment ?? '',
-	// 		});
-	// 		return data;
-	// 	},
-	// 	retry: false,
-	// 	staleTime: 1 * 60 * 1000,
-	// });
 
 	if (!chosenProduct || !chosenProduct.productVariants || !chosenProduct.productVariants.length || !chosenVariant)
 		return;
 
 	// Handlers
 	const sizeHandler = (size: string) => {
+		// Check if the size was already selected
 		const newSize = chosenVariant.size === size ? '' : size;
 
+		let updatedVariant;
+
+		// if size is deselected, reset the variant
 		if (newSize === '') {
-			setChosenVariant({ ...chosenVariant, size: newSize, productPrice: 0, salePrice: 0 });
-			return;
-		}
-
-		const newColor = chosenVariant.color === '' ? '' : chosenVariant.color;
-
-		if (newColor !== '' && availableColorsForSize.includes(newColor)) {
-			const newVariant = chosenProduct.productVariants.find(
-				(variant) => variant.size === newSize && variant.color === newColor,
-			);
-			if (newVariant) {
-				setChosenVariant(newVariant);
-			}
+			updatedVariant = { ...chosenVariant, size: '', productPrice: 0, salePrice: 0 };
+		} else if (
+			chosenVariant.color &&
+			chosenVariant.color !== '' &&
+			availableColorsForSize.includes(chosenVariant.color)
+		) {
+			updatedVariant = chosenProduct.productVariants.find(
+				(v) => v.size === newSize && v.color === chosenVariant.color,
+			) || { ...chosenVariant, size: newSize };
 		} else {
-			setChosenVariant({ ...chosenVariant, size: newSize, color: '', productPrice: 0, salePrice: 0 });
+			// if size is selected and color is not selected
+			updatedVariant = { ...chosenVariant, size: newSize, productPrice: 0, salePrice: 0 };
 		}
+		setChosenVariant(updatedVariant);
 	};
 
 	const colorHandler = (color: string) => {
+		// Check if the color is already selected
 		const newColor = chosenVariant.color === color ? '' : color;
 
+		let updatedVariant;
+
+		// if color is deselected, reset the variant
 		if (newColor === '') {
-			setChosenVariant({ ...chosenVariant, color: newColor, productPrice: 0, salePrice: 0 });
-			return;
-		}
-
-		const newSize = chosenVariant.size === '' ? '' : chosenVariant.size;
-
-		if (newSize !== '' && availableSizesForColor.includes(newSize)) {
-			const newVariant = chosenProduct.productVariants.find(
-				(variant) => variant.color === newColor && variant.size === newSize,
-			);
-			if (newVariant) {
-				setChosenVariant(newVariant);
-			}
+			updatedVariant = { ...chosenVariant, color: '', productPrice: 0, salePrice: 0 };
+		} else if (chosenVariant.size && chosenVariant.size !== '' && availableSizesForColor.includes(chosenVariant.size)) {
+			updatedVariant = chosenProduct.productVariants.find(
+				(v) => v.color === newColor && v.size === chosenVariant.size,
+			) || { ...chosenVariant, color: newColor };
 		} else {
-			setChosenVariant({ ...chosenVariant, color: newColor, size: newSize, productPrice: 0, salePrice: 0 });
+			// if color is selected and size is not selected or not available
+			updatedVariant = { ...chosenVariant, color: newColor, productPrice: 0, salePrice: 0 };
 		}
+
+		setChosenVariant(updatedVariant);
 	};
 
 	// Extract unique sizes and colors from product variants
@@ -190,10 +187,8 @@ export default function ChosenProduct(props: ChosenProductProps) {
 		  ]
 		: availableSizes;
 
-	const handleSlideChange = () => {
-		if (swiperRef.current) {
-			setSwiperIndex(swiperRef.current.swiper.realIndex);
-		}
+	const handleSlideChange = (swiper) => {
+		setSwiperIndex(swiper.realIndex);
 	};
 
 	const incrementQuantityHandler = () => {
@@ -204,43 +199,6 @@ export default function ChosenProduct(props: ChosenProductProps) {
 		if (quantity > 0) {
 			setQuantity(quantity - 1);
 		}
-	};
-
-	const handleDeleteReview = () => {
-		if (!chosenProduct?.memberReview) return;
-		reviewService
-			.deleteReview(chosenProduct.memberReview._id)
-			.then(() => {
-				setChosenProduct({ ...chosenProduct, memberReview: undefined });
-				setReviewUpdate({ rating: 0, comment: '' });
-			})
-			.catch((err) => {
-				console.error('Error deleting review:', err);
-			});
-	};
-
-	const handleEditReview = () => {
-		setIsEditingReview(true);
-	};
-
-	const handleUpdateReview = () => {
-		if (!chosenProduct?.memberReview) return;
-
-		const reviewData: ReviewUpdateInput = {
-			_id: chosenProduct.memberReview._id,
-			rating: reviewUpdate.rating as number,
-			comment: reviewUpdate.comment.trim() || undefined,
-		};
-
-		reviewService
-			.updateReview(reviewData)
-			.then((data) => {
-				setIsEditingReview(false);
-				setChosenProduct({ ...chosenProduct, memberReview: data });
-			})
-			.catch((err) => {
-				console.error('Error updating review:', err);
-			});
 	};
 
 	const handleOpenReviewModal = () => {
@@ -275,11 +233,47 @@ export default function ChosenProduct(props: ChosenProductProps) {
 			.createReview(reviewData)
 			.then((data) => {
 				setReviewModalOpen(false);
-				setChosenProduct({ ...chosenProduct, memberReview: data });
+				fetchProduct(productId);
 			})
 			.catch((err) => {
 				console.error('Error creating review:', err);
 			});
+	};
+
+	const handleUpdateReview = () => {
+		if (!chosenProduct?.memberReview) return;
+
+		const reviewData: ReviewUpdateInput = {
+			_id: chosenProduct.memberReview._id,
+			rating: reviewUpdate.rating as number,
+			comment: reviewUpdate.comment.trim() || undefined,
+		};
+
+		reviewService
+			.updateReview(reviewData)
+			.then((data) => {
+				setIsEditingReview(false);
+				fetchProduct(productId);
+			})
+			.catch((err) => {
+				console.error('Error updating review:', err);
+			});
+	};
+
+	const handleDeleteReview = () => {
+		if (!chosenProduct?.memberReview) return;
+		reviewService
+			.deleteReview(chosenProduct.memberReview._id)
+			.then(() => {
+				fetchProduct(productId);
+			})
+			.catch((err) => {
+				console.error('Error deleting review:', err);
+			});
+	};
+
+	const handleEditReview = () => {
+		setIsEditingReview(true);
 	};
 
 	return (
@@ -329,8 +323,7 @@ export default function ChosenProduct(props: ChosenProductProps) {
 								{chosenProduct.onSale && <span className="on-sale-badge">On Sale</span>}
 							</Stack>
 							<Stack className={'rating-box'}>
-								{/* TODO: */}
-								<Rating name="half-rating" defaultValue={chosenProduct.reviewsRating ?? 0} precision={0.5} readOnly />
+								<Rating name="half-rating" value={chosenProduct.reviewsRating ?? 0} precision={0.5} readOnly />
 
 								<div className={'evaluation-box'}>
 									<div className={'product-view'}>
@@ -533,7 +526,7 @@ export default function ChosenProduct(props: ChosenProductProps) {
 														)}
 													</Box>
 													<Typography variant="subtitle2" gutterBottom>
-														{review.memberName || review.memberId}
+														{review.memberId}
 													</Typography>
 													{review?.comment && <Typography variant="body1">{review.comment}</Typography>}
 												</CardContent>

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useQueries } from '@tanstack/react-query';
 import { Dispatch } from '@reduxjs/toolkit';
 import { useDispatch } from 'react-redux';
@@ -24,46 +24,45 @@ export default function HomePage() {
 	const { setFeaturedProducts, setSaleProducts } = actionDispatch(useDispatch());
 	const productService = new ProductService();
 
-	const queries = [
-		{
-			queryKey: ['featured-products'],
-			queryFn: () =>
-				productService.getProducts({
-					page: 1,
-					limit: 4,
-					direction: Direction.DESC,
-					isFeatured: true,
-				}),
-		},
-		{
-			queryKey: ['sale-products'],
-			queryFn: () =>
-				productService.getProducts({
-					page: 1,
-					limit: 4,
-					direction: Direction.DESC,
-					onSale: true,
-				}),
-		},
-	];
+	useQueries({
+		queries: [
+			{
+				queryKey: ['featured-products'],
+				queryFn: async () => {
+					const result = await productService.getProducts({
+						page: 1,
+						limit: 4,
+						direction: Direction.DESC,
+						isFeatured: true,
+					});
+					if (result.list.length === 0) {
+						return [];
+					}
+					setFeaturedProducts(result.list);
+					return result.list;
+				},
+				staleTime: 5 * 60 * 1000, // 5 minutes
+			},
+			{
+				queryKey: ['sale-products'],
+				queryFn: async () => {
+					const result = await productService.getProducts({
+						page: 1,
+						limit: 4,
+						direction: Direction.DESC,
+						onSale: true,
+					});
+					if (result.list.length === 0) {
+						return [];
+					}
 
-	const results = useQueries({ queries });
-
-	useEffect(() => {
-		const [featuredResult, saleResult] = results;
-
-		if (featuredResult.isSuccess && featuredResult.data) {
-			setFeaturedProducts(featuredResult.data.list);
-		} else if (featuredResult.isError) {
-			console.error('Error fetching featured products:', featuredResult.error);
-		}
-
-		if (saleResult.isSuccess && saleResult.data) {
-			setSaleProducts(saleResult.data.list);
-		} else if (saleResult.isError) {
-			console.error('Error fetching sale products:', saleResult.error);
-		}
-	}, [results]);
+					setSaleProducts(result.list);
+					return result.list;
+				},
+				staleTime: 5 * 60 * 1000, // 5 minutes
+			},
+		],
+	});
 
 	return (
 		<div className={'homepage'}>

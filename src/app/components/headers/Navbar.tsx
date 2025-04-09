@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import PersonIcon from '@mui/icons-material/Person';
 import LogoutIcon from '@mui/icons-material/Logout';
 import LoginIcon from '@mui/icons-material/Login';
@@ -37,20 +37,20 @@ export default function Navbar(props: NavbarProps) {
 			sweetErrorHandling(Messages.error1);
 		}
 	};
-
+	console.log('Navbar');
 	return (
 		<div className="navbar">
 			<Container className="navbar-container">
-				<NavLink to="/" className="brand-logo">
+				<Link to="/" className="brand-logo">
 					<Box>Wear It</Box>
-				</NavLink>
+				</Link>
 
 				<nav className="nav-links">
-					<NavLink exact to="/">
+					<Link exact to="/">
 						Home
-					</NavLink>
-					<NavLink to="/products">Products</NavLink>
-					{authMember && <NavLink to="/orders">Orders</NavLink>}
+					</Link>
+					<Link to="/products">Products</Link>
+					{authMember && <Link to="/orders">Orders</Link>}
 				</nav>
 
 				<div className="auth-section">
@@ -63,7 +63,7 @@ export default function Navbar(props: NavbarProps) {
 								onDelete={onDelete}
 								onDeleteAll={onDeleteAll}
 							/>
-							<NavLink to="/my-page">
+							<Link to="/my-page">
 								<IconButton>
 									{authMember?.memberImage ? (
 										<Avatar src={authMember.memberImage} alt={authMember.memberFullName || 'Profile'} />
@@ -73,7 +73,7 @@ export default function Navbar(props: NavbarProps) {
 										</Avatar>
 									)}
 								</IconButton>
-							</NavLink>
+							</Link>
 							<Button variant="outlined" startIcon={<LogoutIcon />} onClick={handleLogoutRequest}>
 								Logout
 							</Button>

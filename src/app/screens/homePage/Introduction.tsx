@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import { Button, Typography } from '@mui/material';
 
@@ -13,11 +13,11 @@ export default function Introduction() {
 					Discover Your <span className="text-primary">Style</span>
 				</Typography>
 				<Typography className="intro-text">Find inspiration and shop the latest trends curated just for you</Typography>
-				<NavLink to="/products">
+				<Link to="/products">
 					<Button variant="contained" className="shop-button">
 						Shop Now
 					</Button>
-				</NavLink>
+				</Link>
 			</div>
 		</div>
 	);

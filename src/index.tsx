@@ -16,6 +16,8 @@ const container = document.getElementById('root')!;
 const root = createRoot(container);
 const queryClient = new QueryClient();
 
+console.log('HELLO WORLD in index.tsx');
+
 root.render(
 	<React.StrictMode>
 		<Provider store={store}>
@@ -30,7 +32,9 @@ root.render(
 				</QueryClientProvider>
 			</ContextProvider>
 		</Provider>
+		,
 	</React.StrictMode>,
 );
 
 reportWebVitals();
+// <React.StrictMode> -renders twice!
