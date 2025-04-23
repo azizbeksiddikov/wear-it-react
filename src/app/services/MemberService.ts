@@ -80,8 +80,6 @@ class MemberService {
 				},
 			});
 
-			console.log('updateMember:', result);
-
 			const member: Member = result.data;
 			localStorage.setItem('memberData', JSON.stringify(member));
 			return member;

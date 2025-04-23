@@ -37,7 +37,7 @@ export default function Navbar(props: NavbarProps) {
 			sweetErrorHandling(Messages.error1);
 		}
 	};
-	console.log('Navbar');
+
 	return (
 		<div className="navbar">
 			<Container className="navbar-container">

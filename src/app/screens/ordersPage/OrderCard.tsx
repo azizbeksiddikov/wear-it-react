@@ -25,18 +25,13 @@ export default function OrderCard(props: OrderCardProps) {
 	const { authMember, setOrderBuilder } = useGlobals();
 	const { order, setValue } = props;
 
-	console.log('* orderId:', order._id);
-
 	/** HANDLERS */
 	const deleteOrderHandler = async (e: T) => {
 		try {
 			if (!authMember) throw Error(Messages.error2);
 
-			const orderId = e.target.value;
-			console.log('*** deleteOrderHandler orderId:', order._id);
-
 			const input: OrderUpdateInput = {
-				_id: orderId,
+				_id: order._id,
 				orderStatus: OrderStatus.DELETED,
 			};
 
@@ -57,11 +52,8 @@ export default function OrderCard(props: OrderCardProps) {
 			if (!authMember) throw Error(Messages.error2);
 			// Payment process
 
-			const orderId = e.target.value;
-			console.log('*** processOrderHandler orderId:', order._id);
-
 			const input: OrderUpdateInput = {
-				_id: orderId,
+				_id: order._id,
 				orderStatus: OrderStatus.PROCESSING,
 			};
 
@@ -82,11 +74,8 @@ export default function OrderCard(props: OrderCardProps) {
 		try {
 			if (!authMember) throw Error(Messages.error2);
 
-			const orderId = e.target.value;
-			console.log('*** finishOrderHandler orderId:', order._id);
-
 			const input: OrderUpdateInput = {
-				_id: orderId,
+				_id: order._id,
 				orderStatus: OrderStatus.FINISHED,
 			};
 
@@ -107,11 +96,8 @@ export default function OrderCard(props: OrderCardProps) {
 		try {
 			if (!authMember) throw Error(Messages.error2);
 
-			const orderId = e.target.value;
-			console.log('*** cancelOrderHandler orderId:', order._id);
-
 			const input: OrderUpdateInput = {
-				_id: orderId,
+				_id: order._id,
 				orderStatus: OrderStatus.CANCELLED,
 			};
 
@@ -197,6 +183,7 @@ export default function OrderCard(props: OrderCardProps) {
 			{/* Card Content */}
 			<CardContent className="card-content" sx={{ p: 3 }}>
 				<Stack spacing={2}>
+					<Box>{order._id}</Box>
 					{order?.orderItems &&
 						order.orderItems.map((item: OrderItem) => {
 							return (

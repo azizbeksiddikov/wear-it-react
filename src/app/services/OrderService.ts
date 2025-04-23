@@ -32,7 +32,7 @@ class OrderService {
 			axios.defaults.withCredentials = true;
 
 			const url = `${this.path}/order/all/`;
-			let query = `?page=${input.page}&limit=${input.limit}`;
+			let query = `?page=${input.page}`;
 			if (input.orderStatus) {
 				query += `&orderStatus=${input.orderStatus}`;
 			}
@@ -50,8 +50,6 @@ class OrderService {
 			const url = `${serverApi}/order/update`;
 
 			const result = await axios.post(url, input, { withCredentials: true });
-			console.log(result.data);
-			console.log(url);
 
 			return result.data;
 		} catch (err) {

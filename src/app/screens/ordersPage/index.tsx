@@ -39,7 +39,6 @@ export default function OrdersPage() {
 	const [value, setValue] = useState<string>('ALL');
 	const [orderInquiry, setOrderInquiry] = useState<OrderInquiry>({
 		page: 1,
-		limit: 10,
 		orderStatus: OrderStatus.PAUSED,
 	});
 

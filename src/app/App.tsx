@@ -20,8 +20,6 @@ function App() {
 	const handleSignUpClose = () => setSignupOpen(false);
 	const handleLoginClose = () => setLoginOpen(false);
 
-	console.log('APP.tsx');
-
 	return (
 		<>
 			{/* Header */}

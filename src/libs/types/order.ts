@@ -75,6 +75,6 @@ export interface OrderItemInput {
 
 export interface OrderInquiry {
 	page: number;
-	limit: number;
+	limit?: number;
 	orderStatus?: OrderStatus;
 }
