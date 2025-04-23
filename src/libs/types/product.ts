@@ -59,8 +59,8 @@ export interface ProductsInquiry {
 	direction: Direction;
 	productCategory?: ProductCategory;
 	productGender?: ProductGender;
-	isFeatured?: boolean;
-	onSale?: boolean;
+	isFeatured: boolean;
+	onSale: boolean;
 	search?: string;
 }
 

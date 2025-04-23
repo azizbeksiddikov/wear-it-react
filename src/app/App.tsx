@@ -36,7 +36,6 @@ function App() {
 			/>
 			{/* Main content */}
 			<Switch>
-				<Route exact path="/" component={HomePage} />
 				{/* TODO: HelpPage */}
 				<Route path="/help" component={HelpPage} />
 				<Route path="/products">
@@ -44,6 +43,7 @@ function App() {
 				</Route>
 				<Route path="/orders" component={OrdersPage} />
 				<Route path="/my-page" component={UserPage} />
+				<Route path="/" component={HomePage} />
 			</Switch>
 			{/* Footer */}
 			<Footer />

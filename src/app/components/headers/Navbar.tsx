@@ -46,9 +46,7 @@ export default function Navbar(props: NavbarProps) {
 				</Link>
 
 				<nav className="nav-links">
-					<Link exact to="/">
-						Home
-					</Link>
+					<Link to="/">Home</Link>
 					<Link to="/products">Products</Link>
 					{authMember && <Link to="/orders">Orders</Link>}
 				</nav>

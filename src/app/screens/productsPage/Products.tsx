@@ -36,6 +36,7 @@ import ProductService from '../../services/ProductService';
 import { ProductCategory, ProductGender } from '../../../libs/enums/product.enum';
 import { ProductsInquiry, ProductsOutput } from '../../../libs/types/product';
 import { Direction } from '../../../libs/enums/common.enum';
+import { T } from '../../../libs/types/common';
 
 import '../../../css/productsPage/products.css';
 
@@ -52,163 +53,114 @@ const gendersOptions = ['All Genders', ...Object.values(ProductGender)];
 export default function Products() {
 	const { setProducts } = actionDispatch(useDispatch());
 	const { products } = useSelector(productsRetriever);
-	const [isInitialized, setIsInitialized] = useState(false);
+	const location = useLocation();
 
 	const [productSearch, setProductSearch] = useState<ProductsInquiry>({
 		page: 1,
 		limit: 6,
 		direction: Direction.DESC,
-		search: '',
 		isFeatured: false,
+		productCategory: undefined,
+		productGender: undefined,
 		onSale: false,
+		search: '',
 	});
 	const [searchText, setSearchText] = useState('');
 	const [totalPages, setTotalPages] = useState(1);
-	const [sortValue, setSortValue] = useState('new');
-	const location = useLocation();
-	const getQueryParams = () => {
-		const searchParams = new URLSearchParams(location.search);
-		const params: Record<string, string> = {};
 
-		searchParams.forEach((value, key) => {
-			params[key] = value;
-		});
-
-		return params;
-	};
 	const productService = new ProductService();
 
 	useEffect(() => {
-		if (!isInitialized) return;
+		const searchParams = new URLSearchParams(location.search);
 
+		productSearch.isFeatured = searchParams.get('isFeatured') === 'true';
+		productSearch.onSale = searchParams.get('onSale') === 'true';
+
+		if (searchParams.has('productCategory')) {
+			productSearch.productCategory = searchParams.get('productCategory')?.toUpperCase() as ProductCategory | undefined;
+		} else {
+			productSearch.productCategory = undefined;
+		}
+
+		if (searchParams.has('productGender')) {
+			productSearch.productGender = searchParams.get('productGender')?.toUpperCase() as ProductGender | undefined;
+		} else {
+			productSearch.productGender = undefined;
+		}
+
+		if (searchParams.has('search')) {
+			productSearch.search = searchParams.get('search') || '';
+			setSearchText(productSearch.search);
+		} else {
+			productSearch.search = '';
+			setSearchText('');
+		}
+
+		// Reset to page 1 when filters change
+
+		setProductSearch({ ...productSearch, page: 1 });
+	}, [location.search]);
+
+	useEffect(() => {
 		productService
 			.getProducts(productSearch)
 			.then((data) => {
 				setProducts(data);
-				const total = data.count[0]?.total ?? 0;
-				setTotalPages(Math.ceil(total / 8) || 1);
+				setTotalPages(data?.count?.total ?? 1);
 			})
 			.catch((err) => console.log(err));
 	}, [productSearch]);
 
-	useEffect(() => {
-		if (!isInitialized) return;
-
-		if (searchText === '') {
-			productSearch.search = '';
-			setProductSearch({ ...productSearch });
-		}
-	}, [searchText]);
-
-	useEffect(() => {
-		const params = getQueryParams();
-
-		productSearch.page = 1;
-		productSearch.direction = Direction.DESC;
-		setSortValue('new');
-		productSearch.productCategory = undefined;
-		productSearch.productGender = undefined;
-		productSearch.isFeatured = false;
-		productSearch.onSale = false;
-		productSearch.search = '';
-
-		// Check for filters in the URL
-		if (params.isFeatured) {
-			productSearch.isFeatured = params.isFeatured === 'true';
-		}
-
-		if (params.onSale) {
-			productSearch.onSale = params.onSale === 'true';
-		}
-
-		if (params.category) {
-			productSearch.productCategory = params.category.toUpperCase() as ProductCategory;
-		}
-
-		if (params.gender) {
-			productSearch.productGender = params.gender.toUpperCase() as ProductGender;
-		}
-
-		if (params.search) {
-			const search = params.search || '';
-			productSearch.search = search;
-			setSearchText(search);
-		}
-
-		if (Object.keys(params).length > 0) {
-			const cleanUrl = window.location.pathname;
-			window.history.replaceState({}, document.title, cleanUrl);
-		}
-
-		setIsInitialized(true);
-		setProductSearch({ ...productSearch });
-	}, [location.search]);
+	const searchTextHandler = (text: string) => {
+		setSearchText(text);
+	};
 
 	// HANDLERS
 	const PaginationHandler = (e: ChangeEvent, value: number) => {
-		productSearch.page = value;
-		setProductSearch({ ...productSearch });
+		// pageHandler
+		setProductSearch({ ...productSearch, page: value });
 	};
 
 	const directionHandler = (value: string) => {
-		setSortValue(value);
-		if (value === 'new') {
-			productSearch.direction = Direction.DESC;
-		} else if (value === 'old') {
-			productSearch.direction = Direction.ASC;
-		}
-		productSearch.page = 1;
-		setProductSearch({ ...productSearch });
+		if (value === 'new') productSearch.direction = Direction.DESC;
+		else if (value === 'old') productSearch.direction = Direction.ASC;
+
+		setProductSearch({ ...productSearch, page: 1 });
 	};
 
 	const categoryHandler = (value: string) => {
-		if (value === 'All Categories') {
-			productSearch.productCategory = undefined;
-		} else {
-			productSearch.productCategory = value as ProductCategory;
-		}
-		productSearch.page = 1;
+		if (value === 'All Categories') productSearch.productCategory = undefined;
+		else productSearch.productCategory = value as ProductCategory;
 
-		setProductSearch({ ...productSearch });
+		setProductSearch({ ...productSearch, page: 1 });
 	};
 
 	const searchProductHandler = () => {
-		productSearch.page = 1;
 		productSearch.search = searchText;
-		productSearch.page = 1;
-
-		setProductSearch({ ...productSearch });
+		setProductSearch({ ...productSearch, page: 1 });
 	};
 
 	const genderProductHandler = (value: string) => {
-		if (value === 'All Genders') {
-			productSearch.productGender = undefined;
-		} else {
-			productSearch.productGender = value as ProductGender;
-		}
-		productSearch.page = 1;
+		if (value === 'All Genders') productSearch.productGender = undefined;
+		else productSearch.productGender = value as ProductGender;
 
-		setProductSearch({ ...productSearch });
+		setProductSearch({ ...productSearch, page: 1 });
 	};
 
-	const isFeaturedHandler = (value: boolean) => {
+	const onFeatureHandler = (value: boolean) => {
 		productSearch.isFeatured = value;
-		productSearch.page = 1;
-
-		setProductSearch({ ...productSearch });
+		setProductSearch({ ...productSearch, page: 1 });
 	};
 
-	const onSaledHandler = (value: boolean) => {
+	const onSaleHandler = (value: boolean) => {
 		productSearch.onSale = value;
-		productSearch.page = 1;
-
-		setProductSearch({ ...productSearch });
+		setProductSearch({ ...productSearch, page: 1 });
 	};
 
 	const clearAllFiltersHandler = (e: ChangeEvent) => {
 		productSearch.page = 1;
+		productSearch.limit = 6;
 		productSearch.direction = Direction.DESC;
-		setSortValue('new');
 		productSearch.productCategory = undefined;
 		productSearch.productGender = undefined;
 		productSearch.isFeatured = false;
@@ -236,7 +188,7 @@ export default function Products() {
 							<TextField
 								placeholder="Search products..."
 								value={searchText}
-								onChange={(e) => setSearchText(e.target.value)}
+								onChange={(e) => searchTextHandler(e.target.value)}
 								onKeyDown={(e) => {
 									if (e.key === 'Enter') searchProductHandler();
 								}}
@@ -258,7 +210,11 @@ export default function Products() {
 
 						<FormControl variant="outlined" size="small" className="sort-select">
 							<InputLabel>Sort by</InputLabel>
-							<Select value={sortValue} onChange={(e) => directionHandler(e.target.value)} label="Sort by">
+							<Select
+								value={productSearch.direction === Direction.DESC ? 'new' : 'old'}
+								onChange={(e) => directionHandler(e.target.value)}
+								label="Sort by"
+							>
 								<MenuItem value="new">Newest</MenuItem>
 								<MenuItem value="old">Oldest</MenuItem>
 							</Select>
@@ -336,7 +292,7 @@ export default function Products() {
 									control={
 										<Checkbox
 											checked={!!productSearch.isFeatured}
-											onChange={(e) => isFeaturedHandler(e.target.checked)}
+											onChange={(e) => onFeatureHandler(e.target.checked)}
 											name="isFeatured"
 										/>
 									}
@@ -346,7 +302,7 @@ export default function Products() {
 									control={
 										<Checkbox
 											checked={!!productSearch.onSale}
-											onChange={(e) => onSaledHandler(e.target.checked)}
+											onChange={(e) => onSaleHandler(e.target.checked)}
 											name="isSale"
 										/>
 									}

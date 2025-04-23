@@ -60,26 +60,26 @@ export default function Footer() {
 									<Grid item xs={6}>
 										<ul>
 											<li>
-												<Link to="/products?gender=women">Women</Link>
+												<Link to="/products?productGender=women">Women</Link>
 											</li>
 											<li>
-												<Link to="/products?gender=men">Men</Link>
+												<Link to="/products?productGender=men">Men</Link>
 											</li>
 											<li>
-												<Link to="/products?category=accessories">Accessories</Link>
+												<Link to="/products?productCategory=accessories">Accessories</Link>
 											</li>
 										</ul>
 									</Grid>
 									<Grid item xs={6}>
 										<ul>
 											<li>
-												<Link to="/products?category=shoes">Shoes</Link>
+												<Link to="/products?productCategory=shoes">Shoes</Link>
 											</li>
 											<li>
-												<Link to="/products?category=tops">Tops</Link>
+												<Link to="/products?productCategory=tops">Tops</Link>
 											</li>
 											<li>
-												<Link to="/products?category=other">Other</Link>
+												<Link to="/products?productCategory=other">Other</Link>
 											</li>
 										</ul>
 									</Grid>
