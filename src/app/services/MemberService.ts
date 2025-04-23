@@ -19,6 +19,8 @@ class MemberService {
 			const member: Member = result.data.member;
 
 			localStorage.setItem('memberData', JSON.stringify(member));
+			window.location.href = '/'; // Redirect to homepage
+
 			return member;
 		} catch (err) {
 			console.log('Error, signup', err);
@@ -35,6 +37,8 @@ class MemberService {
 
 			const member: Member = result.data.member;
 			localStorage.setItem('memberData', JSON.stringify(member));
+			window.location.href = '/'; // Redirect to homepage
+
 			return member;
 		} catch (err) {
 			console.log('Error, login', err);
@@ -48,6 +52,7 @@ class MemberService {
 			await axios.post(url, {}, { withCredentials: true });
 
 			localStorage.removeItem('memberData');
+			window.location.href = '/'; // Redirect to homepage
 		} catch (err) {
 			console.log('Error, login', err);
 			throw err;
