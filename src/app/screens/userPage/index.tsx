@@ -39,9 +39,8 @@ export default function UserPage() {
 	});
 
 	/** Handlers */
-	const memberEmailHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-		memberUpdateInput.memberEmail = e.target.value;
-		setMemberUpdateInput({ ...memberUpdateInput });
+	const memberEmailHandler = (email: string) => {
+		setMemberUpdateInput({ ...memberUpdateInput, memberEmail: email });
 	};
 
 	const memberPhoneHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,25 +68,20 @@ export default function UserPage() {
 	// 	setMemberUpdateInput({ ...memberUpdateInput });
 	// };
 
-	const memberFullNameHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-		memberUpdateInput.memberFullName = e.target.value;
-		setMemberUpdateInput({ ...memberUpdateInput });
+	const memberFullNameHandler = (value: string) => {
+		setMemberUpdateInput({ ...memberUpdateInput, memberFullName: value });
 	};
 
-	const memberAddressHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-		memberUpdateInput.memberAddress = e.target.value;
-		setMemberUpdateInput({ ...memberUpdateInput });
+	const memberAddressHandler = (value: string) => {
+		setMemberUpdateInput({ ...memberUpdateInput, memberAddress: value });
 	};
 
-	const memberDescHandler = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-		memberUpdateInput.memberDesc = e.target.value;
-		setMemberUpdateInput({ ...memberUpdateInput });
+	const memberDescHandler = (value: string) => {
+		setMemberUpdateInput({ ...memberUpdateInput, memberDesc: value });
 	};
 
-	const memberPointsHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const value = parseInt(e.target.value) || 0;
-		memberUpdateInput.memberPoints = value;
-		setMemberUpdateInput({ ...memberUpdateInput });
+	const memberPointsHandler = (value: string) => {
+		setMemberUpdateInput({ ...memberUpdateInput, memberPoints: Number(value) || 0 });
 	};
 
 	const handleImageViewer = (e: T) => {
@@ -178,7 +172,9 @@ export default function UserPage() {
 										placeholder={authMember?.memberEmail ?? 'Enter your email'}
 										value={memberUpdateInput.memberEmail}
 										name="memberEmail"
-										onChange={memberEmailHandler}
+										onChange={(e: T) => {
+											memberEmailHandler(e.target.value);
+										}}
 									/>
 								</Box>
 
@@ -193,7 +189,7 @@ export default function UserPage() {
 										placeholder={authMember?.memberFullName ? authMember.memberFullName : 'Enter your full name'}
 										value={memberUpdateInput.memberFullName}
 										name="memberFullName"
-										onChange={memberFullNameHandler}
+										onChange={(e: T) => memberFullNameHandler(e.target.value)}
 									/>
 								</Box>
 							</Stack>
@@ -226,7 +222,9 @@ export default function UserPage() {
 										placeholder={authMember?.memberAddress ? authMember.memberAddress : 'Enter your address'}
 										value={memberUpdateInput.memberAddress}
 										name="memberAddress"
-										onChange={memberAddressHandler}
+										onChange={(e: T) => {
+											memberAddressHandler(e.target.value);
+										}}
 									/>
 								</Box>
 							</Stack>
@@ -244,7 +242,9 @@ export default function UserPage() {
 										placeholder="Enter your points"
 										value={memberUpdateInput.memberPoints}
 										name="memberPoints"
-										onChange={memberPointsHandler}
+										onChange={(e: T) => {
+											memberPointsHandler(e.target.value);
+										}}
 									/>
 								</Box>
 							</Stack>
@@ -260,7 +260,9 @@ export default function UserPage() {
 									placeholder={authMember?.memberDesc ? authMember.memberDesc : 'Tell us about yourself'}
 									value={memberUpdateInput.memberDesc}
 									name="memberDesc"
-									onChange={memberDescHandler}
+									onChange={(e: T) => {
+										memberDescHandler(e.target.value);
+									}}
 									rows={4}
 								/>
 							</Box>
