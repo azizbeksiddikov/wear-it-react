@@ -32,11 +32,11 @@ export interface OrderInput {
 
 export interface OrderUpdateInput {
 	_id: string;
-	orderStatus?: OrderStatus;
-	// orderShippingAddress?: string;
-	// orderSubTotal?: number;
-	// orderShippingCost?: number;
-	// orderTotalAmount?: number;
+	orderStatus: OrderStatus;
+	orderShippingAddress: string;
+	orderSubTotal: number;
+	orderShippingCost: number;
+	orderTotalAmount: number;
 }
 
 export interface OrderItem {

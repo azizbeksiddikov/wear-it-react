@@ -1,3 +1,5 @@
+import { Member } from './member';
+
 export interface Review {
 	_id: string;
 	productId: string;
@@ -6,6 +8,8 @@ export interface Review {
 	comment?: string;
 	createdAt: Date;
 	updatedAt: Date;
+
+	memberData?: Member;
 }
 
 export interface ReviewInput {

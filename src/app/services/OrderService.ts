@@ -2,6 +2,7 @@ import axios from 'axios';
 import { serverApi } from '../../libs/config';
 import { BasketData } from '../../libs/types/search';
 import { Order, OrderInquiry, OrderUpdateInput } from '../../libs/types/order';
+import { T } from '../../libs/types/common';
 
 class OrderService {
 	private readonly path: string;
@@ -52,8 +53,8 @@ class OrderService {
 			const result = await axios.post(url, input, { withCredentials: true });
 
 			return result.data;
-		} catch (err) {
-			console.log('Error, getMyOrders:', err);
+		} catch (err: any) {
+			console.log('Error, updateOrder:', err.response?.data?.message);
 			throw err;
 		}
 	}

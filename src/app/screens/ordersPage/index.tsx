@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from 'react';
 import { useState, SyntheticEvent } from 'react';
-import { useQueries } from '@tanstack/react-query';
 import { useDispatch } from 'react-redux';
 import { Dispatch } from '@reduxjs/toolkit';
 import { setPausedOrders, setProcessOrders, setFinishedOrders, setAllOrders } from './slice';

@@ -17,6 +17,7 @@ class ProductService {
 			if (input.isFeatured) url += `&isFeatured=${input.isFeatured}`;
 			if (input.onSale) url += `&onSale=${input.onSale}`;
 			if (input.search) url += `&search=${input.search}`;
+
 			const result = await axios.get(url);
 			return result.data;
 		} catch (err) {
@@ -28,6 +29,7 @@ class ProductService {
 	public async getProductById(id: string): Promise<Product> {
 		try {
 			const url = `${this.path}/product/${id}`;
+
 			const result = await axios.get(url, { withCredentials: true });
 
 			return result.data;

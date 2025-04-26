@@ -37,7 +37,7 @@ class MemberService {
 
 			const member: Member = result.data.member;
 			localStorage.setItem('memberData', JSON.stringify(member));
-			window.location.href = '/'; // Redirect to homepage
+			window.location.href = '/';
 
 			return member;
 		} catch (err) {

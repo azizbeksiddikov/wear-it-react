@@ -30,6 +30,7 @@ import { CartItem } from '../../../libs/types/search';
 import { ReviewInput, ReviewUpdateInput } from '../../../libs/types/review';
 
 import '../../../css/productsPage/chosenProduct.css';
+import { useGlobals } from '../../hooks/useGlobals';
 
 const actionDispatch = (dispatch: Dispatch) => ({
 	setChosenProduct: (data: Product) => dispatch(setChosenProduct(data)),
@@ -41,6 +42,7 @@ interface ChosenProductProps {
 }
 export default function ChosenProduct(props: ChosenProductProps) {
 	const { onAdd } = props;
+	const { authMember } = useGlobals();
 	const { productId } = useParams<{ productId: string }>();
 	const { setChosenProduct } = actionDispatch(useDispatch());
 	const { chosenProduct } = useSelector(chosenProductRetriever);
@@ -415,23 +417,25 @@ export default function ChosenProduct(props: ChosenProductProps) {
 										});
 										setQuantity(1);
 									}}
-									style={{ backgroundColor: '#4caf50', color: 'white' }}
+									style={{
+										backgroundColor: authMember ? '#4caf50' : '#9e9e9e',
+										color: 'white',
+									}}
 									variant="contained"
+									disabled={!authMember}
 								>
 									Add To Basket
 								</Button>
-								{/* isReviewValid: if false, button enabled */}
 
-								{/* Button is disabled when isReviewValid is false */}
 								{!chosenProduct?.memberReview && (
 									<Button
 										style={{
-											backgroundColor: chosenProduct?.isReviewValid === false ? '#9e9e9e' : '#2196f3',
+											backgroundColor: !authMember || chosenProduct?.isReviewValid === false ? '#9e9e9e' : '#2196f3',
 											color: 'white',
 										}}
 										variant="contained"
 										onClick={handleOpenReviewModal}
-										disabled={chosenProduct?.isReviewValid === false}
+										disabled={!authMember || chosenProduct?.isReviewValid === false}
 									>
 										Write Review
 									</Button>
@@ -517,7 +521,10 @@ export default function ChosenProduct(props: ChosenProductProps) {
 										<ListItem key={review._id} disableGutters disablePadding sx={{ display: 'block', mb: 2 }}>
 											<Card className="review-card">
 												<CardContent>
-													<Box className="review-header">
+													<Box
+														className="review-header"
+														sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}
+													>
 														<Rating value={review.rating} readOnly precision={0.5} />
 														{review.createdAt && (
 															<Typography variant="body2" color="textSecondary">
@@ -525,9 +532,29 @@ export default function ChosenProduct(props: ChosenProductProps) {
 															</Typography>
 														)}
 													</Box>
-													<Typography variant="subtitle2" gutterBottom>
-														{review.memberId}
-													</Typography>
+
+													{/* User info with avatar */}
+													<Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
+														<Box
+															component="img"
+															src={review.memberData?.memberImage || '/img/default-user.webp'}
+															alt="User"
+															sx={{
+																width: 36,
+																height: 36,
+																borderRadius: '50%',
+																mr: 1.5,
+																objectFit: 'cover',
+															}}
+															onError={(e) => {
+																e.currentTarget.src = '/icons/default-user.svg';
+															}}
+														/>
+														<Typography variant="subtitle2" gutterBottom sx={{ m: 0 }}>
+															{review.memberData?.memberFullName || review.memberData?.memberEmail || 'Anonymous'}
+														</Typography>
+													</Box>
+
 													{review?.comment && <Typography variant="body1">{review.comment}</Typography>}
 												</CardContent>
 											</Card>

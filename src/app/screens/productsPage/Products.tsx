@@ -36,7 +36,6 @@ import ProductService from '../../services/ProductService';
 import { ProductCategory, ProductGender } from '../../../libs/enums/product.enum';
 import { ProductsInquiry, ProductsOutput } from '../../../libs/types/product';
 import { Direction } from '../../../libs/enums/common.enum';
-import { T } from '../../../libs/types/common';
 
 import '../../../css/productsPage/products.css';
 
@@ -96,9 +95,12 @@ export default function Products() {
 			setSearchText('');
 		}
 
-		// Reset to page 1 when filters change
-
 		setProductSearch({ ...productSearch, page: 1 });
+		window.scrollTo({
+			top: 25,
+			left: 0,
+			behavior: 'smooth',
+		});
 	}, [location.search]);
 
 	useEffect(() => {
@@ -106,9 +108,15 @@ export default function Products() {
 			.getProducts(productSearch)
 			.then((data) => {
 				setProducts(data);
-				setTotalPages(data?.count?.total ?? 1);
+
+				setTotalPages(Math.ceil(data.count[0]?.total / productSearch.limit) || 1);
 			})
 			.catch((err) => console.log(err));
+		window.scrollTo({
+			top: 25,
+			left: 0,
+			behavior: 'smooth',
+		});
 	}, [productSearch]);
 
 	const searchTextHandler = (text: string) => {

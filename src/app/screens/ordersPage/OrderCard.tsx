@@ -22,17 +22,21 @@ interface OrderCardProps {
 }
 
 export default function OrderCard(props: OrderCardProps) {
-	const { authMember, setOrderBuilder } = useGlobals();
+	const { authMember, setAuthMember, setOrderBuilder } = useGlobals();
 	const { order, setValue } = props;
 
 	/** HANDLERS */
-	const deleteOrderHandler = async (e: T) => {
+	const deleteOrderHandler = async () => {
 		try {
 			if (!authMember) throw Error(Messages.error2);
 
 			const input: OrderUpdateInput = {
 				_id: order._id,
 				orderStatus: OrderStatus.DELETED,
+				orderShippingAddress: order.orderShippingAddress,
+				orderSubTotal: order.orderSubTotal,
+				orderShippingCost: order.orderShippingCost,
+				orderTotalAmount: order.orderTotalAmount,
 			};
 
 			const confirmation = window.confirm('Do you want to delete this order?');
@@ -47,22 +51,34 @@ export default function OrderCard(props: OrderCardProps) {
 		}
 	};
 
-	const processOrderHandler = async (e: T) => {
+	const processOrderHandler = async () => {
 		try {
 			if (!authMember) throw Error(Messages.error2);
-			// Payment process
 
 			const input: OrderUpdateInput = {
 				_id: order._id,
 				orderStatus: OrderStatus.PROCESSING,
+				orderShippingAddress: order.orderShippingAddress,
+				orderSubTotal: order.orderSubTotal,
+				orderShippingCost: order.orderShippingCost,
+				orderTotalAmount: order.orderTotalAmount,
 			};
 
 			const confirmation = window.confirm('Do you want to proceed with payment?');
 			if (confirmation) {
 				const order = new OrderService();
-				await order.updateOrder(input);
-				setValue(OrderStatus.PROCESSING);
-				setOrderBuilder(new Date());
+				order
+					.updateOrder(input)
+					.then((data: T) => {
+						setAuthMember(data.member);
+						localStorage.setItem('memberData', JSON.stringify(data.member));
+
+						setValue(OrderStatus.PROCESSING);
+						setOrderBuilder(new Date());
+					})
+					.catch((err: T) => {
+						sweetErrorHandling(err, 2000).then();
+					});
 			}
 		} catch (err) {
 			console.log(err);
@@ -70,13 +86,17 @@ export default function OrderCard(props: OrderCardProps) {
 		}
 	};
 
-	const finishOrderHandler = async (e: T) => {
+	const finishOrderHandler = async () => {
 		try {
 			if (!authMember) throw Error(Messages.error2);
 
 			const input: OrderUpdateInput = {
 				_id: order._id,
 				orderStatus: OrderStatus.FINISHED,
+				orderShippingAddress: order.orderShippingAddress,
+				orderSubTotal: order.orderSubTotal,
+				orderShippingCost: order.orderShippingCost,
+				orderTotalAmount: order.orderTotalAmount,
 			};
 
 			const confirmation = window.confirm('Have you received your order?');
@@ -92,20 +112,34 @@ export default function OrderCard(props: OrderCardProps) {
 		}
 	};
 
-	const cancelOrderHandler = async (e: T) => {
+	const cancelOrderHandler = async () => {
 		try {
 			if (!authMember) throw Error(Messages.error2);
 
 			const input: OrderUpdateInput = {
 				_id: order._id,
 				orderStatus: OrderStatus.CANCELLED,
+				orderShippingAddress: order.orderShippingAddress,
+				orderSubTotal: order.orderSubTotal,
+				orderShippingCost: order.orderShippingCost,
+				orderTotalAmount: order.orderTotalAmount,
 			};
 
 			const confirmation = window.confirm('Do you want to return this order?');
 			if (confirmation) {
 				const order = new OrderService();
-				await order.updateOrder(input);
-				setOrderBuilder(new Date());
+				order
+					.updateOrder(input)
+					.then((data: T) => {
+						setAuthMember(data.member);
+						localStorage.setItem('memberData', JSON.stringify(data.member));
+
+						setValue('ALL');
+						setOrderBuilder(new Date());
+					})
+					.catch((err: T) => {
+						sweetErrorHandling(err, 2000).then();
+					});
 			}
 		} catch (err) {
 			console.log(err);
