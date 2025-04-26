@@ -49,6 +49,7 @@ export default function Navbar(props: NavbarProps) {
 					<Link to="/">Home</Link>
 					<Link to="/products">Products</Link>
 					{authMember && <Link to="/orders">Orders</Link>}
+					<Link to="/help">Help</Link>
 				</nav>
 
 				<div className="auth-section">

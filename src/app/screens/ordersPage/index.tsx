@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { useState, SyntheticEvent } from 'react';
 import { useDispatch } from 'react-redux';
 import { Dispatch } from '@reduxjs/toolkit';
@@ -34,16 +34,18 @@ export default function OrdersPage() {
 	const history = useHistory();
 	const { authMember, orderBuilder } = useGlobals();
 	if (!authMember) history.push('/');
+
 	const { setAllOrders, setPausedOrders, setProcessOrders, setFinishedOrders } = actionDispatch(useDispatch());
+
 	const [value, setValue] = useState<string>('ALL');
 	const [orderInquiry, setOrderInquiry] = useState<OrderInquiry>({
 		page: 1,
 		orderStatus: OrderStatus.PAUSED,
 	});
 
-	const orderService = new OrderService();
-
 	useEffect(() => {
+		const orderService = new OrderService();
+
 		// All Orders
 		orderService
 			.getMyOrders({

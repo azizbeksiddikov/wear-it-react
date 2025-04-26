@@ -35,27 +35,29 @@ export default function FeaturedProducts() {
 					{featuredProducts && featuredProducts.length > 0 ? (
 						featuredProducts.map((product) => (
 							<Grid item xs={12} sm={6} md={3} key={product._id}>
-								<Stack className="product-card">
-									<Box className="product-image-wrapper">
-										<img src={product.productImages[0]} alt={product.productName} className="product-image" />
-										<Box component="span" className="product-category">
-											{product.productCategory}
+								<Link to={`/products/${product._id}`} style={{ textDecoration: 'none' }}>
+									<Stack className="product-card">
+										<Box className="product-image-wrapper">
+											<img src={product.productImages[0]} alt={product.productName} className="product-image" />
+											<Box component="span" className="product-category">
+												{product.productCategory}
+											</Box>
 										</Box>
-									</Box>
 
-									<Stack direction="row" className="product-info" alignItems="center" justifyContent="space-between">
-										<Box>
-											<Typography variant="h6" className="product-name">
-												{product.productName}
-											</Typography>
-										</Box>
-										<Tooltip title="View Details" placement="top" arrow>
-											<Button className="details-button" component={Link} to={`/products/${product._id}`}>
-												<ReadMoreIcon />
-											</Button>
-										</Tooltip>
+										<Stack direction="row" className="product-info" alignItems="center" justifyContent="space-between">
+											<Box>
+												<Typography variant="h6" className="product-name">
+													{product.productName}
+												</Typography>
+											</Box>
+											<Tooltip title="View Details" placement="top" arrow>
+												<Button className="details-button" component={Link} to={`/products/${product._id}`}>
+													<ReadMoreIcon />
+												</Button>
+											</Tooltip>
+										</Stack>
 									</Stack>
-								</Stack>
+								</Link>
 							</Grid>
 						))
 					) : (

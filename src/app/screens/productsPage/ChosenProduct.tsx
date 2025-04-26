@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -74,44 +74,32 @@ export default function ChosenProduct(props: ChosenProductProps) {
 		comment: chosenProduct?.memberReview?.comment ?? '',
 	});
 
-	const fetchProduct = useMemo(
-		() => (id: string) => {
-			return productService
-				.getProductById(id)
-				.then((product: Product) => {
-					if (!product.productVariants || product.productVariants.length === 0) {
-						history.push('/products');
-						return null;
-					}
-
-					setChosenProduct(product);
-					setChosenVariant(product.productVariants[0]);
-
-					setReviewUpdate({
-						rating: product.memberReview?.rating ?? 0,
-						comment: product.memberReview?.comment ?? '',
-					});
-
-					return product;
-				})
-				.catch((err) => {
-					console.error('Error fetching product:', err);
-					history.push('/products');
-					return null;
-				});
-		},
-		[setChosenProduct],
-	);
-
-	// A single useEffect that handles both initial load and review changes
 	useEffect(() => {
-		// This will trigger on component mount AND when productId changes
-		fetchProduct(productId);
-
-		// Reset component state
 		setQuantity(1);
 		setSwiperIndex(0);
 		setIsEditingReview(false);
+
+		// Fetch product data
+		productService
+			.getProductById(productId)
+			.then((product: Product) => {
+				if (!product.productVariants || product.productVariants.length === 0) {
+					history.push('/products');
+					return;
+				}
+
+				setChosenProduct(product);
+				setChosenVariant(product.productVariants[0]);
+
+				setReviewUpdate({
+					rating: product.memberReview?.rating ?? 0,
+					comment: product.memberReview?.comment ?? '',
+				});
+			})
+			.catch((err) => {
+				console.error('Error fetching product:', err);
+				history.push('/products');
+			});
 	}, []);
 
 	if (!chosenProduct || !chosenProduct.productVariants || !chosenProduct.productVariants.length || !chosenVariant)
