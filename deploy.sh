@@ -18,4 +18,5 @@ fi
 
 yarn
 yarn run build
+pm2 delete WEAR-IT-REACT 2>/dev/null || true
 pm2 start "yarn run start:prod" --name=WEAR-IT-REACT
