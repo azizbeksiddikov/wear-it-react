@@ -9,7 +9,7 @@ export default function Introduction() {
 	return (
 		<div className="introduction-frame">
 			<div className="introduction-frame-content">
-				<Typography className="introduction-title">
+				<Typography variant="h1" className="introduction-title">
 					Discover Your <span className="text-primary">Style</span>
 				</Typography>
 				<Typography className="intro-text">Find inspiration and shop the latest trends curated just for you</Typography>
