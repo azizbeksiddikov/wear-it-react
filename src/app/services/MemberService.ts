@@ -59,6 +59,23 @@ class MemberService {
 		}
 	}
 
+	public async getMemberDetail(): Promise<Member | null> {
+		try {
+			const url = `${this.path}/member/detail`;
+			const result = await axios.get(url, {
+				withCredentials: true,
+			});
+
+			const member: Member = result.data;
+			localStorage.setItem('memberData', JSON.stringify(member));
+			return member;
+		} catch (err) {
+			// If not authenticated, return null
+			localStorage.removeItem('memberData');
+			return null;
+		}
+	}
+
 	public async update(input: MemberUpdateInput): Promise<Member> {
 		try {
 			const formData = new FormData();

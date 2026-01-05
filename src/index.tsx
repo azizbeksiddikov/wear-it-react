@@ -10,7 +10,11 @@ import theme from './app/MaterialTheme';
 import { BrowserRouter as Router } from 'react-router-dom';
 import ContextProvider from './app/context/ContextProvider';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import axios from 'axios';
 import './css/index.css';
+
+// Configure axios to send credentials with all requests
+axios.defaults.withCredentials = true;
 
 const container = document.getElementById('root')!;
 const root = createRoot(container);
