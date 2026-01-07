@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -54,8 +54,8 @@ export default function ChosenProduct(props: ChosenProductProps) {
 	const [reviewModalOpen, setReviewModalOpen] = useState(false);
 	const [isEditingReview, setIsEditingReview] = useState(false);
 
-	const productService = new ProductService();
-	const reviewService = new ReviewService();
+	const productService = useMemo(() => new ProductService(), []);
+	const reviewService = useMemo(() => new ReviewService(), []);
 
 	const [chosenVariant, setChosenVariant] = useState<ProductVariant>({
 		_id: '',
@@ -74,33 +74,40 @@ export default function ChosenProduct(props: ChosenProductProps) {
 		comment: chosenProduct?.memberReview?.comment ?? '',
 	});
 
+	const fetchProduct = useCallback(
+		(id: string) => {
+			productService
+				.getProductById(id)
+				.then((product: Product) => {
+					if (!product.productVariants || product.productVariants.length === 0) {
+						history.push('/products');
+						return;
+					}
+
+					setChosenProduct(product);
+					setChosenVariant(product.productVariants[0]);
+
+					setReviewUpdate({
+						rating: product.memberReview?.rating ?? 0,
+						comment: product.memberReview?.comment ?? '',
+					});
+				})
+				.catch((err) => {
+					console.error('Error fetching product:', err);
+					history.push('/products');
+				});
+		},
+		[productService, history, setChosenProduct],
+	);
+
 	useEffect(() => {
 		setQuantity(1);
 		setSwiperIndex(0);
 		setIsEditingReview(false);
 
 		// Fetch product data
-		productService
-			.getProductById(productId)
-			.then((product: Product) => {
-				if (!product.productVariants || product.productVariants.length === 0) {
-					history.push('/products');
-					return;
-				}
-
-				setChosenProduct(product);
-				setChosenVariant(product.productVariants[0]);
-
-				setReviewUpdate({
-					rating: product.memberReview?.rating ?? 0,
-					comment: product.memberReview?.comment ?? '',
-				});
-			})
-			.catch((err) => {
-				console.error('Error fetching product:', err);
-				history.push('/products');
-			});
-	}, []);
+		fetchProduct(productId);
+	}, [fetchProduct, productId]);
 
 	if (!chosenProduct || !chosenProduct.productVariants || !chosenProduct.productVariants.length || !chosenVariant)
 		return;
@@ -120,7 +127,7 @@ export default function ChosenProduct(props: ChosenProductProps) {
 			chosenVariant.color !== '' &&
 			availableColorsForSize.includes(chosenVariant.color)
 		) {
-			updatedVariant = chosenProduct.productVariants.find(
+			updatedVariant = chosenProduct.productVariants?.find(
 				(v) => v.size === newSize && v.color === chosenVariant.color,
 			) || { ...chosenVariant, size: newSize };
 		} else {
@@ -140,7 +147,7 @@ export default function ChosenProduct(props: ChosenProductProps) {
 		if (newColor === '') {
 			updatedVariant = { ...chosenVariant, color: '', productPrice: 0, salePrice: 0 };
 		} else if (chosenVariant.size && chosenVariant.size !== '' && availableSizesForColor.includes(chosenVariant.size)) {
-			updatedVariant = chosenProduct.productVariants.find(
+			updatedVariant = chosenProduct.productVariants?.find(
 				(v) => v.color === newColor && v.size === chosenVariant.size,
 			) || { ...chosenVariant, color: newColor };
 		} else {

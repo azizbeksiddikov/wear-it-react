@@ -41,8 +41,8 @@ export default function OrderCard(props: OrderCardProps) {
 
 			const confirmation = window.confirm('Do you want to delete this order?');
 			if (confirmation) {
-				const order = new OrderService();
-				await order.updateOrder(input);
+				const orderService = new OrderService();
+				await orderService.updateOrder(input);
 				setOrderBuilder(new Date());
 			}
 		} catch (err) {
@@ -66,8 +66,8 @@ export default function OrderCard(props: OrderCardProps) {
 
 			const confirmation = window.confirm('Do you want to proceed with payment?');
 			if (confirmation) {
-				const order = new OrderService();
-				order
+				const orderService = new OrderService();
+				orderService
 					.updateOrder(input)
 					.then((data: T) => {
 						setAuthMember(data.member);
@@ -101,8 +101,8 @@ export default function OrderCard(props: OrderCardProps) {
 
 			const confirmation = window.confirm('Have you received your order?');
 			if (confirmation) {
-				const order = new OrderService();
-				await order.updateOrder(input);
+				const orderService = new OrderService();
+				await orderService.updateOrder(input);
 				setValue(OrderStatus.FINISHED);
 				setOrderBuilder(new Date());
 			}
@@ -127,8 +127,8 @@ export default function OrderCard(props: OrderCardProps) {
 
 			const confirmation = window.confirm('Do you want to return this order?');
 			if (confirmation) {
-				const order = new OrderService();
-				order
+				const orderService = new OrderService();
+				orderService
 					.updateOrder(input)
 					.then((data: T) => {
 						setAuthMember(data.member);
