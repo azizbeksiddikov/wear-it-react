@@ -101,7 +101,7 @@ export default function Products() {
 			.then((data) => {
 				setProducts(data);
 
-				setTotalPages(Math.ceil(data.count[0]?.total / productSearch.limit) || 1);
+				setTotalPages(Math.ceil((data.count as any)[0]?.total / productSearch.limit) || 1);
 			})
 			.catch((err) => console.log(err));
 		window.scrollTo({
@@ -227,7 +227,7 @@ export default function Products() {
 				{/* Main content with filters, products, pagination */}
 				<Stack className="products-content">
 					{/* Filters Sidebar */}
-					<Grid item xs={12} md={3} className="filters-sidebar">
+					<Grid size={{ xs: 12, md: 3 }} className="filters-sidebar">
 						<Typography variant="h6" className="filter-heading">
 							Filters
 						</Typography>
@@ -325,7 +325,7 @@ export default function Products() {
 							<>
 								<Grid container spacing={3} className="products-grid">
 									{products.list.map((product) => (
-										<Grid item xs={12} sm={6} lg={4} key={product._id}>
+										<Grid size={{ xs: 12, sm: 6, lg: 4 }} key={product._id}>
 											<Link to={`/products/${product._id}`} className="product-link">
 												<Card className="product-card">
 													{/* Product image with badges */}

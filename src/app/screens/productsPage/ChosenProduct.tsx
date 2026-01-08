@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -27,7 +27,7 @@ import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { FreeMode, Navigation, Thumbs } from 'swiper';
+import { FreeMode, Navigation, Thumbs } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/free-mode';
 import 'swiper/css/navigation';
@@ -62,6 +62,7 @@ export default function ChosenProduct(props: ChosenProductProps) {
 	const [swiperIndex, setSwiperIndex] = useState(0);
 	const swiperRef = useRef<any>(null);
 	const currentProductIdRef = useRef<string>('');
+	const [prevProductId, setPrevProductId] = useState(productId);
 	const navigate = useNavigate();
 
 	const [reviewModalOpen, setReviewModalOpen] = useState(false);
@@ -88,11 +89,29 @@ export default function ChosenProduct(props: ChosenProductProps) {
 		comment: chosenProduct?.memberReview?.comment ?? '',
 	});
 
+	if (productId !== prevProductId) {
+		setPrevProductId(productId);
+		setQuantity(1);
+		setSwiperIndex(0);
+		setIsEditingReview(false);
+		setChosenVariant({
+			_id: '',
+			productId: '',
+			size: '',
+			color: '',
+			productPrice: 0,
+			stockQuantity: 0,
+			salePrice: undefined,
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		});
+		setIsLoading(true);
+	}
+
 	const fetchProduct = useCallback(
 		(id: string) => {
 			// Update the ref to track the current productId
 			currentProductIdRef.current = id;
-			setIsLoading(true);
 
 			productService
 				.getProductById(id)
@@ -124,24 +143,10 @@ export default function ChosenProduct(props: ChosenProductProps) {
 	);
 
 	useEffect(() => {
-		// Reset all state immediately when productId changes
-		setQuantity(1);
-		setSwiperIndex(0);
-		setIsEditingReview(false);
-		setChosenVariant({
-			_id: '',
-			productId: '',
-			size: '',
-			color: '',
-			productPrice: 0,
-			stockQuantity: 0,
-			salePrice: undefined,
-			createdAt: new Date(),
-			updatedAt: new Date(),
-		});
-
 		// Fetch product data
-		fetchProduct(productId);
+		if (productId) {
+			fetchProduct(productId);
+		}
 	}, [fetchProduct, productId]);
 
 	if (isLoading) {
@@ -242,7 +247,7 @@ export default function ChosenProduct(props: ChosenProductProps) {
 	if (!chosenProduct || !chosenProduct.productVariants || !chosenProduct.productVariants.length || !chosenVariant)
 		return;
 
-	const handleSlideChange = (swiper) => {
+	const handleSlideChange = (swiper: any) => {
 		setSwiperIndex(swiper.realIndex);
 	};
 
@@ -279,16 +284,18 @@ export default function ChosenProduct(props: ChosenProductProps) {
 
 	const handleCreateReview = () => {
 		const reviewData: ReviewInput = {
-			productId,
+			productId: productId as string,
 			rating: reviewUpdate.rating as number,
-			comment: reviewUpdate.comment.trim() || undefined,
+			comment: (reviewUpdate.comment || '').trim() || undefined,
 		};
 
 		reviewService
 			.createReview(reviewData)
-			.then((data) => {
+			.then(() => {
 				setReviewModalOpen(false);
-				fetchProduct(productId);
+				if (productId) {
+					fetchProduct(productId as string);
+				}
 			})
 			.catch((err) => {
 				console.error('Error creating review:', err);
@@ -301,14 +308,16 @@ export default function ChosenProduct(props: ChosenProductProps) {
 		const reviewData: ReviewUpdateInput = {
 			_id: chosenProduct.memberReview._id,
 			rating: reviewUpdate.rating as number,
-			comment: reviewUpdate.comment.trim() || undefined,
+			comment: (reviewUpdate.comment || '').trim() || undefined,
 		};
 
 		reviewService
 			.updateReview(reviewData)
-			.then((data) => {
+			.then(() => {
 				setIsEditingReview(false);
-				fetchProduct(productId);
+				if (productId) {
+					fetchProduct(productId as string);
+				}
 			})
 			.catch((err) => {
 				console.error('Error updating review:', err);
@@ -320,7 +329,9 @@ export default function ChosenProduct(props: ChosenProductProps) {
 		reviewService
 			.deleteReview(chosenProduct.memberReview._id)
 			.then(() => {
-				fetchProduct(productId);
+				if (productId) {
+					fetchProduct(productId);
+				}
 			})
 			.catch((err) => {
 				console.error('Error deleting review:', err);
@@ -456,7 +467,7 @@ export default function ChosenProduct(props: ChosenProductProps) {
 											return;
 										}
 										onAdd({
-											productId: productId,
+											productId: productId as string,
 											variantId: chosenVariant._id,
 											productName: chosenProduct.productName,
 											productCategory: chosenProduct.productCategory,
@@ -651,7 +662,7 @@ export default function ChosenProduct(props: ChosenProductProps) {
 							label="Your Review (optional)"
 							multiline
 							rows={4}
-							value={reviewUpdate?.comment}
+							value={reviewUpdate?.comment || ''}
 							onChange={(e) => handleCommentChange(e)}
 							fullWidth
 							variant="outlined"

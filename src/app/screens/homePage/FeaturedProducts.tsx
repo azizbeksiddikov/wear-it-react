@@ -34,7 +34,7 @@ export default function FeaturedProducts() {
 				<Grid container spacing={3} className="products-grid">
 					{featuredProducts && featuredProducts.length > 0 ? (
 						featuredProducts.map((product) => (
-							<Grid item xs={12} sm={6} md={3} key={product._id}>
+							<Grid size={{ xs: 12, sm: 6, md: 3 }} key={product._id}>
 								<Link to={`/products/${product._id}`} style={{ textDecoration: 'none' }}>
 									<Stack className="product-card">
 										<Box className="product-image-wrapper">

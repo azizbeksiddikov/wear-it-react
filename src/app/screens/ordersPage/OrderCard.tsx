@@ -1,4 +1,3 @@
-import React from 'react';
 import { Box, Typography, Card, CardContent, Stack, Chip, Button } from '@mui/material';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import InventoryIcon from '@mui/icons-material/Inventory';
@@ -198,15 +197,15 @@ export default function OrderCard(props: OrderCardProps) {
 
 					<Stack direction="row" spacing={1} alignItems="center">
 						<Chip
-							icon={statusIcons[order.orderStatus]}
-							label={statusText[order.orderStatus]}
+							icon={statusIcons[order.orderStatus as keyof typeof statusIcons]}
+							label={statusText[order.orderStatus as keyof typeof statusText]}
 							size="small"
 							sx={{
-								bgcolor: statusColors[order.orderStatus],
-								color: statusTextColors[order.orderStatus],
+								bgcolor: statusColors[order.orderStatus as keyof typeof statusColors],
+								color: statusTextColors[order.orderStatus as keyof typeof statusTextColors],
 								fontWeight: 500,
 								'& .MuiChip-icon': {
-									color: statusTextColors[order.orderStatus],
+									color: statusTextColors[order.orderStatus as keyof typeof statusTextColors],
 								},
 							}}
 						/>

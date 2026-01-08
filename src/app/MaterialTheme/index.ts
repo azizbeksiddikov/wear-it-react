@@ -1,5 +1,4 @@
 import { createTheme, ThemeOptions } from '@mui/material/styles';
-import { TypographyOptions } from '@mui/material/styles/createTypography';
 import typography from './typography';
 
 const light: ThemeOptions = {
@@ -80,7 +79,7 @@ const light: ThemeOptions = {
 			},
 		},
 	},
-	typography: typography as TypographyOptions,
+	typography: typography as ThemeOptions['typography'],
 };
 
 const theme = createTheme(light);

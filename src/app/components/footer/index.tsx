@@ -13,7 +13,7 @@ export default function Footer() {
 				<Box className="footer-content">
 					<Grid container spacing={4}>
 						{/* Brand column */}
-						<Grid item xs={12} sm={6} md={6}>
+						<Grid size={{ xs: 12, sm: 6, md: 6 }}>
 							<Box className="brand-section">
 								<Typography variant="h5" className="brand-name">
 									<Link to="/">Wear It</Link>
@@ -51,13 +51,13 @@ export default function Footer() {
 						</Grid>
 
 						{/* Shop column */}
-						<Grid item xs={12} sm={6} md={6}>
+						<Grid size={{ xs: 12, sm: 6, md: 6 }}>
 							<Box className="links-section">
 								<Typography variant="subtitle1" className="section-title">
 									Shop
 								</Typography>
 								<Grid container spacing={2}>
-									<Grid item xs={6}>
+									<Grid size={{ xs: 6 }}>
 										<ul>
 											<li>
 												<Link to="/products?productGender=women">Women</Link>
@@ -70,7 +70,7 @@ export default function Footer() {
 											</li>
 										</ul>
 									</Grid>
-									<Grid item xs={6}>
+									<Grid size={{ xs: 6 }}>
 										<ul>
 											<li>
 												<Link to="/products?productCategory=shoes">Shoes</Link>

@@ -15,7 +15,7 @@ export default function Advertisement() {
 
 				<Grid container spacing={4} className="features-container">
 					{/* Free Shipping */}
-					<Grid item xs={12} md={4}>
+					<Grid size={{ xs: 12, md: 4 }}>
 						<Box className="feature-card">
 							<Box className="feature-icon">
 								<LocalShippingIcon />
@@ -30,7 +30,7 @@ export default function Advertisement() {
 					</Grid>
 
 					{/* Easy Returns */}
-					<Grid item xs={12} md={4}>
+					<Grid size={{ xs: 12, md: 4 }}>
 						<Box className="feature-card">
 							<Box className="feature-icon">
 								<AssignmentReturnIcon />
@@ -45,7 +45,7 @@ export default function Advertisement() {
 					</Grid>
 
 					{/* Secure Payments */}
-					<Grid item xs={12} md={4}>
+					<Grid size={{ xs: 12, md: 4 }}>
 						<Box className="feature-card">
 							<Box className="feature-icon">
 								<SecurityIcon />

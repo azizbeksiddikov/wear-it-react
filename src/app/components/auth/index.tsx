@@ -6,9 +6,9 @@ import LoginIcon from '@mui/icons-material/Login';
 import { T } from '../../../libs/types/common';
 import { Messages } from '../../../libs/config';
 import { LoginInput, MemberInput } from '../../../libs/types/member';
-import MemberService from '../../services/MemberService.ts';
+import MemberService from '../../services/MemberService';
 import { sweetErrorHandling, sweetTopSuccessAlert } from '../../../libs/sweetAlert';
-import { useGlobals } from '../../hooks/useGlobals.ts';
+import { useGlobals } from '../../hooks/useGlobals';
 
 const StyledTextField = styled(TextField)`
 	width: 100%;

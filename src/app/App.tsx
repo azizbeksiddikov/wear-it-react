@@ -47,7 +47,7 @@ function App() {
 			<Routes>
 				{/* TODO: HelpPage */}
 				<Route path="/help" element={<HelpPage />} />
-				<Route path="/products" element={<ProductsPage cartItems={cartItems} onAdd={onAdd} />} />
+				<Route path="/products/*" element={<ProductsPage cartItems={cartItems} onAdd={onAdd} />} />
 				<Route path="/orders" element={<OrdersPage />} />
 				<Route path="/my-page" element={<UserPage />} />
 				<Route path="/" element={<HomePage />} />

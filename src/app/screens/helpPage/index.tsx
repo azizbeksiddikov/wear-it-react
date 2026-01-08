@@ -130,7 +130,7 @@ export default function HelpPage() {
 					</Typography>
 
 					<Grid container spacing={3}>
-						<Grid item xs={12}>
+						<Grid size={{ xs: 12 }}>
 							<Accordion
 								sx={{
 									mb: 2,
@@ -257,7 +257,7 @@ export default function HelpPage() {
 					</Box>
 
 					<Grid container spacing={4}>
-						<Grid item xs={12} md={6}>
+						<Grid size={{ xs: 12, md: 6 }}>
 							<Card sx={{ mb: 3, borderRadius: 2, boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
 								<CardContent sx={{ bgcolor: pinterestColors.white }}>
 									<Typography variant="h6" gutterBottom fontWeight="bold" color={pinterestColors.darkGray}>
@@ -307,7 +307,7 @@ export default function HelpPage() {
 							</Card>
 						</Grid>
 
-						<Grid item xs={12} md={6}>
+						<Grid size={{ xs: 12, md: 6 }}>
 							<Card sx={{ mb: 3, borderRadius: 2, boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
 								<CardContent sx={{ bgcolor: pinterestColors.white }}>
 									<Typography variant="h6" gutterBottom fontWeight="bold" color={pinterestColors.darkGray}>
@@ -344,7 +344,7 @@ export default function HelpPage() {
 					</Typography>
 
 					<Grid container spacing={3}>
-						<Grid item xs={12}>
+						<Grid size={{ xs: 12 }}>
 							<Card sx={{ mb: 3, borderRadius: 2, boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
 								<CardContent sx={{ bgcolor: pinterestColors.white }}>
 									<Typography variant="h6" gutterBottom fontWeight="bold" color={pinterestColors.darkGray}>

@@ -1,6 +1,6 @@
-import { TypographyOptions } from '@mui/material/styles/createTypography';
+// typography options
 
-const typography: TypographyOptions = {
+const typography: any = {
 	fontFamily: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'sans-serif'].join(','),
 	h1: {
 		fontWeight: 600,

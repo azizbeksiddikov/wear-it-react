@@ -9,13 +9,13 @@ import { useGlobals } from '../../hooks/useGlobals';
 import { sweetErrorHandling, sweetTopSmallSuccessAlert } from '../../../libs/sweetAlert';
 import { Messages } from '../../../libs/config';
 import { T } from '../../../libs/types/common';
-import MemberService from '../../services/MemberService.ts';
+import MemberService from '../../services/MemberService';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import SaveIcon from '@mui/icons-material/Save';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import PersonIcon from '@mui/icons-material/Person';
 import '../../../css/user.css';
-import { MemberUpdateInput } from '../../../libs/types/member.ts';
+import { MemberUpdateInput } from '../../../libs/types/member';
 
 export default function UserPage() {
 	const navigate = useNavigate();

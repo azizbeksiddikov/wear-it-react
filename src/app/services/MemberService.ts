@@ -73,7 +73,7 @@ class MemberService {
 			const member: Member = result.data;
 			localStorage.setItem('memberData', JSON.stringify(member));
 			return member;
-		} catch (err) {
+		} catch {
 			// If not authenticated, return null
 			localStorage.removeItem('memberData');
 			return null;

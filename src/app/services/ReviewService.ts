@@ -12,7 +12,7 @@ class ReviewService {
 
 	public async createReview(input: ReviewInput): Promise<Review> {
 		try {
-			let url = `${this.path}/review/create/`;
+			const url = `${this.path}/review/create/`;
 
 			const data: T = {
 				productId: input.productId,
@@ -31,7 +31,7 @@ class ReviewService {
 
 	public async updateReview(input: ReviewUpdateInput): Promise<Review> {
 		try {
-			let url = `${this.path}/review/update/`;
+			const url = `${this.path}/review/update/`;
 			const data: T = {
 				_id: input._id,
 			};
@@ -47,11 +47,11 @@ class ReviewService {
 		}
 	}
 
-	public async deleteReview(reviewId: string): Promise<Review> {
+	public async deleteReview(id: string): Promise<Review> {
 		try {
-			let url = `${this.path}/review/delete`;
+			const url = `${this.path}/review/delete/${id}`;
 
-			const result = await axios.post(url, { reviewId: reviewId }, { withCredentials: true });
+			const result = await axios.post(url, { id: id }, { withCredentials: true });
 
 			return result.data;
 		} catch (err) {

@@ -17,15 +17,10 @@ Wear It is a web application built with React and TypeScript that provides custo
 
 ## Tech Stack
 
-- **Frontend Framework**: React 18.2.0
-- **Language**: TypeScript 4.1.5
-- **State Management**: Redux Toolkit with React Redux
-- **UI Library**: Material-UI (MUI) v6.3.1
-- **Routing**: React Router DOM v5.1.9
-- **HTTP Client**: Axios
-- **Data Fetching**: TanStack React Query
-- **Styling**: Styled Components, CSS Modules
-- **Build Tool**: Create React App (react-scripts 5.0.0)
+- **Build Tool**: Vite 7.3.1
+- **Language**: TypeScript 5.9.3
+- **Frontend Framework**: React 19.2.3
+- **Routing**: React Router DOM v7.12.0
 - **Package Manager**: Yarn
 
 ## Prerequisites
@@ -45,7 +40,7 @@ Wear It is a web application built with React and TypeScript that provides custo
 
 2. Edit `.env` or `.env.dev` and set your environment variables:
    ```
-   REACT_APP_API_URL=https://your-api-url.com
+   VITE_API_URL=https://your-api-url.com
    ```
 
 ## Docker Deployment
@@ -163,15 +158,15 @@ src/
 
 The application requires the following environment variable:
 
-- `REACT_APP_API_URL` - Backend API endpoint URL
+- `VITE_API_URL` - Backend API endpoint URL
 
 ## Health Checks
 
-Production container includes health checks that verify the application is responding on port 3000.
+Production container includes health checks that verify the application is responding on the health endpoint.
 
 ## Notes
 
-- The application runs on port 3000 inside the container
-- Nginx at server level proxies requests to the container
-- Environment variables are loaded from `.env` files (not baked into image)
-- Build uses BuildKit cache for faster rebuilds
+- The application runs on a Node-based `serve` tool (port 3000) inside the production container, mapped to port 3000 on the host.
+- The development container also runs on port 3000.
+- All backend requests use the `VITE_API_URL` environment variable.
+- Built using an optimized multi-stage Node.js Docker process.

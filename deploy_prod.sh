@@ -20,7 +20,6 @@ fi
 # Check if .env exists
 if [ ! -f .env ]; then
     echo "ERROR: .env file is required but not found."
-    echo "   Please create .env file with REACT_APP_API_URL"
     exit 1
 fi
 
