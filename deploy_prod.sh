@@ -52,8 +52,8 @@ if docker ps | grep -q wear-it-react-prod; then
     echo "Container status:"
     docker ps --filter "name=wear-it-react-prod" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
     echo ""
-    echo "To view logs: docker compose -f docker-compose.prod.yml logs -f"
-    echo "To stop: docker compose -f docker-compose.prod.yml down"
+    echo "Showing latest 200 logs (Ctrl+C to exit logs)..."
+    docker compose -f docker-compose.prod.yml logs --tail=200 -f
 else
     echo "ERROR: Container failed to start. Check logs:"
     docker compose -f docker-compose.prod.yml logs
