@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ChangeEvent } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 import { useDispatch, useSelector } from 'react-redux';
@@ -67,40 +67,32 @@ export default function Products() {
 	const [searchText, setSearchText] = useState('');
 	const [totalPages, setTotalPages] = useState(1);
 
-	const productService = new ProductService();
+	const productService = useMemo(() => new ProductService(), []);
 
 	useEffect(() => {
 		const searchParams = new URLSearchParams(location.search);
+		const updatedSearch: ProductsInquiry = {
+			...productSearch,
+			isFeatured: searchParams.get('isFeatured') === 'true',
+			onSale: searchParams.get('onSale') === 'true',
+			productCategory: searchParams.has('productCategory')
+				? (searchParams.get('productCategory')?.toUpperCase() as ProductCategory | undefined)
+				: undefined,
+			productGender: searchParams.has('productGender')
+				? (searchParams.get('productGender')?.toUpperCase() as ProductGender | undefined)
+				: undefined,
+			search: searchParams.get('search') || '',
+			page: 1,
+		};
 
-		productSearch.isFeatured = searchParams.get('isFeatured') === 'true';
-		productSearch.onSale = searchParams.get('onSale') === 'true';
-
-		if (searchParams.has('productCategory')) {
-			productSearch.productCategory = searchParams.get('productCategory')?.toUpperCase() as ProductCategory | undefined;
-		} else {
-			productSearch.productCategory = undefined;
-		}
-
-		if (searchParams.has('productGender')) {
-			productSearch.productGender = searchParams.get('productGender')?.toUpperCase() as ProductGender | undefined;
-		} else {
-			productSearch.productGender = undefined;
-		}
-
-		if (searchParams.has('search')) {
-			productSearch.search = searchParams.get('search') || '';
-			setSearchText(productSearch.search);
-		} else {
-			productSearch.search = '';
-			setSearchText('');
-		}
-
-		setProductSearch({ ...productSearch, page: 1 });
+		setSearchText(updatedSearch.search || '');
+		setProductSearch(updatedSearch);
 		window.scrollTo({
 			top: 25,
 			left: 0,
 			behavior: 'smooth',
 		});
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [location.search]);
 
 	useEffect(() => {
@@ -117,6 +109,7 @@ export default function Products() {
 			left: 0,
 			behavior: 'smooth',
 		});
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [productSearch]);
 
 	const searchTextHandler = (text: string) => {
@@ -124,7 +117,7 @@ export default function Products() {
 	};
 
 	// HANDLERS
-	const PaginationHandler = (e: ChangeEvent, value: number) => {
+	const PaginationHandler = (_e: React.ChangeEvent<unknown>, value: number) => {
 		// pageHandler
 		setProductSearch({ ...productSearch, page: value });
 	};
@@ -165,7 +158,7 @@ export default function Products() {
 		setProductSearch({ ...productSearch, page: 1 });
 	};
 
-	const clearAllFiltersHandler = (e: ChangeEvent) => {
+	const clearAllFiltersHandler = () => {
 		productSearch.page = 1;
 		productSearch.limit = 6;
 		productSearch.direction = Direction.DESC;

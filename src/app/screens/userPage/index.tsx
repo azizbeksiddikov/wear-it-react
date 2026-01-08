@@ -4,7 +4,7 @@ import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
 import HomeIcon from '@mui/icons-material/Home';
 import DescriptionIcon from '@mui/icons-material/Description';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useGlobals } from '../../hooks/useGlobals';
 import { sweetErrorHandling, sweetTopSmallSuccessAlert } from '../../../libs/sweetAlert';
 import { Messages } from '../../../libs/config';
@@ -18,9 +18,9 @@ import '../../../css/user.css';
 import { MemberUpdateInput } from '../../../libs/types/member.ts';
 
 export default function UserPage() {
-	const history = useHistory();
+	const navigate = useNavigate();
 	const { authMember, setAuthMember } = useGlobals();
-	if (!authMember) history.push('/');
+	if (!authMember) navigate('/');
 	const [memberImage, setMemberImage] = useState<string>(
 		authMember?.memberImage ? `${authMember.memberImage}` : `/icons/default-user.svg`,
 	);

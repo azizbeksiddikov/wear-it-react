@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Switch, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/headers/Navbar';
 import HomePage from './screens/homePage';
 import HelpPage from './screens/helpPage';
@@ -16,9 +16,18 @@ function App() {
 	const { cartItems, onAdd, onRemove, onDelete, onDeleteAll } = useBasket();
 	const [signupOpen, setSignupOpen] = useState(false);
 	const [loginOpen, setLoginOpen] = useState(false);
+	const location = useLocation();
+	const [returnPath, setReturnPath] = useState<string>('/');
 
 	/** Handlers */
 	const handleSignUpClose = () => setSignupOpen(false);
+	const handleLoginOpen = (isOpen: boolean = true) => {
+		if (isOpen) {
+			// Store current location before opening login modal
+			setReturnPath(location.pathname + location.search);
+		}
+		setLoginOpen(isOpen);
+	};
 	const handleLoginClose = () => setLoginOpen(false);
 
 	return (
@@ -32,19 +41,17 @@ function App() {
 				onDelete={onDelete}
 				onDeleteAll={onDeleteAll}
 				setSignupOpen={setSignupOpen}
-				setLoginOpen={setLoginOpen}
+				setLoginOpen={handleLoginOpen}
 			/>
 			{/* Main content */}
-			<Switch>
+			<Routes>
 				{/* TODO: HelpPage */}
-				<Route path="/help" component={HelpPage} />
-				<Route path="/products">
-					<ProductsPage cartItems={cartItems} onAdd={onAdd} />
-				</Route>
-				<Route path="/orders" component={OrdersPage} />
-				<Route path="/my-page" component={UserPage} />
-				<Route path="/" component={HomePage} />
-			</Switch>
+				<Route path="/help" element={<HelpPage />} />
+				<Route path="/products" element={<ProductsPage cartItems={cartItems} onAdd={onAdd} />} />
+				<Route path="/orders" element={<OrdersPage />} />
+				<Route path="/my-page" element={<UserPage />} />
+				<Route path="/" element={<HomePage />} />
+			</Routes>
 			{/* Footer */}
 			<Footer />
 
@@ -53,6 +60,7 @@ function App() {
 				loginOpen={loginOpen}
 				handleLoginClose={handleLoginClose}
 				handleSignupClose={handleSignUpClose}
+				returnPath={returnPath}
 			/>
 		</>
 	);

@@ -28,7 +28,7 @@ class MemberService {
 		}
 	}
 
-	public async login(input: LoginInput): Promise<Member> {
+	public async login(input: LoginInput, redirect: boolean = true): Promise<Member> {
 		try {
 			const url = this.path + '/member/login';
 			const result = await axios.post(url, input, {
@@ -37,7 +37,11 @@ class MemberService {
 
 			const member: Member = result.data.member;
 			localStorage.setItem('memberData', JSON.stringify(member));
-			window.location.href = '/';
+
+			// Only redirect if explicitly requested (for backward compatibility)
+			if (redirect) {
+				window.location.href = '/';
+			}
 
 			return member;
 		} catch (err) {

@@ -5,7 +5,7 @@ import Badge from '@mui/material/Badge';
 import Menu from '@mui/material/Menu';
 import CancelIcon from '@mui/icons-material/Cancel';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { BasketData, CartItem } from '../../../libs/types/search';
 import DeletForeverIcon from '@mui/icons-material/DeleteForever';
 import { Messages } from '../../../libs/config';
@@ -25,7 +25,7 @@ interface BasketProps {
 export default function Basket(props: BasketProps) {
 	const { authMember, setOrderBuilder } = useGlobals();
 	const { cartItems, onAdd, onRemove, onDelete, onDeleteAll } = props;
-	const history = useHistory();
+	const navigate = useNavigate();
 
 	const orderSubTotal = cartItems.reduce((a: number, c: CartItem) => {
 		if (c.salePrice) {
@@ -65,7 +65,7 @@ export default function Basket(props: BasketProps) {
 			onDeleteAll();
 			setOrderBuilder(new Date());
 
-			history.push('/orders');
+			navigate('/orders');
 		} catch (err) {
 			console.log(err);
 			sweetErrorHandling(err).then();

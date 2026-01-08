@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { Dispatch } from '@reduxjs/toolkit';
@@ -62,7 +62,7 @@ export default function ChosenProduct(props: ChosenProductProps) {
 	const [swiperIndex, setSwiperIndex] = useState(0);
 	const swiperRef = useRef<any>(null);
 	const currentProductIdRef = useRef<string>('');
-	const history = useHistory();
+	const navigate = useNavigate();
 
 	const [reviewModalOpen, setReviewModalOpen] = useState(false);
 	const [isEditingReview, setIsEditingReview] = useState(false);
@@ -101,7 +101,7 @@ export default function ChosenProduct(props: ChosenProductProps) {
 					if (currentProductIdRef.current !== id) return;
 
 					if (!product.productVariants || product.productVariants.length === 0) {
-						history.push('/products');
+						navigate('/products');
 						return;
 					}
 
@@ -117,10 +117,10 @@ export default function ChosenProduct(props: ChosenProductProps) {
 				.catch((err) => {
 					console.error('Error fetching product:', err);
 					setIsLoading(false);
-					history.push('/products');
+					navigate('/products');
 				});
 		},
-		[productService, history, setChosenProduct],
+		[productService, navigate, setChosenProduct],
 	);
 
 	useEffect(() => {

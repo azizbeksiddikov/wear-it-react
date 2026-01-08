@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { Dispatch } from '@reduxjs/toolkit';
 import { setPausedOrders, setProcessOrders, setFinishedOrders, setAllOrders } from './slice';
 import { useGlobals } from '../../hooks/useGlobals';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { Container, Typography, Stack } from '@mui/material';
 import Tabs from '@mui/material/Tabs';
@@ -31,14 +31,14 @@ const actionDispatch = (dispatch: Dispatch) => ({
 });
 
 export default function OrdersPage() {
-	const history = useHistory();
+	const navigate = useNavigate();
 	const { authMember, orderBuilder } = useGlobals();
-	if (!authMember) history.push('/');
+	if (!authMember) navigate('/');
 
 	const { setAllOrders, setPausedOrders, setProcessOrders, setFinishedOrders } = actionDispatch(useDispatch());
 
 	const [value, setValue] = useState<string>('ALL');
-	const [orderInquiry, setOrderInquiry] = useState<OrderInquiry>({
+	const [orderInquiry] = useState<OrderInquiry>({
 		page: 1,
 		orderStatus: OrderStatus.PAUSED,
 	});
@@ -81,6 +81,7 @@ export default function OrdersPage() {
 			})
 			.then((data) => setFinishedOrders(data))
 			.catch((err) => console.log(err));
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [orderInquiry, orderBuilder]);
 
 	/** HANDLERS */

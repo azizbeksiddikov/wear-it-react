@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Modal from '@material-ui/core/Modal';
-import Backdrop from '@material-ui/core/Backdrop';
-import Fade from '@material-ui/core/Fade';
-import { Fab, TextField } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { Modal, Backdrop, Fade, Fab, TextField, Box } from '@mui/material';
 import styled from 'styled-components';
 import LoginIcon from '@mui/icons-material/Login';
 import { T } from '../../../libs/types/common';
@@ -12,23 +9,6 @@ import { LoginInput, MemberInput } from '../../../libs/types/member';
 import MemberService from '../../services/MemberService.ts';
 import { sweetErrorHandling, sweetTopSuccessAlert } from '../../../libs/sweetAlert';
 import { useGlobals } from '../../hooks/useGlobals.ts';
-
-const useStyles = makeStyles((theme) => ({
-	modal: {
-		display: 'flex',
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
-	paper: {
-		backgroundColor: theme.palette.background.paper,
-		borderRadius: '16px',
-		boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
-		padding: theme.spacing(4, 4, 4),
-		maxWidth: '400px',
-		width: '100%',
-		outline: 'none',
-	},
-}));
 
 const StyledTextField = styled(TextField)`
 	width: 100%;
@@ -59,11 +39,12 @@ interface AuthenticationModalProps {
 	loginOpen: boolean;
 	handleSignupClose: () => void;
 	handleLoginClose: () => void;
+	returnPath?: string;
 }
 
 export default function AuthenticationModal(props: AuthenticationModalProps) {
-	const { signupOpen, loginOpen, handleSignupClose, handleLoginClose } = props;
-	const classes = useStyles();
+	const { signupOpen, loginOpen, handleSignupClose, handleLoginClose, returnPath = '/' } = props;
+	const navigate = useNavigate();
 	const [memberEmail, setMemberEmail] = useState('');
 	const [memberPhone, setMemberPhone] = useState('');
 	const [memberPassword, setMemberPassword] = useState('');
@@ -150,11 +131,14 @@ export default function AuthenticationModal(props: AuthenticationModalProps) {
 				memberPassword: memberPassword,
 			};
 
-			const result = await member.login(loginInput);
+			const result = await member.login(loginInput, false); // Pass false to skip hard redirect
 			setAuthMember(result);
 
 			handleLoginClose();
 			await sweetTopSuccessAlert('success', 700);
+
+			// Navigate back to the page where user started from
+			navigate(returnPath);
 		} catch (err) {
 			handleLoginClose();
 			sweetErrorHandling(err).then();
@@ -167,17 +151,33 @@ export default function AuthenticationModal(props: AuthenticationModalProps) {
 			<Modal
 				aria-labelledby="transition-modal-title"
 				aria-describedby="transition-modal-description"
-				className={classes.modal}
 				open={signupOpen}
 				onClose={handleSignupClose}
 				closeAfterTransition
-				BackdropComponent={Backdrop}
-				BackdropProps={{
-					timeout: 500,
+				slots={{ backdrop: Backdrop }}
+				slotProps={{
+					backdrop: {
+						timeout: 500,
+					},
+				}}
+				sx={{
+					display: 'flex',
+					alignItems: 'center',
+					justifyContent: 'center',
 				}}
 			>
 				<Fade in={signupOpen}>
-					<div className={classes.paper}>
+					<Box
+						sx={{
+							backgroundColor: 'background.paper',
+							borderRadius: '16px',
+							boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
+							padding: 4,
+							maxWidth: '400px',
+							width: '100%',
+							outline: 'none',
+						}}
+					>
 						<ModalTitle>Join Wear It</ModalTitle>
 						<StyledTextField
 							id="outlined-basic"
@@ -222,7 +222,7 @@ export default function AuthenticationModal(props: AuthenticationModalProps) {
 							<LoginIcon sx={{ mr: 1 }} />
 							Create Account
 						</StyledFab>
-					</div>
+					</Box>
 				</Fade>
 			</Modal>
 
@@ -230,17 +230,33 @@ export default function AuthenticationModal(props: AuthenticationModalProps) {
 			<Modal
 				aria-labelledby="transition-modal-title"
 				aria-describedby="transition-modal-description"
-				className={classes.modal}
 				open={loginOpen}
 				onClose={handleLoginClose}
 				closeAfterTransition
-				BackdropComponent={Backdrop}
-				BackdropProps={{
-					timeout: 500,
+				slots={{ backdrop: Backdrop }}
+				slotProps={{
+					backdrop: {
+						timeout: 500,
+					},
+				}}
+				sx={{
+					display: 'flex',
+					alignItems: 'center',
+					justifyContent: 'center',
 				}}
 			>
 				<Fade in={loginOpen}>
-					<div className={classes.paper}>
+					<Box
+						sx={{
+							backgroundColor: 'background.paper',
+							borderRadius: '16px',
+							boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
+							padding: 4,
+							maxWidth: '400px',
+							width: '100%',
+							outline: 'none',
+						}}
+					>
 						<ModalTitle>Welcome Back</ModalTitle>
 						<StyledTextField
 							id="outlined-basic"
@@ -262,7 +278,7 @@ export default function AuthenticationModal(props: AuthenticationModalProps) {
 							<LoginIcon sx={{ mr: 1 }} />
 							Log In
 						</StyledFab>
-					</div>
+					</Box>
 				</Fade>
 			</Modal>
 		</div>
