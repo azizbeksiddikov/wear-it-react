@@ -51,7 +51,7 @@ export default function FeaturedProducts() {
 												</Typography>
 											</Box>
 											<Tooltip title="View Details" placement="top" arrow>
-												<Button className="details-button" component={Link} to={`/products/${product._id}`}>
+												<Button className="details-button" component="div">
 													<ReadMoreIcon />
 												</Button>
 											</Tooltip>

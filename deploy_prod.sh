@@ -33,9 +33,6 @@ docker compose -f docker-compose.prod.yml down
 echo "Removing image $IMAGE_NAME..."
 docker rmi -f "$IMAGE_NAME" 2>/dev/null || true
 
-echo "Cleaning up local node_modules..."
-rm -rf node_modules
-
 echo "Building and starting production containers..."
 # Use DOCKER_BUILDKIT for faster builds with cache
 export DOCKER_BUILDKIT=1

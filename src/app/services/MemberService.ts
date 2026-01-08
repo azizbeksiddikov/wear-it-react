@@ -54,12 +54,23 @@ class MemberService {
 		try {
 			const url = this.path + '/member/logout';
 			await axios.post(url, {}, { withCredentials: true });
-
-			localStorage.removeItem('memberData');
-			window.location.href = '/'; // Redirect to homepage
 		} catch (err) {
-			console.log('Error, login', err);
-			throw err;
+			// If logout fails with 401 (unauthorized), token is already invalid/expired
+			// This is fine - we'll clear local state anyway
+			const isUnauthorized =
+				err && typeof err === 'object' && 'response' in err && (err as any).response?.status === 401;
+
+			if (isUnauthorized) {
+				// Token expired/invalid - this is expected, don't log or throw
+				return;
+			}
+
+			// For other errors (network issues, etc.), log but don't throw
+			// We'll still clear local state
+			console.log('Error, logout', err);
+		} finally {
+			// Always clear local storage, regardless of API response
+			localStorage.removeItem('memberData');
 		}
 	}
 

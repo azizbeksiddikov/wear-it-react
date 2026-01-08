@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import PersonIcon from '@mui/icons-material/Person';
 import LogoutIcon from '@mui/icons-material/Logout';
 import LoginIcon from '@mui/icons-material/Login';
@@ -8,8 +8,7 @@ import { CartItem } from '../../../libs/types/search';
 import { Avatar, Box, Button, Container, IconButton } from '@mui/material';
 import { useGlobals } from '../../hooks/useGlobals';
 import MemberService from '../../services/MemberService';
-import { sweetErrorHandling, sweetTopSuccessAlert } from '../../../libs/sweetAlert';
-import { Messages } from '../../../libs/config';
+import { sweetTopSuccessAlert } from '../../../libs/sweetAlert';
 import '../../../css/components/navbar.css';
 
 interface NavbarProps {
@@ -27,15 +26,20 @@ export default function Navbar(props: NavbarProps) {
 	const { authMember, setAuthMember } = useGlobals();
 
 	const handleLogoutRequest = async () => {
+		// Always clear auth state and local storage, regardless of API response
+		setAuthMember(null);
+		localStorage.removeItem('memberData');
+
+		// Try to call logout API (but don't fail if it errors)
 		try {
 			await new MemberService().logout();
-			setAuthMember(null);
-
-			await sweetTopSuccessAlert('success', 700);
 		} catch (err) {
-			console.log(err);
-			sweetErrorHandling(Messages.error1);
+			// Log but don't show error to user - state is already cleared
+			console.log('Logout API error (state already cleared):', err);
 		}
+
+		// Show success message
+		await sweetTopSuccessAlert('success', 1400);
 	};
 
 	return (
@@ -46,10 +50,12 @@ export default function Navbar(props: NavbarProps) {
 				</Link>
 
 				<nav className="nav-links">
-					<Link to="/">Home</Link>
-					<Link to="/products">Products</Link>
-					{authMember && <Link to="/orders">Orders</Link>}
-					<Link to="/help">Help</Link>
+					<NavLink to="/" end>
+						Home
+					</NavLink>
+					<NavLink to="/products">Products</NavLink>
+					{authMember && <NavLink to="/orders">Orders</NavLink>}
+					<NavLink to="/help">Help</NavLink>
 				</nav>
 
 				<div className="auth-section">
@@ -73,16 +79,36 @@ export default function Navbar(props: NavbarProps) {
 									)}
 								</IconButton>
 							</Link>
-							<Button variant="outlined" startIcon={<LogoutIcon />} onClick={handleLogoutRequest}>
+							<Button
+								variant="outlined"
+								startIcon={<LogoutIcon />}
+								onClick={(e) => {
+									handleLogoutRequest();
+									(e.currentTarget as HTMLButtonElement).blur();
+								}}
+							>
 								Logout
 							</Button>
 						</>
 					) : (
 						<>
-							<Button variant="outlined" startIcon={<LoginIcon />} onClick={() => setLoginOpen(true)}>
+							<Button
+								variant="outlined"
+								startIcon={<LoginIcon />}
+								onClick={(e) => {
+									setLoginOpen(true);
+									(e.currentTarget as HTMLButtonElement).blur();
+								}}
+							>
 								Login
 							</Button>
-							<Button variant="contained" onClick={() => setSignupOpen(true)}>
+							<Button
+								variant="contained"
+								onClick={(e) => {
+									setSignupOpen(true);
+									(e.currentTarget as HTMLButtonElement).blur();
+								}}
+							>
 								Sign Up
 							</Button>
 						</>

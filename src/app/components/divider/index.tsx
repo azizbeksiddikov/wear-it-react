@@ -7,15 +7,17 @@ export interface IDividerProps {
 	bg?: string;
 }
 
-const DividerComponent = styled.span<IDividerProps>`
+const DividerComponent = styled.span<{ $width?: string; $height?: string; $bg?: string }>`
 	display: flex;
-	min-width: ${({ width }) => `${width}px`};
-	min-height: ${({ height }) => `${height}px`};
-	background: ${({ bg }) => `${bg}`};
+	width: ${({ $width }) =>
+		$width ? ($width.includes('%') || $width.includes('px') ? $width : `${$width}px`) : 'auto'};
+	height: ${({ $height }) =>
+		$height ? ($height.includes('%') || $height.includes('px') ? $height : `${$height}px`) : 'auto'};
+	background: ${({ $bg }) => ($bg ? `${$bg}` : 'transparent')};
 `;
 
 function Divider(props: IDividerProps) {
-	return <DividerComponent {...props} />;
+	return <DividerComponent $width={props.width} $height={props.height} $bg={props.bg} />;
 }
 
 export default Divider;

@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
-import { Modal, Backdrop, Fade, Fab, TextField, Box } from '@mui/material';
+import { Fab, TextField, Box, InputAdornment, IconButton } from '@mui/material';
 import styled from 'styled-components';
 import LoginIcon from '@mui/icons-material/Login';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { T } from '../../../libs/types/common';
 import { Messages } from '../../../libs/config';
 import { LoginInput, MemberInput } from '../../../libs/types/member';
@@ -12,7 +15,6 @@ import { useGlobals } from '../../hooks/useGlobals';
 
 const StyledTextField = styled(TextField)`
 	width: 100%;
-	margin-bottom: 16px;
 
 	& .MuiOutlinedInput-root {
 		border-radius: 8px;
@@ -24,6 +26,7 @@ const StyledFab = styled(Fab)`
 	border-radius: 8px !important;
 	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
 	text-transform: none !important;
+	margin-top: 16px !important;
 `;
 
 const ModalTitle = styled.h2`
@@ -32,6 +35,56 @@ const ModalTitle = styled.h2`
 	color: #333;
 	margin-bottom: 24px;
 	text-align: center;
+`;
+
+const CustomModalOverlay = styled.div<{ $isOpen: boolean }>`
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0, 0, 0, 0.3);
+	backdrop-filter: blur(4px);
+	display: ${(props) => (props.$isOpen ? 'flex' : 'none')};
+	align-items: center;
+	justify-content: center;
+	z-index: 1300;
+	animation: ${(props) => (props.$isOpen ? 'fadeIn 0.2s ease-in' : 'none')};
+
+	@keyframes fadeIn {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
+	}
+`;
+
+const CustomModalContent = styled(Box)<{ $isOpen: boolean }>`
+	background-color: #ffffff;
+	border-radius: 16px;
+	box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+	padding: 2rem;
+	max-width: 400px;
+	width: 100%;
+	outline: none;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	animation: ${(props) => (props.$isOpen ? 'slideUp 0.3s ease-out' : 'none')};
+
+	@keyframes slideUp {
+		from {
+			opacity: 0;
+			transform: translateY(20px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
 `;
 
 interface AuthenticationModalProps {
@@ -49,9 +102,35 @@ export default function AuthenticationModal(props: AuthenticationModalProps) {
 	const [memberPhone, setMemberPhone] = useState('');
 	const [memberPassword, setMemberPassword] = useState('');
 	const [confirmPassword, setConfirmPassword] = useState('');
+	const [showPassword, setShowPassword] = useState(false);
+	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+	const [showLoginPassword, setShowLoginPassword] = useState(false);
 
 	const { setAuthMember } = useGlobals();
 	const member = new MemberService();
+
+	// Prevent body scroll when modal is open
+	useEffect(() => {
+		if (signupOpen || loginOpen) {
+			document.body.style.overflow = 'hidden';
+			return () => {
+				document.body.style.overflow = '';
+			};
+		}
+	}, [signupOpen, loginOpen]);
+
+	// Reset form fields when modals close
+	useEffect(() => {
+		if (!signupOpen && !loginOpen) {
+			setMemberEmail('');
+			setMemberPhone('');
+			setMemberPassword('');
+			setConfirmPassword('');
+			setShowPassword(false);
+			setShowConfirmPassword(false);
+			setShowLoginPassword(false);
+		}
+	}, [signupOpen, loginOpen]);
 
 	/** HANDLERS **/
 	const handleUserEmail = (e: T) => {
@@ -112,11 +191,19 @@ export default function AuthenticationModal(props: AuthenticationModalProps) {
 			const result = await member.signup(signupInput);
 			setAuthMember(result);
 
+			// Reset form fields
+			setMemberEmail('');
+			setMemberPhone('');
+			setMemberPassword('');
+			setConfirmPassword('');
+			setShowPassword(false);
+			setShowConfirmPassword(false);
+
 			handleSignupClose();
-			await sweetTopSuccessAlert('success', 700);
+			await sweetTopSuccessAlert('success', 1400);
 		} catch (err) {
 			handleSignupClose();
-			sweetErrorHandling(err).then();
+			sweetErrorHandling(err, 1400).then();
 		}
 	};
 
@@ -134,71 +221,56 @@ export default function AuthenticationModal(props: AuthenticationModalProps) {
 			const result = await member.login(loginInput, false); // Pass false to skip hard redirect
 			setAuthMember(result);
 
+			// Reset form fields
+			setMemberEmail('');
+			setMemberPassword('');
+			setShowLoginPassword(false);
+
 			handleLoginClose();
-			await sweetTopSuccessAlert('success', 700);
+			await sweetTopSuccessAlert('success', 1400);
 
 			// Navigate back to the page where user started from
 			navigate(returnPath);
 		} catch (err) {
 			handleLoginClose();
-			sweetErrorHandling(err).then();
+			sweetErrorHandling(err, 1400).then();
 		}
 	};
 
+	const modalRoot = typeof document !== 'undefined' ? document.body : null;
+
+	if (!modalRoot) return null;
+
 	return (
-		<div>
+		<>
 			{/* Signup modal */}
-			<Modal
-				aria-labelledby="transition-modal-title"
-				aria-describedby="transition-modal-description"
-				open={signupOpen}
-				onClose={handleSignupClose}
-				closeAfterTransition
-				slots={{ backdrop: Backdrop }}
-				slotProps={{
-					backdrop: {
-						timeout: 500,
-					},
-				}}
-				sx={{
-					display: 'flex',
-					alignItems: 'center',
-					justifyContent: 'center',
-				}}
-			>
-				<Fade in={signupOpen}>
-					<Box
-						sx={{
-							backgroundColor: 'background.paper',
-							borderRadius: '16px',
-							boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
-							padding: 4,
-							maxWidth: '400px',
-							width: '100%',
-							outline: 'none',
-						}}
-					>
+			{createPortal(
+				<CustomModalOverlay $isOpen={signupOpen} onClick={handleSignupClose}>
+					<CustomModalContent $isOpen={signupOpen} onClick={(e) => e.stopPropagation()}>
 						<ModalTitle>Join Wear It</ModalTitle>
 						<StyledTextField
-							id="outlined-basic"
+							id="signup-email"
 							label="Email"
 							variant="outlined"
 							fullWidth
+							value={memberEmail}
 							onChange={handleUserEmail}
 						/>
 						<StyledTextField
-							id="outlined-basic"
+							id="signup-phone"
 							label="Phone number"
 							variant="outlined"
 							fullWidth
+							value={memberPhone}
 							onChange={handlePhone}
 						/>
 						<StyledTextField
-							id="outlined-basic"
+							id="signup-password"
 							label="Password"
 							variant="outlined"
-							type="password"
+							type={showPassword ? 'text' : 'password'}
 							fullWidth
+							value={memberPassword}
 							onChange={handlePassword}
 							error={memberPassword !== '' && memberPassword.length > 0 && memberPassword.length < 6}
 							helperText={
@@ -206,82 +278,99 @@ export default function AuthenticationModal(props: AuthenticationModalProps) {
 									? 'Password should be at least 6 characters'
 									: ''
 							}
+							InputProps={{
+								endAdornment: (
+									<InputAdornment position="end">
+										<IconButton
+											aria-label="toggle password visibility"
+											onClick={() => setShowPassword(!showPassword)}
+											edge="end"
+										>
+											{showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+										</IconButton>
+									</InputAdornment>
+								),
+							}}
 						/>
 						<StyledTextField
-							id="outlined-basic"
+							id="signup-confirm-password"
 							label="Confirm Password"
 							variant="outlined"
-							type="password"
+							type={showConfirmPassword ? 'text' : 'password'}
 							fullWidth
+							value={confirmPassword}
 							onChange={handleConfirmPassword}
 							onKeyDown={handlePasswordKeyDown}
 							error={confirmPassword !== '' && confirmPassword !== memberPassword}
 							helperText={confirmPassword !== '' && confirmPassword !== memberPassword ? 'Passwords do not match' : ''}
+							InputProps={{
+								endAdornment: (
+									<InputAdornment position="end">
+										<IconButton
+											aria-label="toggle password visibility"
+											onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+											edge="end"
+										>
+											{showConfirmPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+										</IconButton>
+									</InputAdornment>
+								),
+							}}
 						/>
 						<StyledFab variant="extended" color="primary" onClick={handleSignupRequest}>
 							<LoginIcon sx={{ mr: 1 }} />
 							Create Account
 						</StyledFab>
-					</Box>
-				</Fade>
-			</Modal>
+					</CustomModalContent>
+				</CustomModalOverlay>,
+				modalRoot,
+			)}
 
 			{/* Login modal */}
-			<Modal
-				aria-labelledby="transition-modal-title"
-				aria-describedby="transition-modal-description"
-				open={loginOpen}
-				onClose={handleLoginClose}
-				closeAfterTransition
-				slots={{ backdrop: Backdrop }}
-				slotProps={{
-					backdrop: {
-						timeout: 500,
-					},
-				}}
-				sx={{
-					display: 'flex',
-					alignItems: 'center',
-					justifyContent: 'center',
-				}}
-			>
-				<Fade in={loginOpen}>
-					<Box
-						sx={{
-							backgroundColor: 'background.paper',
-							borderRadius: '16px',
-							boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
-							padding: 4,
-							maxWidth: '400px',
-							width: '100%',
-							outline: 'none',
-						}}
-					>
+			{createPortal(
+				<CustomModalOverlay $isOpen={loginOpen} onClick={handleLoginClose}>
+					<CustomModalContent $isOpen={loginOpen} onClick={(e) => e.stopPropagation()}>
 						<ModalTitle>Welcome Back</ModalTitle>
 						<StyledTextField
-							id="outlined-basic"
+							id="login-email"
 							label="Email"
 							variant="outlined"
 							fullWidth
+							value={memberEmail}
 							onChange={handleUserEmail}
 						/>
 						<StyledTextField
-							id="outlined-basic"
+							id="login-password"
 							label="Password"
 							variant="outlined"
-							type="password"
+							type={showLoginPassword ? 'text' : 'password'}
 							fullWidth
+							value={memberPassword}
 							onChange={handlePassword}
 							onKeyDown={handlePasswordKeyDown}
+							InputProps={{
+								endAdornment: (
+									<InputAdornment position="end">
+										<IconButton
+											aria-label="toggle password visibility"
+											onClick={() => setShowLoginPassword(!showLoginPassword)}
+											edge="end"
+										>
+											{showLoginPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+										</IconButton>
+									</InputAdornment>
+								),
+							}}
 						/>
 						<StyledFab variant="extended" color="primary" onClick={handleLoginRequest}>
 							<LoginIcon sx={{ mr: 1 }} />
 							Log In
 						</StyledFab>
-					</Box>
-				</Fade>
-			</Modal>
-		</div>
+					</CustomModalContent>
+				</CustomModalOverlay>,
+				modalRoot,
+			)}
+		</>
 	);
 }
 

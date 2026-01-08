@@ -33,9 +33,14 @@ const actionDispatch = (dispatch: Dispatch) => ({
 export default function OrdersPage() {
 	const navigate = useNavigate();
 	const { authMember, orderBuilder } = useGlobals();
-	if (!authMember) navigate('/');
-
 	const { setAllOrders, setPausedOrders, setProcessOrders, setFinishedOrders } = actionDispatch(useDispatch());
+
+	// Redirect if not authenticated
+	useEffect(() => {
+		if (!authMember) {
+			navigate('/');
+		}
+	}, [authMember, navigate]);
 
 	const [value, setValue] = useState<string>('ALL');
 	const [orderInquiry] = useState<OrderInquiry>({
