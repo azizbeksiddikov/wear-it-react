@@ -1,4 +1,7 @@
-export const serverApi: string = `${import.meta.env.VITE_API_URL}`;
+// Use proxy in development to avoid CORS issues, production URL otherwise
+// Remove trailing slash if present to avoid double slashes in URLs
+const apiUrl = import.meta.env.VITE_API_URL?.replace(/\/$/, '') || '';
+export const serverApi: string = import.meta.env.DEV ? '/api' : apiUrl;
 
 export const Messages = {
 	error1: 'Something went wrong',
