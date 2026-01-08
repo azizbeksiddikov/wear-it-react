@@ -25,16 +25,16 @@ fi
 
 IMAGE_NAME="wearit-react:prod"
 
-echo "Stopping containers using image $IMAGE_NAME..."
-docker ps -a --filter "ancestor=$IMAGE_NAME" --format "{{.ID}}" | while read container_id; do
-    [ -n "$container_id" ] && docker stop "$container_id" 2>/dev/null || true
-done
-
 echo "Stopping and removing containers..."
+docker compose -f docker-compose.dev.yml down 2>/dev/null || true
 docker compose -f docker-compose.prod.yml down
+
 
 echo "Removing image $IMAGE_NAME..."
 docker rmi -f "$IMAGE_NAME" 2>/dev/null || true
+
+echo "Cleaning up local node_modules..."
+rm -rf node_modules
 
 echo "Building and starting production containers..."
 # Use DOCKER_BUILDKIT for faster builds with cache
