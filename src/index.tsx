@@ -34,9 +34,7 @@ root.render(
 				</QueryClientProvider>
 			</ContextProvider>
 		</Provider>
-		,
 	</React.StrictMode>,
 );
 
 reportWebVitals();
-// <React.StrictMode> -renders twice!
