@@ -4,9 +4,9 @@ FROM node:24-alpine AS builder
 WORKDIR /app
 
 # Copy package files and install dependencies in one layer
-COPY package.json ./
+COPY package.json package-lock.json ./
 RUN --mount=type=cache,target=/root/.npm \
-    npm install --production=false --prefer-offline --no-audit && \
+    npm ci && \
     npm cache clean --force
 
 # Copy source code and build in one layer
