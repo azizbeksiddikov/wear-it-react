@@ -1,13 +1,10 @@
 import React from 'react';
-import { Box, Button, Stack } from '@mui/material';
-import IconButton from '@mui/material/IconButton';
-import Badge from '@mui/material/Badge';
-import Menu from '@mui/material/Menu';
-import CancelIcon from '@mui/icons-material/Cancel';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import { Box, Button, Stack, IconButton, Badge, Menu } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import LocalMallIcon from '@mui/icons-material/LocalMall';
 import { useNavigate } from 'react-router-dom';
 import { BasketData, CartItem } from '../../../libs/types/search';
-import DeletForeverIcon from '@mui/icons-material/DeleteForever';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { Messages } from '../../../libs/config';
 import { sweetErrorHandling } from '../../../libs/sweetAlert';
 import { useGlobals } from '../../hooks/useGlobals';
@@ -82,7 +79,7 @@ export default function Basket(props: BasketProps) {
 				onClick={handleClick}
 			>
 				<Badge badgeContent={cartItems.length} color="secondary">
-					<ShoppingCartIcon />
+					<LocalMallIcon />
 				</Badge>
 			</IconButton>
 			<Menu
@@ -94,8 +91,10 @@ export default function Basket(props: BasketProps) {
 					elevation: 0,
 					sx: {
 						overflow: 'visible',
-						filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+						filter: 'drop-shadow(0px 4px 12px rgba(0,0,0,0.1))',
 						mt: 1.5,
+						borderRadius: '16px',
+						border: '1px solid #efefef',
 						'& .MuiAvatar-root': {
 							width: 32,
 							height: 32,
@@ -113,6 +112,18 @@ export default function Basket(props: BasketProps) {
 							bgcolor: 'background.paper',
 							transform: 'translateY(-50%) rotate(45deg)',
 							zIndex: 0,
+							border: '1px solid #efefef',
+							borderRight: 'none',
+							borderBottom: 'none',
+						},
+						'@media (max-width: 640px)': {
+							maxHeight: '85vh',
+							mt: 1,
+							'&:before': {
+								right: 10,
+								width: 8,
+								height: 8,
+							},
 						},
 					},
 				}}
@@ -122,16 +133,29 @@ export default function Basket(props: BasketProps) {
 				<Stack className={'basket-frame'}>
 					<Box className={'all-check-box'}>
 						{cartItems.length === 0 ? (
-							<div>Cart is empty!</div>
+							<div>Your cart is empty</div>
 						) : (
-							<Stack flexDirection={'row'}>
-								<div>Cart products:</div>
-								<DeletForeverIcon
-									sx={{ ml: '5px', cursor: 'pointer' }}
-									color={'primary'}
+							<>
+								<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+									<LocalMallIcon sx={{ fontSize: 18 }} />
+									<span>
+										My Bag · {cartItems.length} {cartItems.length === 1 ? 'item' : 'items'}
+									</span>
+								</Box>
+								<IconButton
+									size="small"
 									onClick={() => onDeleteAll()}
-								/>
-							</Stack>
+									sx={{
+										color: '#767676',
+										'&:hover': {
+											color: '#e60023',
+											backgroundColor: 'rgba(230, 0, 35, 0.08)',
+										},
+									}}
+								>
+									<DeleteOutlineIcon sx={{ fontSize: 20 }} />
+								</IconButton>
+							</>
 						)}
 					</Box>
 
@@ -141,24 +165,38 @@ export default function Basket(props: BasketProps) {
 								const imagePath = `${item.productImage}`;
 								return (
 									<Box className={'basket-info-box'} key={item.variantId}>
-										<div className={'cancel-btn'}>
-											<CancelIcon color={'primary'} onClick={() => onDelete(item)} />
-										</div>
-										<img src={imagePath} className={'product-img'} alt="productImage" />
-										<span className={'product-name'}>{item.productName}</span>
-										<p className={'product-price'}>
-											${item?.salePrice ?? item.itemUnitPrice} x {item.itemQuantity}
-										</p>
-										<Box sx={{ minWidth: 120 }}>
-											<div className="col-2">
-												<button onClick={() => onRemove(item)} className="remove">
-													-
-												</button>
-												<button onClick={() => onAdd(item)} className="add">
-													+
-												</button>
-											</div>
+										<IconButton
+											size="small"
+											className={'cancel-btn'}
+											onClick={() => onDelete(item)}
+											sx={{
+												position: 'absolute',
+												top: 8,
+												right: 8,
+												color: '#767676',
+												'&:hover': {
+													color: '#e60023',
+													backgroundColor: 'rgba(230, 0, 35, 0.08)',
+												},
+											}}
+										>
+											<CloseIcon sx={{ fontSize: 16 }} />
+										</IconButton>
+										<img src={imagePath} className={'product-img'} alt={item.productName} />
+										<Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0, gap: 0.5 }}>
+											<span className={'product-name'}>{item.productName}</span>
+											<p className={'product-price'}>
+												${item?.salePrice ?? item.itemUnitPrice} × {item.itemQuantity}
+											</p>
 										</Box>
+										<div className="col-2">
+											<button onClick={() => onRemove(item)} className="remove">
+												−
+											</button>
+											<button onClick={() => onAdd(item)} className="add">
+												+
+											</button>
+										</div>
 									</Box>
 								);
 							})}
@@ -166,31 +204,79 @@ export default function Basket(props: BasketProps) {
 					</Box>
 					{cartItems.length !== 0 ? (
 						<Box className={'basket-order'}>
-							<Stack spacing={0.5} sx={{ width: '100%', mb: 1 }}>
-								<Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-									<span>Products:</span>
-									<span>${orderSubTotal.toFixed(2)}</span>
-								</Box>
-								<Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-									<span>Shipping:</span>
-									<span>${orderShippingCost.toFixed(2)}</span>
+							<Stack spacing={0.8} sx={{ width: '100%' }}>
+								<Box
+									sx={{
+										display: 'flex',
+										justifyContent: 'space-between',
+										fontSize: '14px',
+										color: '#767676',
+									}}
+								>
+									<span>Products</span>
+									<span style={{ fontWeight: 600, color: '#111111' }}>${orderSubTotal.toFixed(2)}</span>
 								</Box>
 								<Box
 									sx={{
 										display: 'flex',
 										justifyContent: 'space-between',
-										fontWeight: 'bold',
-										borderTop: '1px solid #e0e0e0',
-										pt: 0.5,
-										mt: 0.5,
+										fontSize: '14px',
+										color: '#767676',
 									}}
 								>
-									<span>Total:</span>
-									<span>${orderTotalAmount.toFixed(2)}</span>
+									<span>Shipping</span>
+									<span style={{ fontWeight: 600, color: orderShippingCost === 0 ? '#10b981' : '#111111' }}>
+										{orderShippingCost === 0 ? 'FREE' : `$${orderShippingCost.toFixed(2)}`}
+									</span>
 								</Box>
+								<Box
+									sx={{
+										display: 'flex',
+										justifyContent: 'space-between',
+										fontWeight: 700,
+										fontSize: '16px',
+										borderTop: '1px solid #efefef',
+										pt: 1,
+										mt: 0.5,
+										color: '#111111',
+									}}
+								>
+									<span>Total</span>
+									<span style={{ color: '#e60023' }}>${orderTotalAmount.toFixed(2)}</span>
+								</Box>
+								{orderSubTotal < 50 && (
+									<Box
+										sx={{
+											fontSize: '11px',
+											color: '#767676',
+											textAlign: 'center',
+											mt: 0.5,
+											fontWeight: 500,
+										}}
+									>
+										Add ${(50 - orderSubTotal).toFixed(2)} more for free shipping
+									</Box>
+								)}
 							</Stack>
-							<Button startIcon={<ShoppingCartIcon />} variant={'contained'} onClick={proceedOrderHandler} fullWidth>
-								Order
+							<Button
+								startIcon={<LocalMallIcon />}
+								variant={'contained'}
+								onClick={proceedOrderHandler}
+								fullWidth
+								sx={{
+									mt: 1.5,
+									py: 1.2,
+									fontSize: '15px',
+									fontWeight: 600,
+									borderRadius: '24px',
+									textTransform: 'none',
+									boxShadow: 'none',
+									'&:hover': {
+										boxShadow: 'none',
+									},
+								}}
+							>
+								Checkout
 							</Button>
 						</Box>
 					) : (
