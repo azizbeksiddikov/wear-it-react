@@ -1,0 +1,27 @@
+services:
+  wear-it-react-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        REACT_APP_API_URL: ${REACT_APP_API_URL}
+    image: wearit-react:prod
+    container_name: wear-it-react-prod
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    restart: unless-stopped
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    # Logging configuration - 30MB per file
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "30m"
+        max-file: "10"

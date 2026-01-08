@@ -166,10 +166,30 @@ export default function Basket(props: BasketProps) {
 					</Box>
 					{cartItems.length !== 0 ? (
 						<Box className={'basket-order'}>
-							<span className={'price'}>
-								Total: ${orderTotalAmount} ({orderSubTotal} + {orderShippingCost})
-							</span>
-							<Button startIcon={<ShoppingCartIcon />} variant={'contained'} onClick={proceedOrderHandler}>
+							<Stack spacing={0.5} sx={{ width: '100%', mb: 1 }}>
+								<Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+									<span>Products:</span>
+									<span>${orderSubTotal.toFixed(2)}</span>
+								</Box>
+								<Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+									<span>Shipping:</span>
+									<span>${orderShippingCost.toFixed(2)}</span>
+								</Box>
+								<Box
+									sx={{
+										display: 'flex',
+										justifyContent: 'space-between',
+										fontWeight: 'bold',
+										borderTop: '1px solid #e0e0e0',
+										pt: 0.5,
+										mt: 0.5,
+									}}
+								>
+									<span>Total:</span>
+									<span>${orderTotalAmount.toFixed(2)}</span>
+								</Box>
+							</Stack>
+							<Button startIcon={<ShoppingCartIcon />} variant={'contained'} onClick={proceedOrderHandler} fullWidth>
 								Order
 							</Button>
 						</Box>

@@ -1,0 +1,21 @@
+# Development Dockerfile - optimized for minimal resources
+FROM node:24.11.1-slim
+
+WORKDIR /app
+
+# Copy package files
+COPY package.json yarn.lock ./
+
+# Install dependencies and clean cache
+RUN yarn install && \
+    yarn cache clean
+
+# Copy source code
+COPY . .
+
+# Expose port 3000 (default React dev server port)
+EXPOSE 3000
+
+# Start development server
+CMD ["yarn", "start"]
+

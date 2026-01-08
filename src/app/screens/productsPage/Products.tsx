@@ -174,6 +174,7 @@ export default function Products() {
 		productSearch.isFeatured = false;
 		productSearch.onSale = false;
 		productSearch.search = '';
+		setSearchText(''); // Clear search text input
 		setProductSearch({ ...productSearch });
 	};
 

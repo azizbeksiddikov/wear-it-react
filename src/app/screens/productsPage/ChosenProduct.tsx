@@ -7,7 +7,19 @@ import { createSelector } from 'reselect';
 import { setChosenProduct } from './slice';
 import { retrieveChosenProduct } from './selector';
 
-import { Container, Stack, Box, Typography, TextField, Rating, List, ListItem, Card, CardContent } from '@mui/material';
+import {
+	Container,
+	Stack,
+	Box,
+	Typography,
+	TextField,
+	Rating,
+	List,
+	ListItem,
+	Card,
+	CardContent,
+	CircularProgress,
+} from '@mui/material';
 
 import { Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import Button from '@mui/material/Button';
@@ -49,10 +61,12 @@ export default function ChosenProduct(props: ChosenProductProps) {
 
 	const [swiperIndex, setSwiperIndex] = useState(0);
 	const swiperRef = useRef<any>(null);
+	const currentProductIdRef = useRef<string>('');
 	const history = useHistory();
 
 	const [reviewModalOpen, setReviewModalOpen] = useState(false);
 	const [isEditingReview, setIsEditingReview] = useState(false);
+	const [isLoading, setIsLoading] = useState(true);
 
 	const productService = useMemo(() => new ProductService(), []);
 	const reviewService = useMemo(() => new ReviewService(), []);
@@ -76,9 +90,16 @@ export default function ChosenProduct(props: ChosenProductProps) {
 
 	const fetchProduct = useCallback(
 		(id: string) => {
+			// Update the ref to track the current productId
+			currentProductIdRef.current = id;
+			setIsLoading(true);
+
 			productService
 				.getProductById(id)
 				.then((product: Product) => {
+					// Check if this is still the current product (prevent race conditions)
+					if (currentProductIdRef.current !== id) return;
+
 					if (!product.productVariants || product.productVariants.length === 0) {
 						history.push('/products');
 						return;
@@ -91,9 +112,11 @@ export default function ChosenProduct(props: ChosenProductProps) {
 						rating: product.memberReview?.rating ?? 0,
 						comment: product.memberReview?.comment ?? '',
 					});
+					setIsLoading(false);
 				})
 				.catch((err) => {
 					console.error('Error fetching product:', err);
+					setIsLoading(false);
 					history.push('/products');
 				});
 		},
@@ -101,74 +124,55 @@ export default function ChosenProduct(props: ChosenProductProps) {
 	);
 
 	useEffect(() => {
+		// Reset all state immediately when productId changes
 		setQuantity(1);
 		setSwiperIndex(0);
 		setIsEditingReview(false);
+		setChosenVariant({
+			_id: '',
+			productId: '',
+			size: '',
+			color: '',
+			productPrice: 0,
+			stockQuantity: 0,
+			salePrice: undefined,
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		});
 
 		// Fetch product data
 		fetchProduct(productId);
 	}, [fetchProduct, productId]);
 
+	if (isLoading) {
+		return (
+			<Box
+				sx={{
+					display: 'flex',
+					justifyContent: 'center',
+					alignItems: 'center',
+					minHeight: '60vh',
+				}}
+			>
+				<CircularProgress />
+			</Box>
+		);
+	}
+
 	if (!chosenProduct || !chosenProduct.productVariants || !chosenProduct.productVariants.length || !chosenVariant)
 		return;
 
-	// Handlers
-	const sizeHandler = (size: string) => {
-		// Check if the size was already selected
-		const newSize = chosenVariant.size === size ? '' : size;
-
-		let updatedVariant;
-
-		// if size is deselected, reset the variant
-		if (newSize === '') {
-			updatedVariant = { ...chosenVariant, size: '', productPrice: 0, salePrice: 0 };
-		} else if (
-			chosenVariant.color &&
-			chosenVariant.color !== '' &&
-			availableColorsForSize.includes(chosenVariant.color)
-		) {
-			updatedVariant = chosenProduct.productVariants?.find(
-				(v) => v.size === newSize && v.color === chosenVariant.color,
-			) || { ...chosenVariant, size: newSize };
-		} else {
-			// if size is selected and color is not selected
-			updatedVariant = { ...chosenVariant, size: newSize, productPrice: 0, salePrice: 0 };
-		}
-		setChosenVariant(updatedVariant);
-	};
-
-	const colorHandler = (color: string) => {
-		// Check if the color is already selected
-		const newColor = chosenVariant.color === color ? '' : color;
-
-		let updatedVariant;
-
-		// if color is deselected, reset the variant
-		if (newColor === '') {
-			updatedVariant = { ...chosenVariant, color: '', productPrice: 0, salePrice: 0 };
-		} else if (chosenVariant.size && chosenVariant.size !== '' && availableSizesForColor.includes(chosenVariant.size)) {
-			updatedVariant = chosenProduct.productVariants?.find(
-				(v) => v.color === newColor && v.size === chosenVariant.size,
-			) || { ...chosenVariant, color: newColor };
-		} else {
-			// if color is selected and size is not selected or not available
-			updatedVariant = { ...chosenVariant, color: newColor, productPrice: 0, salePrice: 0 };
-		}
-
-		setChosenVariant(updatedVariant);
-	};
+	const productVariants = chosenProduct.productVariants;
 
 	// Extract unique sizes and colors from product variants
-	const availableSizes = [...new Set(chosenProduct.productVariants.map((variant) => variant.size))];
-	const availableColors = [...new Set(chosenProduct.productVariants.map((variant) => variant.color))];
+	const availableSizes = [...new Set(productVariants.map((variant) => variant.size))];
+	const availableColors = [...new Set(productVariants.map((variant) => variant.color))];
 
 	// Get available colors for the selected size
 	const availableColorsForSize = chosenVariant.size
 		? [
 				...new Set(
-					chosenProduct.productVariants
-						.filter((variant) => variant.size === chosenVariant.size)
-						.map((variant) => variant.color),
+					productVariants.filter((variant) => variant.size === chosenVariant.size).map((variant) => variant.color),
 				),
 		  ]
 		: availableColors;
@@ -177,12 +181,66 @@ export default function ChosenProduct(props: ChosenProductProps) {
 	const availableSizesForColor = chosenVariant.color
 		? [
 				...new Set(
-					chosenProduct.productVariants
-						.filter((variant) => variant.color === chosenVariant.color)
-						.map((variant) => variant.size),
+					productVariants.filter((variant) => variant.color === chosenVariant.color).map((variant) => variant.size),
 				),
 		  ]
 		: availableSizes;
+
+	// Handlers
+	const sizeHandler = (size: string) => {
+		setChosenVariant((prevVariant) => {
+			// Check if the size was already selected
+			const newSize = prevVariant.size === size ? '' : size;
+
+			// if size is deselected, reset the variant
+			if (newSize === '') {
+				return { ...prevVariant, size: '', productPrice: 0, salePrice: 0 };
+			}
+
+			// Get available colors for the new size
+			const colorsForNewSize = productVariants
+				.filter((variant) => variant.size === newSize)
+				.map((variant) => variant.color);
+
+			// If color is already selected and available for new size, find matching variant
+			if (prevVariant.color && colorsForNewSize.includes(prevVariant.color)) {
+				const matchingVariant = productVariants.find((v) => v.size === newSize && v.color === prevVariant.color);
+				if (matchingVariant) return matchingVariant;
+			}
+
+			// Otherwise, just update the size
+			return { ...prevVariant, size: newSize, productPrice: 0, salePrice: 0 };
+		});
+	};
+
+	const colorHandler = (color: string) => {
+		setChosenVariant((prevVariant) => {
+			// Check if the color is already selected
+			const newColor = prevVariant.color === color ? '' : color;
+
+			// if color is deselected, reset the variant
+			if (newColor === '') {
+				return { ...prevVariant, color: '', productPrice: 0, salePrice: 0 };
+			}
+
+			// Get available sizes for the new color
+			const sizesForNewColor = productVariants
+				.filter((variant) => variant.color === newColor)
+				.map((variant) => variant.size);
+
+			// If size is already selected and available for new color, find matching variant
+			if (prevVariant.size && sizesForNewColor.includes(prevVariant.size)) {
+				const matchingVariant = productVariants.find((v) => v.color === newColor && v.size === prevVariant.size);
+				if (matchingVariant) return matchingVariant;
+			}
+
+			// Otherwise, just update the color
+			return { ...prevVariant, color: newColor, productPrice: 0, salePrice: 0 };
+		});
+	};
+
+	if (!chosenProduct || !chosenProduct.productVariants || !chosenProduct.productVariants.length || !chosenVariant)
+		return;
 
 	const handleSlideChange = (swiper) => {
 		setSwiperIndex(swiper.realIndex);

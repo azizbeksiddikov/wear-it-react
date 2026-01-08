@@ -1,7 +1,15 @@
 import { useState } from 'react';
 import { CartItem } from '../../libs/types/search';
 
-const useBasket = () => {
+interface UseBasketReturn {
+	cartItems: CartItem[];
+	onAdd: (input: CartItem) => void;
+	onRemove: (input: CartItem) => void;
+	onDelete: (input: CartItem) => void;
+	onDeleteAll: () => void;
+}
+
+const useBasket = (): UseBasketReturn => {
 	const cartJson: string | null = localStorage.getItem('cartData');
 	const currentCart = cartJson ? JSON.parse(cartJson) : [];
 	const [cartItems, setCartItems] = useState<CartItem[]>(currentCart);
@@ -23,6 +31,7 @@ const useBasket = () => {
 
 	const onRemove = (input: CartItem) => {
 		const exist: any = cartItems.find((item: CartItem) => item.variantId === input.variantId);
+		if (!exist) return;
 		if (exist.itemQuantity === 1) {
 			const cartUpdate = cartItems.filter((item: CartItem) => item.variantId !== input.variantId);
 			setCartItems(cartUpdate);

@@ -7,6 +7,7 @@ import OrdersPage from './screens/ordersPage';
 import ProductsPage from './screens/productsPage';
 import UserPage from './screens/userPage';
 import Footer from './components/footer';
+import ScrollToTop from './components/ScrollToTop';
 import useBasket from './hooks/useBasket';
 import AuthenticationModal from './components/auth';
 import '../css/app.css';
@@ -22,6 +23,7 @@ function App() {
 
 	return (
 		<>
+			<ScrollToTop />
 			{/* Header */}
 			<Navbar
 				cartItems={cartItems}
