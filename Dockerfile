@@ -22,6 +22,7 @@ WORKDIR /app
 
 # Install serve and create user in one layer
 RUN npm install -g serve@14.2.1 && \
+    apk add --no-cache curl && \
     addgroup -g 1001 -S appuser && \
     adduser -S -u 1001 -G appuser appuser && \
     npm cache clean --force
