@@ -1,10 +1,10 @@
-# Wear It - React Application
+# Wearit - React Application
 
-Modern e-commerce React application for the Wear It fashion platform. A full-featured online shopping experience with product browsing, shopping cart, order management, and user authentication.
+Modern e-commerce React application for the Wearit fashion platform. A full-featured online shopping experience with product browsing, shopping cart, order management, and user authentication.
 
 ## About
 
-Wear It is a web application built with React and TypeScript that provides customers with an intuitive shopping experience. The platform features product catalogs, shopping cart functionality, order tracking, and user account management.
+Wearit is a web application built with React and TypeScript that provides customers with an intuitive shopping experience. The platform features product catalogs, shopping cart functionality, order tracking, and user account management.
 
 ## Features
 

@@ -247,7 +247,7 @@ export default function AuthenticationModal(props: AuthenticationModalProps) {
 			{createPortal(
 				<CustomModalOverlay $isOpen={signupOpen} onClick={handleSignupClose}>
 					<CustomModalContent $isOpen={signupOpen} onClick={(e) => e.stopPropagation()}>
-						<ModalTitle>Join Wear It</ModalTitle>
+						<ModalTitle>Join Wearit</ModalTitle>
 						<StyledTextField
 							id="signup-email"
 							label="Email"

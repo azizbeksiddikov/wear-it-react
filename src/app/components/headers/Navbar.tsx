@@ -46,7 +46,7 @@ export default function Navbar(props: NavbarProps) {
 		<div className="navbar">
 			<Container className="navbar-container">
 				<Link to="/" className="brand-logo">
-					<Box>Wear It</Box>
+					<Box>Wearit</Box>
 				</Link>
 
 				<nav className="nav-links">

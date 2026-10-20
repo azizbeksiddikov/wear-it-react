@@ -16,7 +16,7 @@ export default function Footer() {
 						<Grid size={{ xs: 12, sm: 6, md: 6 }}>
 							<Box className="brand-section">
 								<Typography variant="h5" className="brand-name">
-									<Link to="/">Wear It</Link>
+									<Link to="/">Wearit</Link>
 								</Typography>
 								<Typography variant="body2" className="brand-description">
 									Discover and shop the latest fashion trends.
@@ -93,7 +93,7 @@ export default function Footer() {
 				<Box className="copyright-section">
 					<Stack className="copyright-content">
 						<Typography variant="body2" className="copyright-text">
-							© {new Date().getFullYear()} Wear It. All rights reserved.
+							© {new Date().getFullYear()} Wearit. All rights reserved.
 						</Typography>
 						<Stack className="legal-links">
 							<Typography variant="body2">Privacy Policy</Typography>
