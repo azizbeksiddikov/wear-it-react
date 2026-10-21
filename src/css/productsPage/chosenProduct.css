@@ -592,6 +592,41 @@
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
+	/* Stack image slider above product info instead of 55% / 45% columns */
+	.products-page .chosen-product .title {
+		font-size: 32px;
+		line-height: 40px;
+	}
+
+	.products-page .chosen-product .product-container {
+		flex-direction: column;
+		width: 100%;
+		margin-top: 20px;
+		gap: 20px;
+	}
+
+	.products-page .chosen-product .chosen-product-slider {
+		width: 100%;
+		height: auto;
+		margin-right: 0;
+	}
+
+	.products-page .chosen-product .chosen-product-info {
+		width: 100%;
+		box-sizing: border-box;
+		padding: 20px;
+	}
+
+	.products-page .chosen-product .info-box .category-box {
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+
+	.products-page .chosen-product .quantity-selector .quantity-button {
+		min-width: 40px;
+		min-height: 40px;
+	}
+
 	.chosen-product .button-box {
 		flex-direction: column;
 		align-items: center;

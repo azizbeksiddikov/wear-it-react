@@ -388,3 +388,63 @@
 .sale-price {
 	color: #e53935;
 }
+
+/* Phone / small tablet: stack header, search and filters above the product grid */
+@media (max-width: 768px) {
+	.products-page .products-header {
+		flex-direction: column;
+		align-items: stretch;
+		gap: 1rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.products-page .page-title {
+		font-size: 2rem;
+	}
+
+	.products-page .search-and-sort {
+		flex-wrap: wrap;
+		justify-content: flex-start;
+		gap: 1rem;
+	}
+
+	.products-page .search-container {
+		flex: 1 1 260px;
+		max-width: none;
+		min-width: 0;
+	}
+
+	.products-page .search-input {
+		flex: 1;
+		min-width: 0;
+	}
+
+	.products-page .search-button {
+		padding: 10px 20px;
+	}
+
+	.products-page .sort-select {
+		min-width: 0;
+		flex: 1 1 160px;
+	}
+
+	.products-page .products-content {
+		flex-direction: column;
+		align-items: stretch;
+		gap: 1.5rem;
+	}
+
+	.products-page .filters-sidebar {
+		width: 100%;
+		box-sizing: border-box;
+		padding: 1.25rem;
+	}
+
+	.products-page .filter-heading {
+		margin-bottom: 1rem;
+	}
+
+	.products-page .filter-divider {
+		margin: 1rem 0;
+	}
+}

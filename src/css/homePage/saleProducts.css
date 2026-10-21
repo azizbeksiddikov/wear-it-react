@@ -24,6 +24,7 @@
 	color: #e60023; /* Pinterest red */
 	text-transform: none;
 	font-weight: 600;
+	white-space: nowrap;
 }
 
 /* Product card styling */

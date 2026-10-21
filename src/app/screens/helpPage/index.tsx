@@ -104,7 +104,9 @@ export default function HelpPage() {
 							boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
 							'& .MuiTab-root': {
 								textTransform: 'none',
-								fontSize: '1rem',
+								fontSize: { xs: '0.8rem', sm: '1rem' },
+								minWidth: 0,
+								px: { xs: 0.5, sm: 2 },
 								fontWeight: 500,
 								color: pinterestColors.mediumGray,
 							},

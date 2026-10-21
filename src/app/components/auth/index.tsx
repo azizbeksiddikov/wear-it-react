@@ -67,7 +67,10 @@ const CustomModalContent = styled(Box)<{ $isOpen: boolean }>`
 	box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 	padding: 2rem;
 	max-width: 400px;
-	width: 100%;
+	width: calc(100% - 2rem);
+	box-sizing: border-box;
+	max-height: calc(100dvh - 2rem);
+	overflow-y: auto;
 	outline: none;
 	position: relative;
 	display: flex;

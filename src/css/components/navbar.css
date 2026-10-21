@@ -125,3 +125,47 @@
 	background-color: #efefef;
 	border-color: #efefef;
 }
+
+/* Phone: logo + auth on row 1, nav pill full-width on row 2 (prevents horizontal overflow) */
+@media (max-width: 600px) {
+	.navbar .navbar-container {
+		grid-template-columns: 1fr auto;
+		grid-template-areas:
+			'logo auth'
+			'links links';
+		height: auto;
+		row-gap: 0.5rem;
+		padding-left: 12px;
+		padding-right: 12px;
+	}
+
+	.navbar .brand-logo {
+		grid-area: logo;
+		font-size: 1.35rem;
+		white-space: nowrap;
+	}
+
+	.navbar .nav-links {
+		grid-area: links;
+		justify-self: stretch;
+	}
+
+	.navbar .nav-links a {
+		flex: 1;
+		text-align: center;
+		padding: 0.6rem 0.5rem;
+	}
+
+	.navbar .auth-section {
+		grid-area: auth;
+		gap: 0.5rem;
+	}
+
+	.navbar .auth-section button {
+		min-width: 0;
+		min-height: 40px;
+		padding-left: 12px;
+		padding-right: 12px;
+		white-space: nowrap;
+	}
+}
