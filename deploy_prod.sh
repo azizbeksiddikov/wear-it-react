@@ -44,7 +44,7 @@ sleep 2
 # Check if container is running
 if docker ps | grep -q wear-it-react-prod; then
     echo "Production deployment complete!"
-    echo "Application is running on port 3000 (proxied by nginx at server level)"
+    echo "Application is running on port 4010 (proxied by nginx at server level)"
     echo ""
     echo "Container status:"
     docker ps --filter "name=wear-it-react-prod" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"

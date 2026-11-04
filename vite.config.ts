@@ -30,7 +30,7 @@ export default defineConfig(({ mode }) => {
 			}),
 		],
 		server: {
-			port: 3000,
+			port: Number(process.env.PORT) || 4210,
 			open: false,
 			host: true,
 			proxy: {

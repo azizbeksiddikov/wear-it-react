@@ -14,8 +14,9 @@ RUN --mount=type=cache,target=/root/.npm \
 # Copy source code
 COPY . .
 
-# Expose port 3000 (default React dev server port)
-EXPOSE 3000
+# Dev port (container port = host port; Vite reads PORT)
+ENV PORT=4110
+EXPOSE 4110
 
 # Start development server
 CMD ["npm", "start"]

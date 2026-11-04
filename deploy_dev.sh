@@ -45,7 +45,7 @@ sleep 2
 # Check if container is running
 if docker ps | grep -q wear-it-react-dev; then
     echo "Development deployment complete!"
-    echo "Application is running at http://localhost:3000"
+    echo "Application is running at http://localhost:4110"
     echo ""
     echo "Container status:"
     docker ps --filter "name=wear-it-react-dev" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"

@@ -32,6 +32,8 @@ COPY --from=builder --chown=appuser:appuser /app/build ./build
 
 USER appuser
 
-EXPOSE 3000
+# Port: container port = host port. Prod 4010, dev 4110, local 4210 (set PORT at run time).
+ENV PORT=4010
+EXPOSE 4010
 
-CMD ["serve", "-s", "build", "-l", "3000"]
+CMD ["sh", "-c", "serve -s build -l $PORT"]
