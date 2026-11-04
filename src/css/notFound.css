@@ -1,0 +1,46 @@
+.not-found {
+	padding: 4rem 0;
+	min-height: 50vh;
+	display: flex;
+	align-items: center;
+}
+
+.not-found .not-found-content {
+	max-width: 32rem;
+	margin: 0 auto;
+	text-align: center;
+}
+
+.not-found .not-found-code {
+	font-size: 4rem;
+	font-weight: 800;
+	line-height: 1;
+	color: #e60023;
+}
+
+.not-found .not-found-title {
+	margin: 0.5rem 0 0.75rem;
+	font-size: 1.75rem;
+}
+
+.not-found .not-found-text {
+	color: #6b6b6b;
+	margin-bottom: 1.5rem;
+}
+
+.not-found .not-found-actions {
+	flex-direction: column;
+	align-items: stretch;
+	gap: 12px;
+}
+
+@media (min-width: 600px) {
+	.not-found .not-found-actions {
+		flex-direction: row;
+		justify-content: center;
+	}
+}
+
+.not-found .not-found-actions a {
+	min-height: 44px;
+}

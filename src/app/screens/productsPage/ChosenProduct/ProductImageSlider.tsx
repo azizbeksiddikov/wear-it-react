@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { Stack, Box } from '@mui/material';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { FreeMode, Navigation, Thumbs } from 'swiper/modules';
+import { IMAGE_PLACEHOLDER, handleImageError } from '../../../../libs/image';
 import 'swiper/css';
 import 'swiper/css/free-mode';
 import 'swiper/css/navigation';
@@ -12,7 +13,8 @@ interface ProductImageSliderProps {
 	productName: string;
 }
 
-export default function ProductImageSlider({ images, productName }: ProductImageSliderProps) {
+export default function ProductImageSlider({ images: productImages, productName }: ProductImageSliderProps) {
+	const images = productImages && productImages.length > 0 ? productImages : [IMAGE_PLACEHOLDER];
 	const [swiperIndex, setSwiperIndex] = useState(0);
 	const swiperRef = useRef<any>(null);
 
@@ -37,6 +39,8 @@ export default function ProductImageSlider({ images, productName }: ProductImage
 							className="slider-image"
 							src={image}
 							alt={`${productName} ${index + 1}`}
+							loading={index === 0 ? 'eager' : 'lazy'}
+							onError={handleImageError}
 							style={{ objectFit: 'contain' }}
 						/>
 					</SwiperSlide>
@@ -44,13 +48,16 @@ export default function ProductImageSlider({ images, productName }: ProductImage
 			</Swiper>
 			<Box className={'image-previews'}>
 				{images.map((image: string, index: number) => (
-					<Box
+					<button
+						type="button"
 						key={index}
 						className={`image-preview ${index === swiperIndex ? 'active' : ''}`}
-						onClick={() => swiperRef.current?.swiper.slideTo(index)}
+						aria-label={`Show photo ${index + 1} of ${images.length}`}
+						aria-current={index === swiperIndex}
+						onClick={() => swiperRef.current?.swiper.slideToLoop(index)}
 					>
-						<img src={image} alt={`${productName} Thumbnail ${index + 1}`} style={{ objectFit: 'contain' }} />
-					</Box>
+						<img src={image} alt="" loading="lazy" onError={handleImageError} style={{ objectFit: 'contain' }} />
+					</button>
 				))}
 			</Box>
 		</Stack>

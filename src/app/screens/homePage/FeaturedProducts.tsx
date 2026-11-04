@@ -4,10 +4,11 @@ import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { retrieveFeaturedProducts } from './selector';
 
-import { Box, Button, Container, Grid, Stack, Typography, Tooltip } from '@mui/material';
+import { Box, Button, Container, Grid, Stack, Typography } from '@mui/material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ReadMoreIcon from '@mui/icons-material/ReadMore';
 
+import { handleImageError, photoOf } from '../../../libs/image';
 import '../../../css/homePage/featuredProducts.css';
 
 const FeaturedProductsRetriever = createSelector(retrieveFeaturedProducts, (featuredProducts) => ({
@@ -26,19 +27,30 @@ export default function FeaturedProducts() {
 						<Typography variant="body1">Handpicked selections just for you</Typography>
 					</Stack>
 
-					<Link to="/products?isFeatured=true" className="view-all-link">
-						<Button endIcon={<ArrowForwardIcon />}>View All</Button>
-					</Link>
+					<Button
+						component={Link}
+						to="/products?isFeatured=true"
+						className="view-all-link"
+						endIcon={<ArrowForwardIcon />}
+					>
+						View All
+					</Button>
 				</Stack>
 
-				<Grid container spacing={3} className="products-grid">
+				<Grid container spacing={{ xs: 1.5, sm: 3 }} className="products-grid">
 					{featuredProducts && featuredProducts.length > 0 ? (
 						featuredProducts.map((product) => (
-							<Grid size={{ xs: 12, sm: 6, md: 3 }} key={product._id}>
+							<Grid size={{ xs: 6, sm: 6, md: 3 }} key={product._id}>
 								<Link to={`/products/${product._id}`} style={{ textDecoration: 'none' }}>
 									<Stack className="product-card">
 										<Box className="product-image-wrapper">
-											<img src={product.productImages[0]} alt={product.productName} className="product-image" />
+											<img
+												src={photoOf(product.productImages)}
+												alt={product.productName}
+												className="product-image"
+												loading="lazy"
+												onError={handleImageError}
+											/>
 											<Box component="span" className="product-category">
 												{product.productCategory}
 											</Box>
@@ -49,12 +61,23 @@ export default function FeaturedProducts() {
 												<Typography variant="h6" className="product-name">
 													{product.productName}
 												</Typography>
+												{product.cheapestProductVariant && (
+													<Typography component="div" className="product-price-line">
+														{product.cheapestProductVariant.salePrice ? (
+															<>
+																<span className="price-now">${product.cheapestProductVariant.salePrice}</span>
+																<span className="price-was">${product.cheapestProductVariant.productPrice}</span>
+															</>
+														) : (
+															<span className="price-now">${product.cheapestProductVariant.productPrice}</span>
+														)}
+													</Typography>
+												)}
 											</Box>
-											<Tooltip title="View Details" placement="top" arrow>
-												<Button className="details-button" component="div">
-													<ReadMoreIcon />
-												</Button>
-											</Tooltip>
+											{/* The whole card is the link; this icon is only a visual hint */}
+											<span className="details-button" aria-hidden="true">
+												<ReadMoreIcon />
+											</span>
 										</Stack>
 									</Stack>
 								</Link>

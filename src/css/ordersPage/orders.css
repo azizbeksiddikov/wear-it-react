@@ -77,7 +77,7 @@
 .empty-orders {
 	text-align: center;
 	padding: 40px 0;
-	color: #767676;
+	color: #6b6b6b;
 	background-color: #f9f9f9;
 	border-radius: 16px;
 	margin-top: 16px;
@@ -120,11 +120,32 @@
 }
 
 .pinterest-text-secondary {
-	color: #767676;
+	color: #6b6b6b;
 	font-size: 0.9rem;
 }
 
 /* Tab panel customization */
 .order-tab-panel {
 	padding: 12px 0;
+}
+
+/* The tab panel brings its own 24px side padding: drop it so cards use the full width */
+.orders .orders-tab-panel {
+	padding-left: 0;
+	padding-right: 0;
+}
+
+.orders .order-tabs .MuiTab-root {
+	min-width: 44px;
+	padding-left: 14px;
+	padding-right: 14px;
+}
+
+/* Phone: all four tabs fit without scrolling */
+@media (max-width: 600px) {
+	.orders .order-tabs .MuiTab-root {
+		font-size: 0.8125rem;
+		padding-left: 10px;
+		padding-right: 10px;
+	}
 }

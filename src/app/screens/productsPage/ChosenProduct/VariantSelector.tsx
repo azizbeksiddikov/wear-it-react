@@ -1,4 +1,4 @@
-import { Stack, Box } from '@mui/material';
+import { Stack } from '@mui/material';
 import { ProductVariant } from '../../../../libs/types/product';
 import Divider from '../../../components/divider';
 
@@ -9,7 +9,12 @@ interface VariantSelectorProps {
 	onColorChange: (color: string) => void;
 }
 
-export default function VariantSelector({ variants, chosenVariant, onSizeChange, onColorChange }: VariantSelectorProps) {
+export default function VariantSelector({
+	variants,
+	chosenVariant,
+	onSizeChange,
+	onColorChange,
+}: VariantSelectorProps) {
 	// Extract unique sizes and colors
 	const availableSizes = [...new Set(variants.map((variant) => variant.size))];
 	const availableColors = [...new Set(variants.map((variant) => variant.color))];
@@ -27,35 +32,43 @@ export default function VariantSelector({ variants, chosenVariant, onSizeChange,
 	return (
 		<>
 			{/* Size selection */}
-			<Stack className={'size-options'}>
-				<span>Size:</span>
-				{availableSizes.map((size) => (
-					<Box
-						key={size}
-						className={`size-option ${chosenVariant?.size === size ? 'selected' : ''} ${
-							!availableSizesForColor.includes(size) ? 'disabled' : ''
-						}`}
-						onClick={() => (!availableSizesForColor.includes(size) ? null : onSizeChange(size))}
-					>
-						{size}
-					</Box>
-				))}
+			<Stack className={'size-options'} role="group" aria-labelledby="size-label">
+				<span id="size-label">Size:</span>
+				{availableSizes.map((size) => {
+					const unavailable = !availableSizesForColor.includes(size);
+					return (
+						<button
+							type="button"
+							key={size}
+							className={`size-option ${chosenVariant?.size === size ? 'selected' : ''} ${unavailable ? 'disabled' : ''}`}
+							aria-pressed={chosenVariant?.size === size}
+							disabled={unavailable}
+							onClick={() => onSizeChange(size)}
+						>
+							{size}
+						</button>
+					);
+				})}
 			</Stack>
 
 			{/* Color selection */}
-			<Stack className={'color-options'}>
-				<span>Color:</span>
-				{availableColors.map((color) => (
-					<Box
-						key={color}
-						className={`color-option ${chosenVariant?.color === color ? 'selected' : ''} ${
-							!availableColorsForSize.includes(color) ? 'disabled' : ''
-						}`}
-						onClick={() => (!availableColorsForSize.includes(color) ? null : onColorChange(color))}
-					>
-						{color}
-					</Box>
-				))}
+			<Stack className={'color-options'} role="group" aria-labelledby="color-label">
+				<span id="color-label">Color:</span>
+				{availableColors.map((color) => {
+					const unavailable = !availableColorsForSize.includes(color);
+					return (
+						<button
+							type="button"
+							key={color}
+							className={`color-option ${chosenVariant?.color === color ? 'selected' : ''} ${unavailable ? 'disabled' : ''}`}
+							aria-pressed={chosenVariant?.color === color}
+							disabled={unavailable}
+							onClick={() => onColorChange(color)}
+						>
+							{color}
+						</button>
+					);
+				})}
 			</Stack>
 			<Divider height="1" width="100%" bg="#000000" />
 		</>

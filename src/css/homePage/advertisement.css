@@ -42,9 +42,71 @@
 }
 
 .advertisement-section .feature-description {
-	color: #767676;
+	color: #6b6b6b;
 	font-size: 1rem;
 	line-height: 1.5;
 	max-width: 80%;
 	margin: 0 auto;
+}
+
+@media (max-width: 600px) {
+	.advertisement-section {
+		padding: 2rem 0;
+	}
+
+	.advertisement-section .section-title {
+		font-size: 1.35rem;
+		margin-bottom: 1.25rem;
+	}
+
+	.advertisement-section .features-container {
+		margin: 0;
+		width: 100%;
+		gap: 12px;
+	}
+
+	.advertisement-section .features-container > .MuiGrid-root {
+		padding: 0;
+		flex-basis: 100%;
+		max-width: 100%;
+	}
+
+	.advertisement-section .feature-card {
+		flex-direction: row;
+		text-align: left;
+		align-items: flex-start;
+		gap: 14px;
+		display: grid;
+		grid-template-columns: 48px 1fr;
+		grid-template-areas: 'icon title' 'icon desc';
+		column-gap: 14px;
+		row-gap: 2px;
+		padding: 14px;
+		background: #f9f9f9;
+		border-radius: 14px;
+	}
+
+	.advertisement-section .feature-icon {
+		grid-area: icon;
+		width: 48px;
+		height: 48px;
+		margin: 0;
+	}
+
+	.advertisement-section .feature-icon svg {
+		font-size: 24px;
+	}
+
+	.advertisement-section .feature-title {
+		grid-area: title;
+		font-size: 1rem;
+		margin: 0;
+	}
+
+	.advertisement-section .feature-description {
+		grid-area: desc;
+		font-size: 0.875rem;
+		max-width: none;
+		margin: 0;
+	}
 }

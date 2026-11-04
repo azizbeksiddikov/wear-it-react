@@ -22,19 +22,19 @@ const light: ThemeOptions = {
 		},
 		text: {
 			primary: '#111111', // Pinterest dark text
-			secondary: '#767676', // Pinterest secondary text
+			secondary: '#6b6b6b', // Pinterest secondary text
 		},
 		// Adding Pinterest specific colors
 		pinterest: {
 			red: '#E60023',
 			black: '#111111',
-			gray: '#767676',
+			gray: '#6b6b6b',
 			lightgray: '#EFEFEF',
 		},
 		// Adding muted color for less prominent elements
 		muted: {
 			main: '#EFEFEF',
-			contrastText: '#767676',
+			contrastText: '#6b6b6b',
 		},
 	},
 	shape: {
@@ -72,6 +72,10 @@ const light: ThemeOptions = {
 				root: {
 					paddingLeft: '2rem',
 					paddingRight: '2rem',
+					'@media (max-width:600px)': {
+						paddingLeft: '16px',
+						paddingRight: '16px',
+					},
 				},
 				maxWidthLg: {
 					maxWidth: '1400px',

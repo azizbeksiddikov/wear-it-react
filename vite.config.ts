@@ -8,7 +8,7 @@ import { ViteImageOptimizer } from 'vite-plugin-image-optimizer';
 export default defineConfig(({ mode }) => {
 	// Load env file based on `mode` in the current working directory.
 	const env = loadEnv(mode, process.cwd(), '');
-	const apiUrl = env.VITE_API_URL?.replace(/\/$/, '') || 'https://wearit.admin.azbek.me';
+	const apiUrl = env.VITE_API_URL?.replace(/\/$/, '') || 'http://localhost:4011'; // local backend by default; never fall back to production
 
 	return {
 		plugins: [

@@ -24,3 +24,39 @@ html {
 code {
 	font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
+
+/* The "no photo" placeholder is a wide drawing: show all of it instead of cropping it */
+img[src$='/icons/noimage-list.svg'] {
+	object-fit: contain !important;
+	background-color: #f2f2f2;
+}
+
+/* Keyboard focus: always visible, one style everywhere */
+:focus-visible {
+	outline: 2px solid #111111;
+	outline-offset: 2px;
+}
+
+/* Keep content clear of the notch and the home indicator (viewport-fit=cover) */
+body {
+	padding-left: env(safe-area-inset-left);
+	padding-right: env(safe-area-inset-right);
+}
+
+/* Respect "reduce motion": no running animations, instant transitions and scrolling */
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
+}
+
+/* SweetAlert2 dialogs: buttons reach the 44px tap size on touch screens (docs/DESIGN-RULES.md) */
+.swal2-actions .swal2-styled {
+	min-width: 44px;
+	min-height: 44px;
+}

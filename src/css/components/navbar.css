@@ -22,6 +22,9 @@
 	color: #e60023;
 	font-size: 1.6rem;
 	font-weight: 800;
+	display: inline-flex;
+	align-items: center;
+	min-height: 44px;
 	justify-self: start;
 	letter-spacing: -0.5px;
 	transition: transform 0.2s ease;
@@ -42,10 +45,14 @@
 
 .navbar .nav-links a {
 	text-decoration: none;
-	color: #767676;
+	color: #6b6b6b;
 	font-weight: 600;
 	font-size: 0.9rem;
-	padding: 0.6rem 1.25rem;
+	display: inline-flex;
+	align-items: center;
+	min-height: 44px;
+	box-sizing: border-box;
+	padding: 0 1.25rem;
 	border-radius: 40px;
 	transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -94,7 +101,6 @@
 .navbar .auth-section button.MuiButton-contained:focus,
 .navbar .auth-section button.MuiButton-contained:focus-visible {
 	background-color: #e60023;
-	outline: none;
 	box-shadow: none;
 }
 
@@ -117,7 +123,6 @@
 	background-color: transparent;
 	border-color: #efefef;
 	color: #111111;
-	outline: none;
 	box-shadow: none;
 }
 
@@ -126,46 +131,135 @@
 	border-color: #efefef;
 }
 
-/* Phone: logo + auth on row 1, nav pill full-width on row 2 (prevents horizontal overflow) */
-@media (max-width: 600px) {
+/* Icon buttons / drawer */
+.navbar .mobile-only {
+	display: none !important;
+}
+
+.navbar .nav-icon-btn {
+	width: 44px;
+	height: 44px;
+	color: #111111;
+}
+
+.nav-drawer-paper {
+	width: min(300px, 85vw);
+	display: flex;
+	flex-direction: column;
+}
+
+.nav-drawer-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 8px 8px 8px 20px;
+	border-bottom: 1px solid #efefef;
+	min-height: 56px;
+}
+
+.nav-drawer-head .brand-logo {
+	color: #e60023;
+	font-size: 1.35rem;
+	font-weight: 800;
+	letter-spacing: -0.5px;
+}
+
+.nav-drawer-links {
+	display: flex;
+	flex-direction: column;
+	padding: 8px 12px;
+}
+
+.nav-drawer-links a {
+	display: flex;
+	align-items: center;
+	min-height: 48px;
+	padding: 0 12px;
+	border-radius: 12px;
+	text-decoration: none;
+	color: #333333;
+	font-weight: 600;
+	font-size: 1rem;
+}
+
+.nav-drawer-links a.active {
+	background: #fdecee;
+	color: #e60023;
+}
+
+.nav-drawer-actions {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	padding: 16px 20px;
+	margin-top: auto;
+	border-top: 1px solid #efefef;
+}
+
+.nav-drawer-actions button {
+	min-height: 46px;
+	border-radius: 30px;
+	text-transform: none;
+	font-weight: 600;
+	box-shadow: none;
+}
+
+.nav-drawer-actions .MuiButton-contained {
+	background: #e60023;
+}
+
+.nav-drawer-actions .MuiButton-outlined {
+	color: #111111;
+	border-color: #dddddd;
+}
+
+/* Phone: compact bar, logo left, icons right, nav lives in the drawer */
+@media (max-width: 899px) {
+	.navbar {
+		padding: 0;
+	}
+
 	.navbar .navbar-container {
-		grid-template-columns: 1fr auto;
-		grid-template-areas:
-			'logo auth'
-			'links links';
-		height: auto;
-		row-gap: 0.5rem;
-		padding-left: 12px;
-		padding-right: 12px;
+		display: flex;
+		justify-content: space-between;
+		height: 56px;
+		padding-left: 16px;
+		padding-right: 8px;
 	}
 
 	.navbar .brand-logo {
-		grid-area: logo;
 		font-size: 1.35rem;
 		white-space: nowrap;
 	}
 
-	.navbar .nav-links {
-		grid-area: links;
-		justify-self: stretch;
+	.navbar .nav-links,
+	.navbar .desktop-only {
+		display: none !important;
 	}
 
-	.navbar .nav-links a {
-		flex: 1;
-		text-align: center;
-		padding: 0.6rem 0.5rem;
+	.navbar .mobile-only {
+		display: inline-flex !important;
 	}
 
 	.navbar .auth-section {
-		grid-area: auth;
-		gap: 0.5rem;
+		gap: 0;
 	}
 
-	.navbar .auth-section button {
-		min-width: 0;
-		min-height: 40px;
-		padding-left: 12px;
-		padding-right: 12px;
-		white-space: nowrap;
+	.navbar .basket .MuiIconButton-root {
+		width: 44px;
+		height: 44px;
+	}
+}
+
+.navbar .auth-section button.nav-icon-btn {
+	min-width: 0;
+	border-radius: 50%;
+}
+
+@media (max-width: 899px) {
+	.navbar .brand-logo {
+		display: inline-flex;
+		align-items: center;
+		min-height: 44px;
 	}
 }

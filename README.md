@@ -1,172 +1,108 @@
-# Wearit - React Application
+# Wearit Storefront
 
-Modern e-commerce React application for the Wearit fashion platform. A full-featured online shopping experience with product browsing, shopping cart, order management, and user authentication.
+[![CI](https://github.com/azizbeksiddikov/wear-it-react/actions/workflows/ci.yml/badge.svg)](https://github.com/azizbeksiddikov/wear-it-react/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+![React](https://img.shields.io/badge/React-19-61dafb)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178c6)
+![Vite](https://img.shields.io/badge/Vite-7-646cff)
 
-## About
+The customer-facing website of **Wearit**, an online fashion shop. Browse products, filter and search, pick a size and colour, keep a basket, place orders and leave reviews. Phone first, English only.
 
-Wearit is a web application built with React and TypeScript that provides customers with an intuitive shopping experience. The platform features product catalogs, shopping cart functionality, order tracking, and user account management.
+Live demo: https://wearit.azbek.me
+
+This repository is the **frontend**. It is a thin client: all data comes from the REST API in the backend repository, [`wear-it`](https://github.com/azizbeksiddikov/wear-it) (Express and MongoDB, which also serves the shop's admin site). There is no database here.
 
 ## Features
 
-- **Product Catalog**: Browse and search through fashion products with detailed product pages
-- **Shopping Cart**: Add, remove, and manage items in your cart
-- **Order Management**: Track orders with status (Processing, Paused, Finished)
-- **User Authentication**: Secure login and registration system
-- **User Profile**: Manage account settings and view order history
-- **Featured Products**: Highlighted product collections and sales
+- **Catalogue:** home page with featured and sale products, a product list with search, category and gender filters, sorting and pagination.
+- **Product page:** photo gallery, size and colour chips, quantity, price with sale price, ratings and reviews.
+- **Basket and checkout:** a basket saved in the browser, free shipping from $50, one-tap checkout for signed-in members. Orders ship to the address saved in the profile; without one, checkout asks for it first.
+- **Points and top-up:** orders are paid with points. The profile has a Balance card to add free demo points (1 to 1,000 at a time, up to 10,000; no real money). Paying with too few points offers to add some.
+- **Account:** sign up and log in, profile page with photo, order history with status tabs (paused, processing, completed) and actions.
+- **Reviews:** members can write, edit and delete one review per product.
+- **Made to be used:** phone-first layout, 44 px tap targets, keyboard and screen-reader friendly, friendly error messages. The rules are in [docs/DESIGN-RULES.md](docs/DESIGN-RULES.md).
 
-## Tech Stack
+## Tech stack
 
-- **Build Tool**: Vite 7.3.1
-- **Language**: TypeScript 5.9.3
-- **Frontend Framework**: React 19.2.3
-- **Routing**: React Router DOM v7.12.0
-- **Package Manager**: Yarn
+React 19, TypeScript 5.9, Vite 7, MUI 7, Redux Toolkit, React Query, React Router 7, axios, sweetalert2, swiper. Plain CSS per screen. Tested with Node's test runner.
 
-## Prerequisites
+## Quick start
 
-- Docker with Docker Compose V2 (built-in `docker compose` command)
-- Node.js 24.11.1+ (for local development)
-- Yarn package manager
-
-## Environment Setup
-
-1. Copy the example environment file:
-
-   ```bash
-   cp env.example .env        # For production
-   cp env.example .env.dev    # For development
-   ```
-
-2. Edit `.env` or `.env.dev` and set your environment variables:
-   ```
-   VITE_API_URL=https://your-api-url.com
-   ```
-
-## Docker Deployment
-
-### Production Deployment
+You need **Node 24** and npm, and a running backend (or any API that follows the backend's routes).
 
 ```bash
-./deploy_prod.sh
+git clone https://github.com/azizbeksiddikov/wear-it-react.git
+cd wear-it-react
+npm install
+cp .env.example .env        # set VITE_API_URL to your backend
+npm run dev                 # http://localhost:4210
 ```
 
-This will:
-
-- Build the production Docker image
-- Start the container on port 3000
-- Configure resource limits (256MB memory, 0.5 CPU)
-- Set up health checks
-
-### Development Deployment
+Build for production:
 
 ```bash
-./deploy_dev.sh
+npm run build               # type check, then files in build/
+npm run start:prod          # serve build/ on port 4210 (the Docker image uses 4010)
 ```
 
-This will:
+## Configuration
 
-- Build the development Docker image with hot reload
-- Start the container on port 3000
-- Mount source code for live updates
+| Variable       | Required | Meaning                                                    |
+| -------------- | -------- | ---------------------------------------------------------- |
+| `VITE_API_URL` | yes      | base URL of the backend REST API, without a trailing slash |
 
-## Manual Docker Commands
+It is read at build time and ends up in the browser bundle, so never put a secret in it. Details, file names per environment and rules: [docs/KEYS.md](docs/KEYS.md).
 
-### Build and Run Production
+## Scripts
 
-```bash
-docker compose -f docker-compose.prod.yml up -d --build
-```
+| Command                             | What it does                                                                                                                                                 |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `npm run dev`                       | Vite dev server with hot reload on port 4210; `/api` is proxied to `VITE_API_URL`                                                                            |
+| `npm run build`                     | `tsc` type check, then production build into `build/`                                                                                                        |
+| `npm run preview`                   | serve the Vite build locally                                                                                                                                 |
+| `npm run start:prod`                | `serve -s build -l $PORT` (what the Docker image runs)                                                                                                       |
+| `npm run lint` / `npm run lint:fix` | ESLint over `src`                                                                                                                                            |
+| `npm test`                          | unit tests for the error message mapping                                                                                                                     |
 
-### Build and Run Development
-
-```bash
-docker compose -f docker-compose.dev.yml up -d --build
-```
-
-### View Logs
-
-```bash
-# Production
-docker compose -f docker-compose.prod.yml logs -f
-
-# Development
-docker compose -f docker-compose.dev.yml logs -f
-```
-
-### Stop Containers
-
-```bash
-# Production
-docker compose -f docker-compose.prod.yml down
-
-# Development
-docker compose -f docker-compose.dev.yml down
-```
-
-## Local Development (without Docker)
-
-```bash
-# Install dependencies
-yarn install
-
-# Start development server (runs on http://localhost:3000)
-yarn start
-
-# Build for production
-yarn build
-
-# Run production build locally
-yarn start:prod
-
-# Lint code
-yarn lint
-```
-
-## Project Structure
+## Project structure
 
 ```
 src/
+├── index.tsx             providers: Redux, React Query, MUI theme, router
 ├── app/
-│   ├── components/       # Reusable UI components
-│   │   ├── auth/         # Authentication modals
-│   │   ├── headers/      # Navigation and basket
-│   │   └── footer/       # Footer component
-│   ├── screens/          # Page components
-│   │   ├── homePage/     # Home page with featured products
-│   │   ├── productsPage/ # Product catalog and details
-│   │   ├── ordersPage/   # Order management
-│   │   └── userPage/     # User profile
-│   ├── services/         # API service layer
-│   ├── hooks/            # Custom React hooks
-│   ├── context/          # React context providers
-│   └── store.ts          # Redux store configuration
-├── css/                  # Stylesheets
-├── libs/                 # Utilities and configurations
-└── public/               # Static assets
+│   ├── App.tsx           routes, header, footer, login and signup modals
+│   ├── screens/          one folder per page: homePage, productsPage, ordersPage,
+│   │                     userPage, helpPage, notFoundPage
+│   ├── components/       shared UI: headers (navbar, basket), footer, auth modals
+│   ├── services/         axios classes for the backend (member, product, order, review)
+│   ├── hooks/            useBasket (the basket), useGlobals (signed-in member)
+│   └── MaterialTheme/    MUI theme: brand red, radius, typography
+├── libs/                 config, error messages, alerts, image helpers, types, enums
+└── css/                  plain CSS per screen and component
+tests/                    unit tests
+docs/                     architecture, design rules, deploy, keys
 ```
 
-## Available Scripts
+More in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-- `yarn start` - Start development server
-- `yarn build` - Build for production
-- `yarn lint` - Check code for linting errors
-- `yarn lint:fix` - Automatically fix linting issues
-- `yarn start:prod` - Serve production build locally
+## How it talks to the backend
 
-## Environment Variables
+Every request goes from the browser to the backend REST API (`/member`, `/product`, `/order`, `/review`) with cookies for the session. In development the Vite server proxies `/api` to `VITE_API_URL`, so there are no CORS problems; in production the API must allow your site's origin and credentials. The backend repo is [`wear-it`](https://github.com/azizbeksiddikov/wear-it); run it locally or point `VITE_API_URL` at your own copy. Please do not create accounts, orders or reviews on the public demo.
 
-The application requires the following environment variable:
+## Documentation
 
-- `VITE_API_URL` - Backend API endpoint URL
+| File                                               | Content                                              |
+| -------------------------------------------------- | ---------------------------------------------------- |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)       | folders, routes, data flow, auth, basket, state      |
+| [docs/DESIGN-RULES.md](docs/DESIGN-RULES.md)       | how the storefront looks and behaves, with checklist |
+| [docs/DEPLOY.md](docs/DEPLOY.md)                   | Docker and static hosting, redeploy steps            |
+| [docs/KEYS.md](docs/KEYS.md)                       | environment variable (name only)                     |
+| [PROGRESS.md](PROGRESS.md)                         | status, known gaps, open decisions                   |
 
-## Health Checks
+## Contributing
 
-Production container includes health checks that verify the application is responding on the health endpoint.
+Report security problems as described in [SECURITY.md](SECURITY.md). Contributions are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) for the branch model (`develop`, then `master`), the checks to run (`npm run lint`, `npm run build`, `npm test`) and the commit style.
 
-## Notes
+## License
 
-- The application runs on a Node-based `serve` tool (port 3000) inside the production container, mapped to port 3000 on the host.
-- The development container also runs on port 3000.
-- All backend requests use the `VITE_API_URL` environment variable.
-- Built using an optimized multi-stage Node.js Docker process.
+[MIT](LICENSE), Copyright (c) 2026 Azizbek Siddikov.

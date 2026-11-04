@@ -1,26 +1,28 @@
-import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
 import { Dispatch } from '@reduxjs/toolkit';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import { createSelector } from 'reselect';
 
-import { Container, Stack, Box, Rating, CircularProgress } from '@mui/material';
-import Button from '@mui/material/Button';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
+import { Box, CircularProgress, Container, Rating, Stack } from '@mui/material';
+import Button from '@mui/material/Button';
 
-import { setChosenProduct } from '../slice';
-import { retrieveChosenProduct } from '../selector';
-import ProductService from '../../../services/ProductService';
+import { sweetTopSmallSuccessAlert } from '../../../../libs/sweetAlert';
 import { Product, ProductVariant } from '../../../../libs/types/product';
 import { CartItem } from '../../../../libs/types/search';
 import { useGlobals } from '../../../hooks/useGlobals';
+import ProductService from '../../../services/ProductService';
+import { retrieveChosenProduct } from '../selector';
+import { setChosenProduct } from '../slice';
 
 // Import new components
-import ProductImageSlider from './ProductImageSlider';
-import VariantSelector from './VariantSelector';
-import QuantitySelector from './QuantitySelector';
+import NotFoundPage from '../../notFoundPage';
 import PriceDisplay from './PriceDisplay';
+import ProductImageSlider from './ProductImageSlider';
+import QuantitySelector from './QuantitySelector';
 import ReviewSection from './ReviewSection';
+import VariantSelector from './VariantSelector';
 
 import '../../../../css/productsPage/chosenProduct.css';
 
@@ -40,12 +42,12 @@ export default function ChosenProduct(props: ChosenProductProps) {
 	const dispatch = useDispatch();
 	const { setChosenProduct } = useMemo(() => actionDispatch(dispatch), [dispatch]);
 	const { chosenProduct } = useSelector(chosenProductRetriever);
-	const navigate = useNavigate();
 
 	const currentProductIdRef = useRef<string>('');
 	const prevProductIdRef = useRef<string | undefined>(productId);
 
 	const [isLoading, setIsLoading] = useState(true);
+	const [notFound, setNotFound] = useState(false);
 	const [quantity, setQuantity] = useState(1);
 	const [chosenVariant, setChosenVariant] = useState<ProductVariant>({
 		_id: '',
@@ -85,6 +87,7 @@ export default function ChosenProduct(props: ChosenProductProps) {
 
 			currentProductIdRef.current = productId;
 			setIsLoading(true);
+			setNotFound(false);
 
 			try {
 				const product = await productService.getProductById(productId);
@@ -93,22 +96,24 @@ export default function ChosenProduct(props: ChosenProductProps) {
 				if (currentProductIdRef.current !== productId) return;
 
 				if (!product.productVariants || product.productVariants.length === 0) {
-					navigate('/products');
+					setNotFound(true);
+					setIsLoading(false);
 					return;
 				}
 
+				setNotFound(false);
 				setChosenProduct(product);
 				setChosenVariant(product.productVariants[0]);
 				setIsLoading(false);
 			} catch (err) {
 				console.error('Error fetching product:', err);
 				setIsLoading(false);
-				navigate('/products');
+				setNotFound(true);
 			}
 		};
 
 		fetchProduct();
-	}, [productId, productService, navigate, setChosenProduct]);
+	}, [productId, productService, setChosenProduct]);
 
 	// Refetch function for review handlers
 	const refetchProduct = useCallback(() => {
@@ -190,7 +195,7 @@ export default function ChosenProduct(props: ChosenProductProps) {
 	};
 
 	const decrementQuantityHandler = () => {
-		if (quantity > 0) {
+		if (quantity > 1) {
 			setQuantity(quantity - 1);
 		}
 	};
@@ -204,7 +209,7 @@ export default function ChosenProduct(props: ChosenProductProps) {
 			productName: chosenProduct!.productName,
 			productCategory: chosenProduct!.productCategory,
 			productGender: chosenProduct!.productGender,
-			productImage: chosenProduct!.productImages[0],
+			productImage: chosenProduct!.productImages?.[0] ?? '',
 			productSize: chosenVariant.size,
 			productColor: chosenVariant.color,
 			itemUnitPrice: chosenVariant.productPrice,
@@ -212,7 +217,11 @@ export default function ChosenProduct(props: ChosenProductProps) {
 			itemQuantity: quantity,
 		});
 		setQuantity(1);
+		sweetTopSmallSuccessAlert('Added to basket', 1200);
 	};
+
+	const hasVariant = chosenVariant.productPrice !== 0;
+	const addHint = !authMember ? 'Log in to add items to your basket.' : !hasVariant ? 'Choose a size and colour.' : '';
 
 	if (isLoading) {
 		return (
@@ -229,12 +238,23 @@ export default function ChosenProduct(props: ChosenProductProps) {
 		);
 	}
 
+	if (notFound) {
+		return (
+			<NotFoundPage
+				title="Product not found"
+				message="We could not find this product. It may have been removed, or the link may be wrong."
+			/>
+		);
+	}
+
 	if (!chosenProduct || !chosenProduct.productVariants || !chosenProduct.productVariants.length || !chosenVariant)
 		return null;
 
 	return (
 		<div className={'chosen-product'}>
-			<Box className={'title'}>Product Detail</Box>
+			<Box className={'title'} aria-hidden="true">
+				Product Detail
+			</Box>
 			<Container>
 				<Stack className={'product-container'}>
 					{/* Product Image Slider */}
@@ -243,7 +263,9 @@ export default function ChosenProduct(props: ChosenProductProps) {
 					{/* Product Info */}
 					<Stack className={'chosen-product-info'}>
 						<Stack className={'info-box'}>
-							<Box className={'product-name'}>{chosenProduct.productName}</Box>
+							<Box component="h1" className={'product-name'}>
+								{chosenProduct.productName}
+							</Box>
 							<Stack className={'category-box'}>
 								<span>{chosenProduct.productCategory}</span>
 								{chosenProduct.isFeatured && <span className="feature-badge">Featured</span>}
@@ -286,16 +308,19 @@ export default function ChosenProduct(props: ChosenProductProps) {
 							<div className={'button-box'}>
 								<Button
 									onClick={handleAddToBasket}
-									style={{
-										backgroundColor: authMember ? '#4caf50' : '#9e9e9e',
-										color: 'white',
-									}}
 									variant="contained"
-									disabled={!authMember}
+									color="primary"
+									disabled={!authMember || !hasVariant}
+									aria-describedby={addHint ? 'add-hint' : undefined}
 								>
 									Add To Basket
 								</Button>
 							</div>
+							{addHint && (
+								<p id="add-hint" className="add-hint">
+									{addHint}
+								</p>
+							)}
 						</Stack>
 					</Stack>
 				</Stack>

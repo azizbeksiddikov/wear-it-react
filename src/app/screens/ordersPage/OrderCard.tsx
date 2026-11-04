@@ -1,19 +1,22 @@
-import { Box, Typography, Card, CardContent, Stack, Chip, Button } from '@mui/material';
-import LocalShippingIcon from '@mui/icons-material/LocalShipping';
-import InventoryIcon from '@mui/icons-material/Inventory';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import DeleteIcon from '@mui/icons-material/Delete';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import DoneIcon from '@mui/icons-material/Done';
+import InventoryIcon from '@mui/icons-material/Inventory';
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import { Box, Button, Card, CardContent, Chip, Stack, Typography } from '@mui/material';
 import moment from 'moment';
-import { Order, OrderItem } from '../../../libs/types/order';
-import { T } from '../../../libs/types/common';
+import { Link, useNavigate } from 'react-router-dom';
 import { Messages } from '../../../libs/config';
-import OrderService from '../../services/OrderService';
-import { sweetErrorHandling } from '../../../libs/sweetAlert';
 import { OrderStatus } from '../../../libs/enums/order.enum';
-import { OrderUpdateInput } from '../../../libs/types/order';
+import { getErrorCode } from '../../../libs/errorMessages';
+import { IMAGE_PLACEHOLDER, handleImageError } from '../../../libs/image';
+import { pointsMissing } from '../../../libs/points';
+import { sweetAskForPoints, sweetConfirm, sweetErrorHandling } from '../../../libs/sweetAlert';
+import { T } from '../../../libs/types/common';
+import { Order, OrderItem, OrderUpdateInput } from '../../../libs/types/order';
 import { useGlobals } from '../../hooks/useGlobals';
+import OrderService from '../../services/OrderService';
 
 interface OrderCardProps {
 	order: Order;
@@ -23,6 +26,13 @@ interface OrderCardProps {
 export default function OrderCard(props: OrderCardProps) {
 	const { authMember, setAuthMember, setOrderBuilder } = useGlobals();
 	const { order, setValue } = props;
+	const navigate = useNavigate();
+
+	/** Too few points: offer to add some (they are free) and open the balance card. */
+	const offerPoints = async () => {
+		const missing = pointsMissing(authMember?.memberPoints ?? 0, order.orderTotalAmount);
+		if (await sweetAskForPoints(missing)) navigate('/my-page#balance');
+	};
 
 	/** HANDLERS */
 	const deleteOrderHandler = async () => {
@@ -38,7 +48,7 @@ export default function OrderCard(props: OrderCardProps) {
 				orderTotalAmount: order.orderTotalAmount,
 			};
 
-			const confirmation = window.confirm('Do you want to delete this order?');
+			const confirmation = await sweetConfirm('Delete this order?', 'Delete');
 			if (confirmation) {
 				const orderService = new OrderService();
 				await orderService.updateOrder(input);
@@ -63,7 +73,12 @@ export default function OrderCard(props: OrderCardProps) {
 				orderTotalAmount: order.orderTotalAmount,
 			};
 
-			const confirmation = window.confirm('Do you want to proceed with payment?');
+			if (pointsMissing(authMember.memberPoints, order.orderTotalAmount) > 0) {
+				await offerPoints();
+				return;
+			}
+
+			const confirmation = await sweetConfirm('Proceed with payment?', 'Pay');
 			if (confirmation) {
 				const orderService = new OrderService();
 				orderService
@@ -76,7 +91,8 @@ export default function OrderCard(props: OrderCardProps) {
 						setOrderBuilder(new Date());
 					})
 					.catch((err: T) => {
-						sweetErrorHandling(err, 2000).then();
+						if (getErrorCode(err) === 'NOT_ENOUGH_POINTS') offerPoints().then();
+						else sweetErrorHandling(err, 2000).then();
 					});
 			}
 		} catch (err) {
@@ -98,7 +114,7 @@ export default function OrderCard(props: OrderCardProps) {
 				orderTotalAmount: order.orderTotalAmount,
 			};
 
-			const confirmation = window.confirm('Have you received your order?');
+			const confirmation = await sweetConfirm('Have you received your order?', 'Yes, received');
 			if (confirmation) {
 				const orderService = new OrderService();
 				await orderService.updateOrder(input);
@@ -124,7 +140,7 @@ export default function OrderCard(props: OrderCardProps) {
 				orderTotalAmount: order.orderTotalAmount,
 			};
 
-			const confirmation = window.confirm('Do you want to return this order?');
+			const confirmation = await sweetConfirm('Return this order?', 'Return order');
 			if (confirmation) {
 				const orderService = new OrderService();
 				orderService
@@ -184,7 +200,7 @@ export default function OrderCard(props: OrderCardProps) {
 					spacing={2}
 					justifyContent="space-between"
 					alignItems={{ xs: 'flex-start', sm: 'center' }}
-					p={2}
+					p={{ xs: 1.5, sm: 2 }}
 				>
 					<Stack>
 						<Typography variant="subtitle1" className="pinterest-text-title">
@@ -214,13 +230,12 @@ export default function OrderCard(props: OrderCardProps) {
 			</Box>
 
 			{/* Card Content */}
-			<CardContent className="card-content" sx={{ p: 3 }}>
+			<CardContent className="card-content" sx={{ p: { xs: 1.5, sm: 3 } }}>
 				<Stack spacing={2}>
-					<Box>{order._id}</Box>
 					{order?.orderItems &&
 						order.orderItems.map((item: OrderItem) => {
 							return (
-								<a key={item._id} href={`/products/${item.productId}`} className="order-item-link">
+								<Link key={item._id} to={`/products/${item.productId}`} className="order-item-link">
 									<Stack direction="row" spacing={2} alignItems="center" className="order-item-row">
 										{/* Image */}
 										<Box
@@ -232,11 +247,17 @@ export default function OrderCard(props: OrderCardProps) {
 												overflow: 'hidden',
 											}}
 										>
-											<img src={`${item.productImage}`} alt={item.productName} className="item-image" />
+											<img
+												src={item.productImage || IMAGE_PLACEHOLDER}
+												alt={item.productName}
+												className="item-image"
+												loading="lazy"
+												onError={handleImageError}
+											/>
 										</Box>
 
-										<Box sx={{ flexGrow: 1 }}>
-											<Typography variant="body1" className="pinterest-text-title">
+										<Box sx={{ flexGrow: 1, minWidth: 0 }}>
+											<Typography variant="body1" className="pinterest-text-title" sx={{ overflowWrap: 'break-word' }}>
 												{item.productName}
 											</Typography>
 											<div className="item-details">
@@ -262,7 +283,7 @@ export default function OrderCard(props: OrderCardProps) {
 											</div>
 										</Box>
 
-										<Box sx={{ textAlign: 'right' }}>
+										<Box sx={{ textAlign: 'right', flexShrink: 0 }}>
 											<Stack className="pinterest-text-title price-container">
 												{item.salePrice ? (
 													<>
@@ -281,14 +302,17 @@ export default function OrderCard(props: OrderCardProps) {
 											</Stack>
 										</Box>
 									</Stack>
-								</a>
+								</Link>
 							);
 						})}
 				</Stack>
 			</CardContent>
 
 			{/* Card Footer */}
-			<Box className="card-footer" sx={{ borderTop: 1, borderColor: 'divider', bgcolor: '#f9f9f9', p: 2 }}>
+			<Box
+				className="card-footer"
+				sx={{ borderTop: 1, borderColor: 'divider', bgcolor: '#f9f9f9', p: { xs: 1.5, sm: 2 } }}
+			>
 				<Stack
 					direction={{ xs: 'column', sm: 'row' }}
 					justifyContent="space-between"
@@ -299,53 +323,49 @@ export default function OrderCard(props: OrderCardProps) {
 						{order.orderItems.reduce((acc, item) => acc + item.itemQuantity, 0)} items
 					</Typography>
 
-					<Stack direction="row" spacing={2} alignItems="center">
+					<Stack direction="row" useFlexGap sx={{ gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
 						{/* Buttons */}
-						<Stack direction="row" spacing={2} alignItems="center">
+						<Stack direction="row" useFlexGap sx={{ gap: 1.5, flexWrap: 'wrap', alignItems: 'center' }}>
 							{[OrderStatus.PAUSED, OrderStatus.CANCELLED].includes(order.orderStatus) && (
 								<Button
-									size="small"
 									variant="outlined"
 									startIcon={<DeleteIcon />}
 									value={order._id}
 									onClick={deleteOrderHandler}
-									sx={{ color: statusTextColors.DELETE, borderColor: statusTextColors.DELETE }}
+									sx={{ minHeight: 44, color: statusTextColors.DELETE, borderColor: statusTextColors.DELETE }}
 								>
 									Delete
 								</Button>
 							)}
 							{order.orderStatus === OrderStatus.FINISHED && (
 								<Button
-									size="small"
 									variant="outlined"
 									startIcon={<DeleteIcon />}
 									value={order._id}
 									onClick={cancelOrderHandler}
-									sx={{ color: statusTextColors.DELETE, borderColor: statusTextColors.DELETE }}
+									sx={{ minHeight: 44, color: statusTextColors.DELETE, borderColor: statusTextColors.DELETE }}
 								>
 									Cancel
 								</Button>
 							)}
 							{order.orderStatus === OrderStatus.PAUSED && (
 								<Button
-									size="small"
 									variant="outlined"
 									startIcon={<PlayArrowIcon />}
 									value={order._id}
 									onClick={processOrderHandler}
-									sx={{ color: statusTextColors.PROCESSING, borderColor: statusTextColors.PROCESSING }}
+									sx={{ minHeight: 44, color: statusTextColors.PROCESSING, borderColor: statusTextColors.PROCESSING }}
 								>
 									Process
 								</Button>
 							)}
 							{order.orderStatus === OrderStatus.PROCESSING && (
 								<Button
-									size="small"
 									variant="outlined"
 									startIcon={<DoneIcon />}
 									value={order._id}
 									onClick={finishOrderHandler}
-									sx={{ color: statusTextColors.FINISHED, borderColor: statusTextColors.FINISHED }}
+									sx={{ minHeight: 44, color: statusTextColors.FINISHED, borderColor: statusTextColors.FINISHED }}
 								>
 									Finish
 								</Button>

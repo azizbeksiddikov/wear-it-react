@@ -29,13 +29,18 @@ import {
 	FormGroup,
 	FormControlLabel,
 	Checkbox,
+	CircularProgress,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
+import TuneIcon from '@mui/icons-material/Tune';
 
 import ProductService from '../../services/ProductService';
 import { ProductCategory, ProductGender } from '../../../libs/enums/product.enum';
 import { ProductsInquiry, ProductsOutput } from '../../../libs/types/product';
 import { Direction } from '../../../libs/enums/common.enum';
+import { handleImageError, photoOf } from '../../../libs/image';
+import { sweetErrorHandling } from '../../../libs/sweetAlert';
+import { friendlyErrorMessage } from '../../../libs/errorMessages';
 
 import '../../../css/productsPage/products.css';
 
@@ -66,6 +71,16 @@ export default function Products() {
 	});
 	const [searchText, setSearchText] = useState('');
 	const [totalPages, setTotalPages] = useState(1);
+	const [filtersOpen, setFiltersOpen] = useState(false);
+	const [loading, setLoading] = useState(true);
+	const [loadFailed, setLoadFailed] = useState(false);
+	const [loadError, setLoadError] = useState('');
+	const [reloadKey, setReloadKey] = useState(0);
+	const activeFilterCount =
+		(productSearch.productCategory ? 1 : 0) +
+		(productSearch.productGender ? 1 : 0) +
+		(productSearch.isFeatured ? 1 : 0) +
+		(productSearch.onSale ? 1 : 0);
 
 	const productService = useMemo(() => new ProductService(), []);
 
@@ -96,6 +111,8 @@ export default function Products() {
 	}, [location.search]);
 
 	useEffect(() => {
+		setLoading(true);
+		setLoadFailed(false);
 		productService
 			.getProducts(productSearch)
 			.then((data) => {
@@ -103,14 +120,20 @@ export default function Products() {
 
 				setTotalPages(Math.ceil((data.count as any)[0]?.total / productSearch.limit) || 1);
 			})
-			.catch((err) => console.log(err));
+			.catch((err) => {
+				console.log(err);
+				setLoadFailed(true);
+				setLoadError(friendlyErrorMessage(err));
+				sweetErrorHandling(err).then();
+			})
+			.finally(() => setLoading(false));
 		window.scrollTo({
 			top: 25,
 			left: 0,
 			behavior: 'smooth',
 		});
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [productSearch]);
+	}, [productSearch, reloadKey]);
 
 	const searchTextHandler = (text: string) => {
 		setSearchText(text);
@@ -190,6 +213,8 @@ export default function Products() {
 							<TextField
 								placeholder="Search products..."
 								value={searchText}
+								type="search"
+								inputProps={{ 'aria-label': 'Search products', enterKeyHint: 'search' }}
 								onChange={(e) => searchTextHandler(e.target.value)}
 								onKeyDown={(e) => {
 									if (e.key === 'Enter') searchProductHandler();
@@ -210,31 +235,43 @@ export default function Products() {
 							</Button>
 						</Stack>
 
-						<FormControl variant="outlined" size="small" className="sort-select">
-							<InputLabel>Sort by</InputLabel>
-							<Select
-								value={productSearch.direction === Direction.DESC ? 'new' : 'old'}
-								onChange={(e) => directionHandler(e.target.value)}
-								label="Sort by"
+						<Stack className="sort-row">
+							<Button
+								variant="outlined"
+								className="filters-toggle"
+								startIcon={<TuneIcon />}
+								aria-expanded={filtersOpen}
+								onClick={() => setFiltersOpen((o) => !o)}
 							>
-								<MenuItem value="new">Newest</MenuItem>
-								<MenuItem value="old">Oldest</MenuItem>
-							</Select>
-						</FormControl>
+								Filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
+							</Button>
+							<FormControl variant="outlined" size="small" className="sort-select">
+								<InputLabel id="sort-select-label">Sort by</InputLabel>
+								<Select
+									labelId="sort-select-label"
+									value={productSearch.direction === Direction.DESC ? 'new' : 'old'}
+									onChange={(e) => directionHandler(e.target.value)}
+									label="Sort by"
+								>
+									<MenuItem value="new">Newest</MenuItem>
+									<MenuItem value="old">Oldest</MenuItem>
+								</Select>
+							</FormControl>
+						</Stack>
 					</Stack>
 				</Stack>
 
 				{/* Main content with filters, products, pagination */}
 				<Stack className="products-content">
 					{/* Filters Sidebar */}
-					<Grid size={{ xs: 12, md: 3 }} className="filters-sidebar">
+					<Grid size={{ xs: 12, md: 3 }} className={`filters-sidebar${filtersOpen ? ' open' : ''}`}>
 						<Typography variant="h6" className="filter-heading">
 							Filters
 						</Typography>
 
 						{/* Category Filters */}
 						<Box className="filter-section">
-							<Typography variant="subtitle1" className="filter-subheading">
+							<Typography variant="subtitle1" className="filter-subheading" id="category-select-label">
 								Categories
 							</Typography>
 							<FormControl fullWidth variant="outlined" size="small">
@@ -260,7 +297,7 @@ export default function Products() {
 
 						{/* Gender Filters */}
 						<Box className="filter-section">
-							<Typography variant="subtitle1" className="filter-subheading">
+							<Typography variant="subtitle1" className="filter-subheading" id="gender-select-label">
 								Gender
 							</Typography>
 							<FormControl fullWidth variant="outlined" size="small">
@@ -314,27 +351,48 @@ export default function Products() {
 						</Box>
 
 						{/* Clear All Filters Button */}
-						<Button variant="outlined" onClick={clearAllFiltersHandler} className="clear-filters-btn">
+						<Button
+							variant="outlined"
+							onClick={clearAllFiltersHandler}
+							className="clear-filters-btn"
+							disabled={activeFilterCount === 0 && !productSearch.search}
+						>
 							Clear All Filters
 						</Button>
 					</Grid>
 
 					{/* Products Grid with Pagination */}
-					<Stack className="products-container">
-						{products && products.list.length > 0 ? (
+					<Stack className="products-container" aria-busy={loading}>
+						{loading && !products?.list.length ? (
+							<Box className="no-products" role="status">
+								<CircularProgress aria-label="Loading products" />
+							</Box>
+						) : loadFailed && !products?.list.length ? (
+							<Box className="no-products" role="alert">
+								<Typography variant="h6">We could not load the products.</Typography>
+								<Typography variant="body2" className="no-products-hint">
+									{loadError}
+								</Typography>
+								<Button variant="outlined" onClick={() => setReloadKey((k) => k + 1)} className="reset-button">
+									Try again
+								</Button>
+							</Box>
+						) : products && products.list.length > 0 ? (
 							<>
-								<Grid container spacing={3} className="products-grid">
+								<Grid container spacing={{ xs: 1.5, sm: 3 }} className="products-grid">
 									{products.list.map((product) => (
-										<Grid size={{ xs: 12, sm: 6, lg: 4 }} key={product._id}>
+										<Grid size={{ xs: 6, sm: 6, lg: 4 }} key={product._id}>
 											<Link to={`/products/${product._id}`} className="product-link">
 												<Card className="product-card">
 													{/* Product image with badges */}
 													<Box className="product-image-container">
 														<CardMedia
 															component="img"
-															image={product.productImages[0]}
+															image={photoOf(product.productImages)}
 															alt={product.productName}
 															className="product-image"
+															loading="lazy"
+															onError={handleImageError}
 														/>
 														{product.isFeatured && <Chip label="Featured" className="featured-badge" />}
 														{product.onSale && <Chip label="Sale" className="sale-badge" />}
@@ -383,6 +441,9 @@ export default function Products() {
 						) : (
 							<Box className="no-products">
 								<Typography variant="h6">No products found matching your criteria.</Typography>
+								<Typography variant="body2" className="no-products-hint">
+									Try different words, or clear the filters.
+								</Typography>
 								<Button variant="outlined" onClick={clearAllFiltersHandler} className="reset-button">
 									Reset Filters
 								</Button>

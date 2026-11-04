@@ -15,6 +15,7 @@ const HelpPage = lazy(() => import('./screens/helpPage'));
 const OrdersPage = lazy(() => import('./screens/ordersPage'));
 const ProductsPage = lazy(() => import('./screens/productsPage'));
 const UserPage = lazy(() => import('./screens/userPage'));
+const NotFoundPage = lazy(() => import('./screens/notFoundPage'));
 
 // Beautiful loading fallback
 const PageLoading = () => (
@@ -66,6 +67,7 @@ function App() {
 					<Route path="/orders" element={<OrdersPage />} />
 					<Route path="/my-page" element={<UserPage />} />
 					<Route path="/" element={<HomePage />} />
+					<Route path="*" element={<NotFoundPage />} />
 				</Routes>
 			</Suspense>
 			{/* Footer */}

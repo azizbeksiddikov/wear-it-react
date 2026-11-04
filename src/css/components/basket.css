@@ -80,9 +80,17 @@
 	flex-shrink: 0;
 }
 
+.basket-info-box .col-2 .qty {
+	min-width: 1.5rem;
+	text-align: center;
+	font-weight: 600;
+	font-size: 14px;
+	color: #111111;
+}
+
 .basket-info-box .col-2 button {
-	width: 28px;
-	height: 28px;
+	width: 44px;
+	height: 44px;
 	border-radius: 50%;
 	border: 1px solid #efefef;
 	background: #ffffff;
@@ -197,9 +205,7 @@
 	}
 
 	.basket-info-box .col-2 button {
-		width: 26px;
-		height: 26px;
-		font-size: 14px;
+		font-size: 16px;
 	}
 
 	.basket-frame .basket-order {

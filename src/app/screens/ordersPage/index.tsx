@@ -109,7 +109,8 @@ export default function OrdersPage() {
 							onChange={handleChange}
 							aria-label="order tabs"
 							className="order-tabs"
-							variant="fullWidth"
+							variant="scrollable"
+							scrollButtons={false}
 							sx={{ '& .MuiTabs-indicator': { backgroundColor: '#e60023' } }}
 						>
 							<Tab label={'All '} value={'ALL'} />

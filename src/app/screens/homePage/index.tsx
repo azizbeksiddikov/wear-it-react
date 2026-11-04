@@ -1,5 +1,6 @@
 import React from 'react';
 import { useQueries } from '@tanstack/react-query';
+import { Button } from '@mui/material';
 import { Dispatch } from '@reduxjs/toolkit';
 import { useDispatch } from 'react-redux';
 import { setFeaturedProducts, setSaleProducts } from './slice';
@@ -24,7 +25,7 @@ export default function HomePage() {
 	const { setFeaturedProducts, setSaleProducts } = actionDispatch(useDispatch());
 	const productService = new ProductService();
 
-	useQueries({
+	const results = useQueries({
 		queries: [
 			{
 				queryKey: ['featured-products'],
@@ -64,9 +65,19 @@ export default function HomePage() {
 		],
 	});
 
+	const loadFailed = results.some((r) => r.isError);
+
 	return (
 		<div className={'homepage'}>
 			<Introduction />
+			{loadFailed && (
+				<div className="home-load-error" role="alert">
+					<p>We could not load some products. Check your connection and try again.</p>
+					<Button variant="outlined" onClick={() => results.forEach((r) => r.isError && r.refetch())}>
+						Try again
+					</Button>
+				</div>
+			)}
 			<FeaturedProducts />
 			<SaleProducts />
 			<Advertisement />

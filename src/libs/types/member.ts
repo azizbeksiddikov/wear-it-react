@@ -42,7 +42,6 @@ export interface MemberUpdateInput {
 	memberAddress?: string;
 	memberDesc?: string;
 	memberImage?: string;
-	memberPoints?: number;
 	memeberStatus?: MemberStatus;
 }
 

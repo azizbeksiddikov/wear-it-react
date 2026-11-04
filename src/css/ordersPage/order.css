@@ -39,6 +39,12 @@
 
 .order-card .order-item-row {
 	width: 100%;
+	box-sizing: border-box;
+}
+
+.order-card .order-item-link {
+	box-sizing: border-box;
+	max-width: 100%;
 }
 
 .order-card .item-image-container {
@@ -113,10 +119,36 @@
 	color: white;
 	padding: 2px 6px;
 	border-radius: 4px;
-	font-size: 0.65rem;
+	font-size: 0.75rem;
 	font-weight: 600;
 }
 
 .order-card .card-footer {
 	background-color: #f9fafb;
+}
+
+/* Phone: the price drops under the product text instead of squeezing the name */
+@media (max-width: 600px) {
+	.order-card .order-item-row {
+		flex-wrap: wrap;
+		row-gap: 4px;
+	}
+
+	.order-card .order-item-row > :nth-child(2) {
+		flex: 1 1 140px;
+		min-width: 0;
+	}
+
+	.order-card .order-item-row > :nth-child(3) {
+		flex: 0 0 100%;
+		margin-left: 0 !important;
+		padding-left: 80px;
+		text-align: left !important;
+	}
+
+	.order-card .order-item-row .price-container {
+		flex-direction: row;
+		gap: 8px;
+		align-items: baseline;
+	}
 }

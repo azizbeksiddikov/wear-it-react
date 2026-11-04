@@ -32,7 +32,7 @@ const pinterestColors = {
 	red: '#e60023',
 	lightRed: '#ffeaee',
 	darkGray: '#333333',
-	mediumGray: '#767676',
+	mediumGray: '#6b6b6b',
 	lightGray: '#efefef',
 	white: '#ffffff',
 };
@@ -80,6 +80,7 @@ export default function HelpPage() {
 					bgcolor: pinterestColors.red,
 					color: pinterestColors.white,
 					py: 6,
+					px: 2, // 16px side margin on phones
 					mb: 4,
 					position: 'relative',
 				}}

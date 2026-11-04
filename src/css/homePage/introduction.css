@@ -1,6 +1,9 @@
 .introduction-frame {
 	width: 100%;
+	box-sizing: border-box;
+	overflow: hidden;
 	padding: 6rem 0;
+	flex-direction: column;
 	background-color: #f9f9f9;
 	position: relative;
 	display: flex;
@@ -50,7 +53,7 @@
 	padding-top: 1rem;
 	padding-bottom: 2rem;
 	font-size: 1.125rem;
-	color: #767676;
+	color: #6b6b6b;
 }
 
 .introduction-frame .shop-button {
@@ -66,4 +69,109 @@
 	transform: translateY(-2px);
 	background-color: #d1001f;
 	box-shadow: 0 6px 10px rgba(230, 0, 35, 0.3);
+}
+
+.introduction-frame-content {
+	position: relative;
+}
+
+/* Product strip is a phone-only element */
+.introduction-frame .hero-strip {
+	display: none;
+}
+
+@media (max-width: 600px) {
+	.introduction-frame {
+		padding: 1.25rem 0 1.5rem;
+		align-items: stretch;
+	}
+
+	.introduction-frame::before {
+		opacity: 0.35;
+	}
+
+	.introduction-frame-content {
+		padding: 0 16px;
+		max-width: none;
+		text-align: left;
+	}
+
+	.introduction-frame .introduction-title {
+		font-size: clamp(1.6rem, 7.5vw, 2rem);
+		line-height: 1.15;
+	}
+
+	.introduction-frame .introduction-title .text-primary::after {
+		height: 4px;
+	}
+
+	.introduction-frame .intro-text {
+		padding-top: 0.5rem;
+		padding-bottom: 1rem;
+		font-size: 0.95rem;
+		line-height: 1.45;
+	}
+
+	.introduction-frame .shop-button {
+		min-height: 44px;
+		padding: 8px 24px;
+		font-size: 1rem;
+	}
+
+	.introduction-frame .hero-strip {
+		display: flex;
+		position: relative;
+		gap: 10px;
+		margin-top: 1.25rem;
+		padding: 0 16px 4px;
+		overflow-x: auto;
+		scroll-snap-type: x mandatory;
+		scroll-padding-left: 16px;
+		-webkit-overflow-scrolling: touch;
+		scrollbar-width: none;
+	}
+
+	.introduction-frame .hero-strip::-webkit-scrollbar {
+		display: none;
+	}
+
+	.hero-strip-card {
+		flex: 0 0 132px;
+		scroll-snap-align: start;
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		text-decoration: none;
+		color: #111111;
+		background: #ffffff;
+		border-radius: 14px;
+		overflow: hidden;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+		padding-bottom: 8px;
+	}
+
+	.hero-strip-card img {
+		width: 100%;
+		aspect-ratio: 1;
+		object-fit: cover;
+		background: #f2f2f2;
+	}
+
+	.hero-strip-name {
+		padding: 6px 10px 0;
+		font-size: 0.8rem;
+		font-weight: 600;
+		line-height: 1.25;
+		display: -webkit-box;
+		-webkit-line-clamp: 1;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+
+	.hero-strip-price {
+		padding: 0 10px;
+		font-size: 0.85rem;
+		font-weight: 700;
+		color: #e60023;
+	}
 }

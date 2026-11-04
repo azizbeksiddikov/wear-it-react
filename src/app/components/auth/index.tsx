@@ -10,7 +10,8 @@ import { T } from '../../../libs/types/common';
 import { Messages } from '../../../libs/config';
 import { LoginInput, MemberInput } from '../../../libs/types/member';
 import MemberService from '../../services/MemberService';
-import { sweetErrorHandling, sweetTopSuccessAlert } from '../../../libs/sweetAlert';
+import { sweetTopSuccessAlert } from '../../../libs/sweetAlert';
+import { friendlyErrorMessage } from '../../../libs/errorMessages';
 import { useGlobals } from '../../hooks/useGlobals';
 
 const StyledTextField = styled(TextField)`
@@ -18,6 +19,11 @@ const StyledTextField = styled(TextField)`
 
 	& .MuiOutlinedInput-root {
 		border-radius: 8px;
+	}
+
+	& .MuiIconButton-root {
+		width: 44px;
+		height: 44px;
 	}
 `;
 
@@ -27,6 +33,18 @@ const StyledFab = styled(Fab)`
 	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
 	text-transform: none !important;
 	margin-top: 16px !important;
+`;
+
+const FormBody = styled.form`
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+`;
+
+const FormError = styled.p`
+	margin: 0;
+	color: #c62828;
+	font-size: 0.875rem;
 `;
 
 const ModalTitle = styled.h2`
@@ -108,6 +126,8 @@ export default function AuthenticationModal(props: AuthenticationModalProps) {
 	const [showPassword, setShowPassword] = useState(false);
 	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 	const [showLoginPassword, setShowLoginPassword] = useState(false);
+	const [formError, setFormError] = useState('');
+	const [pending, setPending] = useState(false);
 
 	const { setAuthMember } = useGlobals();
 	const member = new MemberService();
@@ -120,6 +140,21 @@ export default function AuthenticationModal(props: AuthenticationModalProps) {
 				document.body.style.overflow = '';
 			};
 		}
+	}, [signupOpen, loginOpen]);
+
+	// Focus the first field when a modal opens, and let Escape close it
+	useEffect(() => {
+		if (!signupOpen && !loginOpen) return;
+		setFormError('');
+		document.getElementById(signupOpen ? 'signup-email' : 'login-email')?.focus();
+		const onKey = (e: KeyboardEvent) => {
+			if (e.key !== 'Escape') return;
+			if (signupOpen) handleSignupClose();
+			if (loginOpen) handleLoginClose();
+		};
+		document.addEventListener('keydown', onKey);
+		return () => document.removeEventListener('keydown', onKey);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [signupOpen, loginOpen]);
 
 	// Reset form fields when modals close
@@ -163,27 +198,22 @@ export default function AuthenticationModal(props: AuthenticationModalProps) {
 		setConfirmPassword(e.target.value);
 	};
 
-	const handlePasswordKeyDown = (e: T) => {
-		// signup
-		if (e.key === 'Enter' && signupOpen) {
-			handleSignupRequest().then();
-		}
-		// login
-		else if (e.key === 'Enter' && loginOpen) {
-			handleLoginRequest().then();
-		}
-	};
-
 	// Signup request
 	const handleSignupRequest = async () => {
+		if (pending) return;
 		try {
+			setFormError('');
 			const errorMessage: string | null = validateSignupInput(
 				memberEmail,
 				memberPhone,
 				memberPassword,
 				confirmPassword,
 			);
-			if (errorMessage) throw new Error(errorMessage);
+			if (errorMessage) {
+				setFormError(errorMessage);
+				return;
+			}
+			setPending(true);
 
 			const signupInput: MemberInput = {
 				memberEmail: memberEmail,
@@ -203,18 +233,26 @@ export default function AuthenticationModal(props: AuthenticationModalProps) {
 			setShowConfirmPassword(false);
 
 			handleSignupClose();
-			await sweetTopSuccessAlert('success', 1400);
+			await sweetTopSuccessAlert('Welcome to Wearit', 1400);
 		} catch (err) {
-			handleSignupClose();
-			sweetErrorHandling(err, 1400).then();
+			// Keep the modal open and what the shopper typed, and say what to fix
+			setFormError(friendlyErrorMessage(err));
+		} finally {
+			setPending(false);
 		}
 	};
 
 	// Login request
 	const handleLoginRequest = async () => {
+		if (pending) return;
 		try {
+			setFormError('');
 			const isFulFill = memberEmail !== '' && memberPassword !== '';
-			if (!isFulFill) throw new Error(Messages.error3);
+			if (!isFulFill) {
+				setFormError(Messages.error3);
+				return;
+			}
+			setPending(true);
 
 			const loginInput: LoginInput = {
 				memberEmail: memberEmail,
@@ -230,13 +268,14 @@ export default function AuthenticationModal(props: AuthenticationModalProps) {
 			setShowLoginPassword(false);
 
 			handleLoginClose();
-			await sweetTopSuccessAlert('success', 1400);
+			await sweetTopSuccessAlert('You are logged in', 1400);
 
 			// Navigate back to the page where user started from
 			navigate(returnPath);
 		} catch (err) {
-			handleLoginClose();
-			sweetErrorHandling(err, 1400).then();
+			setFormError(friendlyErrorMessage(err));
+		} finally {
+			setPending(false);
 		}
 	};
 
@@ -249,81 +288,106 @@ export default function AuthenticationModal(props: AuthenticationModalProps) {
 			{/* Signup modal */}
 			{createPortal(
 				<CustomModalOverlay $isOpen={signupOpen} onClick={handleSignupClose}>
-					<CustomModalContent $isOpen={signupOpen} onClick={(e) => e.stopPropagation()}>
-						<ModalTitle>Join Wearit</ModalTitle>
-						<StyledTextField
-							id="signup-email"
-							label="Email"
-							variant="outlined"
-							fullWidth
-							value={memberEmail}
-							onChange={handleUserEmail}
-						/>
-						<StyledTextField
-							id="signup-phone"
-							label="Phone number"
-							variant="outlined"
-							fullWidth
-							value={memberPhone}
-							onChange={handlePhone}
-						/>
-						<StyledTextField
-							id="signup-password"
-							label="Password"
-							variant="outlined"
-							type={showPassword ? 'text' : 'password'}
-							fullWidth
-							value={memberPassword}
-							onChange={handlePassword}
-							error={memberPassword !== '' && memberPassword.length > 0 && memberPassword.length < 6}
-							helperText={
-								memberPassword !== '' && memberPassword.length > 0 && memberPassword.length < 6
-									? 'Password should be at least 6 characters'
-									: ''
-							}
-							InputProps={{
-								endAdornment: (
-									<InputAdornment position="end">
-										<IconButton
-											aria-label="toggle password visibility"
-											onClick={() => setShowPassword(!showPassword)}
-											edge="end"
-										>
-											{showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
-										</IconButton>
-									</InputAdornment>
-								),
+					<CustomModalContent
+						$isOpen={signupOpen}
+						onClick={(e) => e.stopPropagation()}
+						role="dialog"
+						aria-modal="true"
+						aria-labelledby="signup-title"
+					>
+						<FormBody
+							noValidate
+							onSubmit={(e: React.FormEvent) => {
+								e.preventDefault();
+								handleSignupRequest().then();
 							}}
-						/>
-						<StyledTextField
-							id="signup-confirm-password"
-							label="Confirm Password"
-							variant="outlined"
-							type={showConfirmPassword ? 'text' : 'password'}
-							fullWidth
-							value={confirmPassword}
-							onChange={handleConfirmPassword}
-							onKeyDown={handlePasswordKeyDown}
-							error={confirmPassword !== '' && confirmPassword !== memberPassword}
-							helperText={confirmPassword !== '' && confirmPassword !== memberPassword ? 'Passwords do not match' : ''}
-							InputProps={{
-								endAdornment: (
-									<InputAdornment position="end">
-										<IconButton
-											aria-label="toggle password visibility"
-											onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-											edge="end"
-										>
-											{showConfirmPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
-										</IconButton>
-									</InputAdornment>
-								),
-							}}
-						/>
-						<StyledFab variant="extended" color="primary" onClick={handleSignupRequest}>
-							<LoginIcon sx={{ mr: 1 }} />
-							Create Account
-						</StyledFab>
+						>
+							<ModalTitle id="signup-title">Join Wearit</ModalTitle>
+							<StyledTextField
+								id="signup-email"
+								label="Email"
+								type="email"
+								autoComplete="email"
+								inputProps={{ inputMode: 'email' }}
+								variant="outlined"
+								fullWidth
+								value={memberEmail}
+								onChange={handleUserEmail}
+							/>
+							<StyledTextField
+								id="signup-phone"
+								label="Phone number"
+								type="tel"
+								autoComplete="tel"
+								inputProps={{ inputMode: 'tel' }}
+								helperText="Format: 010-1111-1111"
+								variant="outlined"
+								fullWidth
+								value={memberPhone}
+								onChange={handlePhone}
+							/>
+							<StyledTextField
+								id="signup-password"
+								label="Password"
+								autoComplete="new-password"
+								variant="outlined"
+								type={showPassword ? 'text' : 'password'}
+								fullWidth
+								value={memberPassword}
+								onChange={handlePassword}
+								error={memberPassword !== '' && memberPassword.length > 0 && memberPassword.length < 6}
+								helperText={
+									memberPassword !== '' && memberPassword.length > 0 && memberPassword.length < 6
+										? 'Password should be at least 6 characters'
+										: ''
+								}
+								InputProps={{
+									endAdornment: (
+										<InputAdornment position="end">
+											<IconButton
+												aria-label="Show or hide password"
+												onClick={() => setShowPassword(!showPassword)}
+												edge="end"
+											>
+												{showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+											</IconButton>
+										</InputAdornment>
+									),
+								}}
+							/>
+							<StyledTextField
+								id="signup-confirm-password"
+								label="Confirm Password"
+								variant="outlined"
+								type={showConfirmPassword ? 'text' : 'password'}
+								fullWidth
+								value={confirmPassword}
+								onChange={handleConfirmPassword}
+								autoComplete="new-password"
+								error={confirmPassword !== '' && confirmPassword !== memberPassword}
+								helperText={
+									confirmPassword !== '' && confirmPassword !== memberPassword ? 'Passwords do not match' : ''
+								}
+								InputProps={{
+									endAdornment: (
+										<InputAdornment position="end">
+											<IconButton
+												aria-label="Show or hide password"
+												onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+												edge="end"
+											>
+												{showConfirmPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+											</IconButton>
+										</InputAdornment>
+									),
+								}}
+							/>
+							{formError && <FormError role="alert">{formError}</FormError>}
+							<StyledFab variant="extended" color="primary" type="submit" disabled={pending}>
+								<LoginIcon sx={{ mr: 1 }} />
+								{pending ? 'Creating account…' : 'Create Account'}
+							</StyledFab>
+						</FormBody>
 					</CustomModalContent>
 				</CustomModalOverlay>,
 				modalRoot,
@@ -332,43 +396,61 @@ export default function AuthenticationModal(props: AuthenticationModalProps) {
 			{/* Login modal */}
 			{createPortal(
 				<CustomModalOverlay $isOpen={loginOpen} onClick={handleLoginClose}>
-					<CustomModalContent $isOpen={loginOpen} onClick={(e) => e.stopPropagation()}>
-						<ModalTitle>Welcome Back</ModalTitle>
-						<StyledTextField
-							id="login-email"
-							label="Email"
-							variant="outlined"
-							fullWidth
-							value={memberEmail}
-							onChange={handleUserEmail}
-						/>
-						<StyledTextField
-							id="login-password"
-							label="Password"
-							variant="outlined"
-							type={showLoginPassword ? 'text' : 'password'}
-							fullWidth
-							value={memberPassword}
-							onChange={handlePassword}
-							onKeyDown={handlePasswordKeyDown}
-							InputProps={{
-								endAdornment: (
-									<InputAdornment position="end">
-										<IconButton
-											aria-label="toggle password visibility"
-											onClick={() => setShowLoginPassword(!showLoginPassword)}
-											edge="end"
-										>
-											{showLoginPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
-										</IconButton>
-									</InputAdornment>
-								),
+					<CustomModalContent
+						$isOpen={loginOpen}
+						onClick={(e) => e.stopPropagation()}
+						role="dialog"
+						aria-modal="true"
+						aria-labelledby="login-title"
+					>
+						<FormBody
+							noValidate
+							onSubmit={(e: React.FormEvent) => {
+								e.preventDefault();
+								handleLoginRequest().then();
 							}}
-						/>
-						<StyledFab variant="extended" color="primary" onClick={handleLoginRequest}>
-							<LoginIcon sx={{ mr: 1 }} />
-							Log In
-						</StyledFab>
+						>
+							<ModalTitle id="login-title">Welcome Back</ModalTitle>
+							<StyledTextField
+								id="login-email"
+								label="Email"
+								type="email"
+								autoComplete="email"
+								inputProps={{ inputMode: 'email' }}
+								variant="outlined"
+								fullWidth
+								value={memberEmail}
+								onChange={handleUserEmail}
+							/>
+							<StyledTextField
+								id="login-password"
+								label="Password"
+								variant="outlined"
+								type={showLoginPassword ? 'text' : 'password'}
+								fullWidth
+								value={memberPassword}
+								onChange={handlePassword}
+								autoComplete="current-password"
+								InputProps={{
+									endAdornment: (
+										<InputAdornment position="end">
+											<IconButton
+												aria-label="Show or hide password"
+												onClick={() => setShowLoginPassword(!showLoginPassword)}
+												edge="end"
+											>
+												{showLoginPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+											</IconButton>
+										</InputAdornment>
+									),
+								}}
+							/>
+							{formError && <FormError role="alert">{formError}</FormError>}
+							<StyledFab variant="extended" color="primary" type="submit" disabled={pending}>
+								<LoginIcon sx={{ mr: 1 }} />
+								{pending ? 'Logging in…' : 'Log In'}
+							</StyledFab>
+						</FormBody>
 					</CustomModalContent>
 				</CustomModalOverlay>,
 				modalRoot,

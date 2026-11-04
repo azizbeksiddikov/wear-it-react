@@ -10,7 +10,7 @@
 }
 
 .products-page .chosen-product .title {
-	font-family: 'Playfair Display', serif;
+	font-family: inherit;
 	font-style: normal;
 	font-weight: 700;
 	font-size: 48px;
@@ -79,6 +79,13 @@
 }
 
 .products-page .chosen-product .info-box .product-name {
+	margin-top: 0;
+	/* The detail page keeps the full name (the list page clamps it to 2 lines) */
+	display: block;
+	-webkit-line-clamp: unset;
+	overflow: visible;
+	min-height: 0;
+	overflow-wrap: anywhere;
 	font-family: 'Poppins', sans-serif;
 	font-style: normal;
 	font-weight: 700;
@@ -131,7 +138,7 @@
 }
 
 .products-page .chosen-product .info-box .category-box .on-sale-badge {
-	background-color: #f44336; /* Red color */
+	background-color: #c62828; /* Red color */
 	color: white;
 	padding: 4px 8px;
 	border-radius: 4px;
@@ -170,7 +177,7 @@
 .products-page .chosen-product .rating-box .evaluation-box .product-view {
 	display: flex;
 	align-items: center;
-	color: #777;
+	color: #6b6b6b;
 	font-size: 14px;
 }
 
@@ -208,11 +215,11 @@
 }
 
 .products-page .chosen-product .product-price .sale-price {
-	color: #e44d26; /* A vibrant color for sale price */
+	color: #e60023; /* A vibrant color for sale price */
 }
 
 .products-page .chosen-product .product-price .original-price {
-	color: #777;
+	color: #6b6b6b;
 	font-size: 24px;
 	text-decoration: line-through;
 }
@@ -239,7 +246,7 @@
 	border-radius: 25px;
 	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); /* Lighter shadow */
 	transition: transform 0.2s ease, box-shadow 0.2s ease;
-	background-color: #4caf50; /* Change color */
+	background-color: #e60023;
 }
 
 .products-page .chosen-product .button-box button:hover {
@@ -281,6 +288,12 @@
 	font-weight: 500;
 	font-size: 14px;
 	color: #555;
+	/* Chips are real buttons: reset the browser look, keep a 44px tap target */
+	background-color: #fff;
+	font-family: inherit;
+	min-height: 44px;
+	min-width: 44px;
+	box-sizing: border-box;
 }
 
 .products-page .chosen-product .size-option:hover,
@@ -291,7 +304,7 @@
 
 .products-page .chosen-product .size-option.selected,
 .products-page .chosen-product .color-option.selected {
-	border-color: #4caf50;
+	border-color: #e60023;
 	color: #222;
 	font-weight: 600;
 }
@@ -325,6 +338,8 @@
 	border: 2px solid transparent;
 	border-radius: 8px;
 	margin: 0 5px;
+	padding: 0;
+	background: none;
 	cursor: pointer;
 	transition: border-color 0.3s ease;
 }
@@ -336,7 +351,7 @@
 }
 
 .products-page .chosen-product .image-previews .image-preview.active {
-	border-color: #4caf50;
+	border-color: #e60023;
 	opacity: 0.7; /* Highlight active image */
 }
 
@@ -360,9 +375,9 @@
 }
 
 .products-page .chosen-product .quantity-selector .quantity-button {
-	width: 40px;
-	height: 40px;
-	min-width: 30px;
+	width: 44px;
+	height: 44px;
+	min-width: 44px;
 	border-radius: 50%;
 	margin: 0 3px;
 	border: 2px solid #ddd;
@@ -472,8 +487,8 @@
 }
 
 .chosen-product .user-review .MuiButton-outlinedError {
-	color: #f44336;
-	border-color: #f44336;
+	color: #c62828;
+	border-color: #c62828;
 }
 
 .chosen-product .user-review .MuiButton-outlinedError:hover {
@@ -573,12 +588,16 @@
 	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-.chosen-product .button-box button:first-child {
-	background-color: #4caf50;
+/* One accent colour: the main action is brand red (set above), not green or blue */
+.chosen-product .button-box button:disabled {
+	background-color: #6b6b6b;
+	color: #ffffff;
 }
 
-.chosen-product .button-box button:last-child {
-	background-color: #2196f3;
+/* Gallery arrows follow the brand colour */
+.products-page .chosen-product .swiper {
+	--swiper-navigation-color: #e60023;
+	--swiper-theme-color: #e60023;
 }
 
 /* TextField Styles for Review Editing */
@@ -694,4 +713,112 @@
 		font-size: 24px;
 		margin-bottom: 8px;
 	}
+}
+
+/* Tablet: a calmer title size so a long name does not take five lines */
+@media (max-width: 899px) {
+	.products-page .chosen-product .info-box .product-name {
+		font-size: 1.75rem;
+		line-height: 1.25;
+	}
+}
+
+/* Phone refinements for the product detail page */
+@media (max-width: 600px) {
+	.products-page {
+		padding-top: 0;
+	}
+
+	.products-page .chosen-product .title {
+		display: none;
+	}
+
+	.products-page .chosen-product .product-container {
+		margin-top: 12px;
+		margin-bottom: 20px;
+		gap: 14px;
+	}
+
+	.products-page .chosen-product .chosen-product-slider {
+		border-radius: 14px;
+		overflow: hidden;
+	}
+
+	.products-page .chosen-product .chosen-product-slider:hover,
+	.products-page .chosen-product .chosen-product-slider .swiper-area .slider-image:hover {
+		transform: none;
+	}
+
+	.products-page .chosen-product .chosen-product-info {
+		padding: 16px;
+		border-radius: 14px;
+	}
+
+	.products-page .chosen-product .info-box .product-name {
+		font-size: clamp(1.15rem, 5.5vw, 1.4rem);
+		line-height: 1.3;
+		letter-spacing: 0;
+	}
+
+	.products-page .chosen-product .info-box .product-desc {
+		font-size: 0.9rem;
+		line-height: 1.5;
+	}
+
+	.products-page .chosen-product .size-option,
+	.products-page .chosen-product .color-option {
+		min-height: 44px;
+		box-sizing: border-box;
+		margin-bottom: 8px;
+	}
+
+	.products-page .chosen-product .size-option:hover,
+	.products-page .chosen-product .color-option:hover {
+		transform: none;
+	}
+
+	.products-page .chosen-product .quantity-selector .quantity-button {
+		min-width: 44px;
+		min-height: 44px;
+	}
+
+	.products-page .chosen-product .button-box {
+		margin-top: 12px;
+	}
+
+	.products-page .chosen-product .button-box button,
+	.chosen-product .button-box button {
+		width: 100%;
+		max-width: none;
+		height: 52px;
+		margin-bottom: 0;
+		font-size: 1rem;
+	}
+}
+
+@media (max-width: 600px) {
+	.products-page .chosen-product .product-price span {
+		font-size: 22px;
+		line-height: 1.2;
+	}
+
+	.products-page .chosen-product .info-box .product-price {
+		margin: 12px 0;
+	}
+}
+
+/* Hint under a disabled "Add To Basket" (log in, choose a size and colour) */
+.products-page .chosen-product .add-hint {
+	margin: 8px 0 0;
+	text-align: center;
+	font-size: 0.875rem;
+	color: #6b6b6b;
+}
+
+/* Focus ring on the option chips and thumbnails (buttons now) */
+.products-page .chosen-product .size-option:focus-visible,
+.products-page .chosen-product .color-option:focus-visible,
+.products-page .chosen-product .image-preview:focus-visible {
+	outline: 2px solid #111111;
+	outline-offset: 2px;
 }

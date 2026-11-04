@@ -2,3 +2,18 @@
 	width: 100%;
 	height: auto;
 }
+
+.homepage .home-load-error {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+	padding: 16px;
+	text-align: center;
+	background: #fdecee;
+	color: #111111;
+}
+
+.homepage .home-load-error p {
+	margin: 0;
+}

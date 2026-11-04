@@ -1,5 +1,6 @@
 import React from 'react';
-import { Box, Typography, Stack } from '@mui/material';
+import { Box, Button, Typography, Stack } from '@mui/material';
+import { Link } from 'react-router-dom';
 import OrderCard from './OrderCard';
 import { useSelector } from 'react-redux';
 import { createSelector } from '@reduxjs/toolkit';
@@ -31,6 +32,11 @@ export default function AllOrders(props: AllOrdersProps) {
 					<Typography variant="body1" className="pinterest-text-secondary">
 						You don't have any orders to display.
 					</Typography>
+					<Box sx={{ mt: 2 }}>
+						<Button component={Link} to="/products" variant="contained">
+							Start shopping
+						</Button>
+					</Box>
 				</Stack>
 			)}
 		</TabPanel>
