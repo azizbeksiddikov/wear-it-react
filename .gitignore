@@ -24,7 +24,8 @@ playwright-report
 
 # Environment variables
 .env
-.env.dev
+.env.*
+!.env.example
 
 # Logs
 logs
