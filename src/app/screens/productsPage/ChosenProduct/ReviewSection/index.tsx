@@ -7,6 +7,7 @@ import ReviewList from './ReviewList';
 import ReviewService from '../../../../services/ReviewService';
 import { ReviewInput, ReviewUpdateInput } from '../../../../../libs/types/review';
 import { T } from '../../../../../libs/types/common';
+import { sweetConfirm, sweetErrorHandling, sweetTopSmallSuccessAlert } from '../../../../../libs/sweetAlert';
 
 interface Review {
 	_id: string;
@@ -81,8 +82,10 @@ export default function ReviewSection({
 				setReviewModalOpen(false);
 				onRefetch();
 			})
+			.then(() => sweetTopSmallSuccessAlert('Thanks for your review', 1500))
 			.catch((err) => {
 				console.error('Error creating review:', err);
+				sweetErrorHandling(err).then();
 			});
 	};
 
@@ -103,11 +106,13 @@ export default function ReviewSection({
 			})
 			.catch((err) => {
 				console.error('Error updating review:', err);
+				sweetErrorHandling(err).then();
 			});
 	};
 
-	const handleDeleteReview = () => {
+	const handleDeleteReview = async () => {
 		if (!memberReview) return;
+		if (!(await sweetConfirm('Delete your review?', 'Delete'))) return;
 		reviewService
 			.deleteReview(memberReview._id)
 			.then(() => {
@@ -115,6 +120,7 @@ export default function ReviewSection({
 			})
 			.catch((err) => {
 				console.error('Error deleting review:', err);
+				sweetErrorHandling(err).then();
 			});
 	};
 
@@ -128,16 +134,19 @@ export default function ReviewSection({
 			{!memberReview && (
 				<Box mb={3}>
 					<Button
-						style={{
-							backgroundColor: !authMember || isReviewValid === false ? '#9e9e9e' : '#2196f3',
-							color: 'white',
-						}}
 						variant="contained"
+						color="primary"
 						onClick={() => setReviewModalOpen(true)}
 						disabled={!authMember || isReviewValid === false}
+						aria-describedby={!authMember ? 'review-hint' : undefined}
 					>
 						Write Review
 					</Button>
+					{!authMember && (
+						<p id="review-hint" className="add-hint" style={{ textAlign: 'left' }}>
+							Log in to write a review.
+						</p>
+					)}
 				</Box>
 			)}
 
